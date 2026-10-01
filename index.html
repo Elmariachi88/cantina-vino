@@ -4554,6 +4554,15 @@ function _wlLinks(it) {
 }
 function _wlSafeUrl(u) { return /^https?:\/\//i.test(u || '') ? u : ''; }
 
+function _wlColor(it) {
+  if (it.color) return it.color;
+  try { const sg = kbSuggestFields(it.name, it.producer, it.region, it.vintage); if (sg && sg.color) return sg.color; } catch(e) {}
+  const t = ((it.name||'') + ' ' + (it.notes||'')).toLowerCase();
+  if (/\brosato\b|ros[eé]\b/.test(t)) return 'Rosato';
+  if (/\brosso\b|\bred\b/.test(t)) return 'Rosso';
+  if (/\bbianco\b|\bwhite\b|\bbrut\b|spumante|prosecco|franciacorta|champagne/.test(t)) return 'Bianco';
+  return '';
+}
 async function viewWishlist() {
   const all = (await DB.getAll('wishlist')).slice().sort((a, b) => (b._ts || 0) - (a._ts || 0));
   const q = WL.q.trim().toLowerCase();
@@ -4581,7 +4590,7 @@ async function viewWishlist() {
       <div style="border-bottom:1px solid var(--border)">
         <div class="wine-item" style="cursor:default;border-bottom:none">
           <input type="checkbox" data-wl-sel="${esc(it.id)}" ${WL.sel.has(it.id) ? 'checked' : ''} style="margin-right:8px;flex-shrink:0" aria-label="Seleziona">
-          <div class="wine-color-bar bar-w"></div>
+          <div class="wine-color-bar ${colorBar(_wlColor(it))}"></div>
           <div class="wine-info">
             <div class="wine-name">${it.kind === 'distillates' ? '🥃' : '🍷'} ${esc(it.name)}</div>
             <div class="wine-sub">${esc([it.producer, it.vintage, it.priceEstimate != null ? fmt(it.priceEstimate) : ''].filter(Boolean).join(' · ') || '—')}${bestOffer ? ' · 🏷 da ' + (bestOffer.price != null ? fmt(bestOffer.price) : '?') + ' (' + esc(bestOffer.shop || '') + ')' : ''}${it.notes ? ' · ' + esc(it.notes.slice(0, 60)) + (it.notes.length > 60 ? '…' : '') : ''}</div>
@@ -4745,7 +4754,7 @@ async function wishlistBulkPurchased() {
       if (it.kind === 'distillates') { skipped++; continue; }   // per i distillati usa "✓ Acquistato" singolo
       const wine = {
         name: it.name, producer: it.producer || '', region: it.region || '', country: '',
-        vintage: it.vintage != null ? it.vintage : null, color: '', type: '',
+        vintage: it.vintage != null ? it.vintage : null, color: _wlColor(it), type: '',
         quantity: qty, purchasePrice: it.priceEstimate != null ? it.priceEstimate : null, marketPrice: null,
         peakStart: null, peakEnd: null, notes: it.notes || '', foodPairing: '', location: '',
         addedDate: today(), favorite: fav
@@ -4922,7 +4931,16 @@ async function viewStats() {
     DB.getAll('wines'), DB.getAll('purchases'), DB.getAll('checkouts'),
     DB.getAll('distillates'), DB.getAll('distillatePurchases'), DB.getAll('distillateCheckouts')
   ]);
-  const allPurchases = purchases.concat(distillatePurchases);
+  // Acquisti senza prezzo/data (es. da importazione): si usano prezzo e data del vino
+  const _items = {};
+  wines.forEach(w => { _items[w.id] = w; }); distillates.forEach(d => { _items[d.id] = d; });
+  const allPurchases = purchases.concat(distillatePurchases).map(p => {
+    const it = _items[p.wineId] || _items[p.distillateId] || {};
+    return Object.assign({}, p, {
+      pricePerBottle: p.pricePerBottle != null ? p.pricePerBottle : (it.purchasePrice != null ? it.purchasePrice : null),
+      date: p.date || it.addedDate || ''
+    });
+  });
   const allCheckouts = checkouts.concat(distillateCheckouts);
 
   // ── Spesa per anno (solo acquisti con un prezzo indicato: mai una spesa
@@ -4968,7 +4986,7 @@ async function viewStats() {
     <div class="card-title">Spesa per anno</div>
     ${spendRows.length
       ? _barTableHtml(spendRows, {labelCol:'Anno', valueCol:'Speso', currency:true})
-      : '<div class="empty">Nessun acquisto con un prezzo registrato: qui vedrai la spesa per anno non appena ne registri uno.</div>'}
+      : '<div class="empty">Nessun vino ha un prezzo di acquisto: inseriscilo nella scheda del vino (Modifica) o nelle colonne del file importato, e comparirà qui la spesa per anno.</div>'}
   </div>
 
   <div class="card">
@@ -4982,7 +5000,7 @@ async function viewStats() {
     <div class="card-title">Spesa per fornitore</div>
     ${sellerRows.length
       ? _barTableHtml(sellerRows, {labelCol:'Fornitore', valueCol:'Speso', currency:true})
-      : '<div class="empty">Nessun acquisto con venditore e prezzo indicati insieme: qui vedrai quanto spendi presso ciascun fornitore.</div>'}
+      : '<div class="empty">Serve il fornitore: usa "Registra acquisto" nella scheda del vino indicando venditore e prezzo (i vini importati da file non hanno il fornitore).</div>'}
   </div>
 
   <div class="card">
@@ -6347,6 +6365,10 @@ ${distGroups.map(sectionHtml).join('')}
 // vino (vedi openProModal) — qui la mappa è solo lettura + navigazione,
 // nessuna nuova assegnazione dalla griglia stessa: tenerla di sola lettura
 // evita un drag&drop complesso per un beneficio marginale. ───
+function assignFromMap(kind, id) {
+  navigate('/' + kind + '/' + id);
+  setTimeout(async () => { try { await openProModal(id, kind); const l = document.getElementById('pro-cells-list'); if (l && !l.querySelector('.pro-cell-row')) addProCellRow(); } catch(e) {} }, 700);
+}
 let _mapSelectedZoneId = '';
 async function viewCellarMap() {
   const [zones, wines, distillates] = await Promise.all([DB.getAll('cellarZones'), DB.getAll('wines'), DB.getAll('distillates')]);
@@ -6415,7 +6437,7 @@ async function viewCellarMap() {
     ${unassignedRows.length===0 ? '<div class="empty">Ogni bottiglia in cantina ha una cella assegnata.</div>' : unassignedRows.map(({w,missing}) => `
     <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px">
       <span>${w.kind==='distillates'?'🥃':'🍷'} ${esc(w.name)}${w.vintage?' '+w.vintage:''} <span style="color:var(--text-3)">— ${missing} di ${w.quantity} da posizionare</span></span>
-      <a onclick="navigate('/${w.kind}/${jsAttr(w.id)}')" style="color:var(--accent);cursor:pointer;white-space:nowrap">Assegna →</a>
+      <a onclick="assignFromMap('${w.kind}','${jsAttr(w.id)}')" style="color:var(--accent);cursor:pointer;white-space:nowrap">Assegna →</a>
     </div>`).join('')}
   </div>`;
 }
@@ -7796,8 +7818,9 @@ async function doImportSheet(rows, mapping, defaultQty = 0, opts = {}) {
       const item = {
         kind: 'wines', name: wine.name, producer: wine.producer, region: wine.region,
         vintage: wine.vintage, priceEstimate: wine.purchasePrice ?? wine.marketPrice ?? null,
-        notes: wine.notes, addedDate: today()
+        notes: wine.notes, addedDate: today(), color: wine.color || ''
       };
+      if (!item.color) item.color = _wlColor(item);
       const k = _wlKey(item);
       if (wlSeen.has(k)) { skipped++; continue; }   // già in lista: nessun doppione
       wlSeen.add(k);
