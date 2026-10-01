@@ -4861,6 +4861,7 @@ async function openWishlistGem() {
         Dimensione lotto <select id="gem-size"><option>10</option><option selected>20</option></select>
         Lotto n° <input type="number" id="gem-n" value="1" min="1" style="width:70px">
         <button type="button" class="btn btn-accent btn-sm" id="gem-copy-batch">Copia il lotto</button>
+        <button type="button" class="btn btn-outline btn-sm" id="gem-copy-all" title="Per una chat normale (Gemini, Claude, ChatGPT) senza Gem o skill">Copia istruzioni + lotto</button>
         <span id="gem-batch-info" style="color:var(--text-3)"></span></div></div>
     <div style="font-size:12.5px;margin-bottom:8px"><b>3.</b> Incolla il lotto nel Gem, aspetta la risposta (può richiedere alcuni minuti: è lento apposta), poi incollala qui:
       <textarea id="gem-result" rows="6" placeholder="id;negozio;prezzo_euro;url;disponibilita;nota" style="width:100%;margin-top:6px;padding:8px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:12px;font-family:monospace"></textarea></div>
@@ -4894,6 +4895,15 @@ async function openWishlistGem() {
       (_francoMemGet() ? '[MEMORIA FRANCO DA CARICARE]\n' + _francoMemGet() + '\n[FINE MEMORIA]\n' : '') +
       list.map(it => [it.id, (it.name || '').replace(/;/g, ','), (it.producer || '').replace(/;/g, ','), it.vintage || '', it.priceEstimate != null ? it.priceEstimate : ''].join(';')).join('\n'),
       `Lotto di ${list.length} vini copiato`);
+  });
+  div.querySelector('#gem-copy-all').addEventListener('click', () => {
+    const list = batchOf();
+    if (!list.length) { toast('Nessun vino in questo lotto', 'error'); return; }
+    copy('ISTRUZIONI (segui queste regole per tutta la chat):\n' + GEM_INSTRUCTIONS + '\n\nNEGOZI CONSENTITI: ' + shops.join(', ') + ', Wine-Searcher, Google Shopping.\n\n' +
+      '=== INIZIO LOTTO ===\nLOTTO - cerca dove acquistare questi vini (formato righe: id;vino;produttore;annata;prezzo_indicativo). Rispondi come da regole, solo CSV.\n' +
+      (_francoMemGet() ? '[MEMORIA FRANCO DA CARICARE]\n' + _francoMemGet() + '\n[FINE MEMORIA]\n' : '') +
+      list.map(it => [it.id, (it.name || '').replace(/;/g, ','), (it.producer || '').replace(/;/g, ','), it.vintage || '', it.priceEstimate != null ? it.priceEstimate : ''].join(';')).join('\n'),
+      `Istruzioni + lotto di ${list.length} vini copiati`);
   });
   div.querySelector('#gem-close').addEventListener('click', () => div.remove());
   div.addEventListener('click', e => { if (e.target === div) div.remove(); });
