@@ -3240,8 +3240,10 @@ async function viewWineDetail(id) {
   const wineCells = wineZoneCells(w).map(c => Object.assign({}, c, { zone: cellarZones.find(z => z.id === c.zoneId) })).filter(c => c.zone);
   const ph = phase(w.peakStart,w.peakEnd);
   const adv = wineAdvice(w);
-  const totalPurchased = purchases.reduce((s,p)=>s+(p.quantity||0),0);
   const totalOut = checkouts.reduce((s,c)=>s+(c.quantity||0),0);
+  // Un vino importato da file non ha acquisti registrati: le bottiglie acquistate
+  // non possono essere meno di quelle in cantina più quelle già uscite.
+  const totalPurchased = Math.max(purchases.reduce((s,p)=>s+(p.quantity||0),0), (w.quantity||0) + totalOut);
   const priceHistSorted = priceHistory.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'') || (b._ts||0)-(a._ts||0));
   // Solo i punti realmente disegnabili finiscono nel grafico: un singolo
   // punto con il prezzo mancante (capita in un backup vecchio o rovinato)
@@ -4267,7 +4269,7 @@ async function viewDistillateDetail(id) {
     DB.getByIndex('distillatePurchases','distillateId',id)
   ]);
   const totalOut = checkouts.reduce((s,c)=>s+(c.quantity||0),0);
-  const totalPurchased = purchases.reduce((s,p)=>s+(p.quantity||0),0);
+  const totalPurchased = Math.max(purchases.reduce((s,p)=>s+(p.quantity||0),0), (d.quantity||0) + totalOut);
   const cellarZones = await DB.getAll('cellarZones');
   const dCells = wineZoneCells(d).map(c => Object.assign({}, c, { zone: cellarZones.find(z => z.id === c.zoneId) })).filter(c => c.zone);
 
@@ -4527,11 +4529,16 @@ const WL = { q: '', page: 0, size: 50, sel: new Set(), open: new Set(), refocus:
 let _importTarget = 'wines';   // 'wines' | 'wishlist': dove finisce un import da file/incolla
 
 function _wlQuery(it) {
-  const n = (it.name || '').trim();
-  const bits = [n];
-  if (it.producer && !n.toLowerCase().includes(String(it.producer).toLowerCase())) bits.push(it.producer);
-  if (it.vintage && !n.includes(String(it.vintage))) bits.push(String(it.vintage));
-  return bits.join(' ').trim();
+  // Nome "pulito": via virgolette, sigle di denominazione e parole di contorno,
+  // massimo 7 parole; l'annata solo se non già nel nome. Un nome ufficiale
+  // lunghissimo (con tutte le virgolette e le sigle) dava risultati fuori tema.
+  const STOP = new Set(['doc','docg','igt','igp','di','del','della','dello','dei','delle','da','de','la','il','lo','e','con','in','d']);
+  let n = String(it.name || '').replace(/["“”'`’]/g, ' ').replace(/[(),;:/]/g, ' ').replace(/\s+/g, ' ').trim();
+  const words = n.split(' ').filter(w => w && !STOP.has(w.toLowerCase())).slice(0, 7);
+  let q = words.join(' ');
+  if (it.producer && !q.toLowerCase().includes(String(it.producer).toLowerCase().split(' ')[0])) q += ' ' + it.producer;
+  if (it.vintage && !q.includes(String(it.vintage))) q += ' ' + it.vintage;
+  return q.trim();
 }
 function _wlLinks(it) {
   const q = _wlQuery(it), e = encodeURIComponent(q);
@@ -7750,6 +7757,7 @@ async function doImportSheet(rows, mapping, defaultQty = 0, opts = {}) {
   for (const row of rows) {
     const name = ((row[mapping.name])||'').toString().trim();
     if (!name) { skipped++; continue; }
+    if (/^(totale|totali|total|somma|subtotale|totale generale)\b/i.test(name)) { skipped++; continue; }   // riga dei totali del foglio, non un vino
 
     // Valori grezzi dal file: stringa vuota se la colonna non è mappata O se
     // per QUESTA riga la cella è vuota — in entrambi i casi il campo va
@@ -7816,7 +7824,13 @@ async function doImportSheet(rows, mapping, defaultQty = 0, opts = {}) {
     // scheda) invece di un valore a caso spacciato per dato certo. Si
     // possono sempre completare a mano dalla scheda del vino.
 
-    try { await DB.add('wines', wine); imported++; } catch(e) { skipped++; }
+    try {
+      const savedW = await DB.add('wines', wine); imported++;
+      if (wine.quantity > 0 && savedW && savedW.id) {
+        // carico iniziale: così "Bottiglie acquistate" non resta a 0 per i vini importati
+        try { await DB.add('purchases', { wineId: savedW.id, date: wine.addedDate, quantity: wine.quantity, pricePerBottle: wine.purchasePrice, seller: '' }); } catch(e) {}
+      }
+    } catch(e) { skipped++; }
   }
   if (toWishlist && !opts.silent) {
     _importTarget = 'wines';
