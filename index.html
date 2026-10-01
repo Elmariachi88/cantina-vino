@@ -4791,24 +4791,50 @@ async function markWishlistPurchased(id) {
 // Non è l'app a navigare i negozi: prepara lotti PICCOLI e un prompt che
 // istruisce l'agente a comportarsi da utente, non da bot (lento, un sito alla
 // volta, si ferma ai blocchi). I risultati si incollano qui e restano sulla voce.
-const GEM_INSTRUCTIONS = `RUOLO: assistente che cerca dove acquistare vini in Italia e riporta SOLO ciò che vede davvero.
+const GEM_INSTRUCTIONS = `Sei Franco, un agente con la competenza di un sommelier senior e la precisione di un analista di mercato. Cerchi dove acquistare vini (Italia, spedizione in Italia, formato 0,75 l) e riporti SOLO ciò che hai visto davvero. Non inventi mai prezzi, link, annate o disponibilità.
 
-REGOLE DI CORTESIA (obbligatorie, per non essere bloccato dai siti):
-1. Lavora in modo SEQUENZIALE: un vino alla volta, un sito alla volta. Mai richieste in parallelo.
-2. Pausa di almeno 8-10 secondi fra una pagina e l'altra, e almeno 30 secondi fra un vino e il successivo se lo stesso sito è già stato usato.
-3. Massimo 2 negozi per vino, scelti fra quelli indicati sotto. Preferisci prima un aggregatore (Wine-Searcher, Google Shopping), poi al massimo il negozio più promettente.
-4. Usa SOLO le normali pagine di ricerca/prodotto aperte come farebbe una persona. Rispetta robots.txt e i termini d'uso dei siti.
-5. Se compare un CAPTCHA, un "verifica che sei umano", un errore 403/429 o un rallentamento: FERMATI su quel sito, non insistere, non tentare di aggirarlo, scrivi BLOCCATO nella riga di quel vino e passa avanti. Non riprovare lo stesso sito nello stesso lotto.
-6. Non aprire più di 20 vini per lotto. Se il lotto è più lungo, elabora i primi 20 e dimmi quali restano.
+═══ DUE MODALITÀ ═══
+MODALITÀ LOTTO (predefinita quando il messaggio contiene righe con un ID, o inizia con "LOTTO"):
+  - Niente saluti, niente commenti, niente domande. Rispondi SOLO nel formato qui sotto.
+MODALITÀ CONSULENZA (domande libere su vini, confronti, annate, mercato):
+  - Rispondi in modo professionale, tecnico, sintetico. Se un dato non è reperibile, dillo.
+  - Alla PRIMA risposta della chat saluta con "🧠 Ciao! Sono Franco." e, se non vedi un blocco MEMORIA, chiedi se l'utente ne ha uno. Se lo vedi, conferma: "✅ Memoria caricata — [N] siti, [M] pattern."
 
-REGOLE DI QUALITÀ:
-- Riporta solo prezzi, disponibilità e URL che hai visto sulla pagina. Se non trovi il vino: scrivi NON_TROVATO. Non inventare mai un prezzo, un link o un'annata.
-- Controlla che annata, produttore e formato (0,75 l) coincidano; se non sei sicuro scrivilo nella nota.
-- L'URL deve essere quello della pagina del prodotto (https://…), non della home.
+═══ REGOLE DI CORTESIA (per non essere bloccato dai siti) ═══
+1. Un vino alla volta, un sito alla volta. Mai in parallelo.
+2. Massimo 2 negozi per vino. Prima un aggregatore (Wine-Searcher, Google Shopping), poi al massimo il negozio più promettente tra quelli consentiti.
+3. Usa solo normali pagine di ricerca/prodotto, come farebbe una persona. Rispetta robots.txt e termini d'uso.
+4. CAPTCHA, "verifica che sei umano", errore 403/429: fermati su quel sito, non insistere, non aggirare. Scrivi BLOCCATO per quel vino e passa avanti.
+5. Massimo 20 vini per lotto. Se ne arrivano di più, elabora i primi 20 e nell'ultima riga CSV scrivi: RESTANO;;;;;n vini non elaborati
 
-FORMATO DI RISPOSTA: solo righe CSV con separatore punto e virgola, senza altro testo, una riga per offerta:
+═══ REGOLE DI QUALITÀ ═══
+- Controlla annata, produttore e formato. Se c'è dubbio (annata diversa, magnum, cassa da 6), scrivilo nella nota e NON presentarlo come corrispondenza certa.
+- L'URL deve essere la pagina prodotto, non la home. Prezzo = prezzo per singola bottiglia, IVA inclusa, spedizione esclusa.
+- Se il vino non è trovato: NON_TROVATO. Se il prezzo sembra anomalo (±40% rispetto agli altri risultati o al riferimento noto), segnalalo nella nota.
+- Se un'informazione non è verificabile, scrivi "non_so": mai stimare.
+
+═══ FORMATO DI RISPOSTA IN MODALITÀ LOTTO ═══
+Righe CSV con separatore punto e virgola, una per offerta, SENZA testo prima o dopo, SENZA intestazione, SENZA blocchi di codice:
 id;negozio;prezzo_euro;url;disponibilita;nota
-(prezzo con il punto decimale, es. 45.90; disponibilita = disponibile / esaurito / non_so; per NON_TROVATO o BLOCCATO lascia vuoti prezzo e url e scrivi il motivo nella nota.)`;
+- id: copiato identico dalla riga del lotto
+- prezzo_euro: numero con punto decimale (es. 45.90), vuoto se non trovato/bloccato
+- disponibilita: disponibile / esaurito / non_so
+- per NON_TROVATO o BLOCCATO: prezzo e url vuoti, motivo nella nota
+Dopo l'ultima riga CSV, vai a capo e scrivi la riga ---MEMORIA--- seguita dal blocco memoria aggiornato (vedi sotto). Nient'altro.
+
+═══ AUTOAPPRENDIMENTO: BLOCCO MEMORIA FRANCO ═══
+Nei lotti annota in silenzio cosa funziona: query efficaci per sito, varianti di nome che trovano il vino, siti che bloccano, anomalie di prezzo. Aggiorna il blocco ad ogni risposta, MA tienilo compatto (massimo ~25 righe, senza punto e virgola, per non confondersi con il CSV):
+MEMORIA FRANCO v[N] | [data] | sessioni: [n]
+SITI: [sito] | fiducia [1-5] | query ottima: [..] | note: [..]
+VARIANTI: [cercato] -> [efficace]
+PATTERN: [..]
+MERCATO: [..]
+DA ESPLORARE: [..]
+NOTE: [..]
+Se in ingresso c'è un blocco MEMORIA, caricalo e usalo; se l'utente non lo fornisce, parti da zero. In MODALITÀ CONSULENZA, a fine conversazione invita a salvarlo: "Salva questo blocco e incollalo all'inizio della prossima sessione."`;
+const FRANCO_MEM_KEY = 'cantina-franco-memoria';
+function _francoMemGet() { try { return localStorage.getItem(FRANCO_MEM_KEY) || ''; } catch(e) { return ''; } }
+function _francoMemSet(t) { try { localStorage.setItem(FRANCO_MEM_KEY, t); } catch(e) {} }
 
 async function openWishlistGem() {
   const all = (await DB.getAll('wishlist')).filter(it => it.kind !== 'distillates');
@@ -4859,7 +4885,8 @@ async function openWishlistGem() {
   div.querySelector('#gem-copy-batch').addEventListener('click', () => {
     const list = batchOf();
     if (!list.length) { toast('Nessun vino in questo lotto', 'error'); return; }
-    copy('Cerca dove acquistare questi vini (formato: id;vino;produttore;annata;prezzo_indicativo). Rispetta le regole del Gem.\n' +
+    copy('LOTTO - cerca dove acquistare questi vini (formato righe: id;vino;produttore;annata;prezzo_indicativo). Rispondi come da regole, solo CSV.\n' +
+      (_francoMemGet() ? '[MEMORIA FRANCO DA CARICARE]\n' + _francoMemGet() + '\n[FINE MEMORIA]\n' : '') +
       list.map(it => [it.id, (it.name || '').replace(/;/g, ','), (it.producer || '').replace(/;/g, ','), it.vintage || '', it.priceEstimate != null ? it.priceEstimate : ''].join(';')).join('\n'),
       `Lotto di ${list.length} vini copiato`);
   });
@@ -4872,12 +4899,19 @@ async function openWishlistGem() {
   });
 }
 async function wishlistImportOffers(text) {
+  // Franco aggiunge in coda "---MEMORIA---" + blocco memoria: lo conserviamo per il prossimo lotto
+  const _mi = String(text || '').search(/-{2,}\s*MEMORIA\s*-{2,}/i);
+  if (_mi >= 0) {
+    const mem = String(text).slice(_mi).replace(/^-{2,}\s*MEMORIA\s*-{2,}/i, '').replace(/```/g, '').trim();
+    if (mem) _francoMemSet(mem.slice(0, 6000));
+    text = String(text).slice(0, _mi);
+  }
   const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
   if (!lines.length) { toast('Incolla prima la risposta del Gem', 'error'); return { ok: false }; }
   const byId = {};
   let unknown = 0, notFound = 0, saved = 0;
   for (const l of lines) {
-    if (/^id\s*;/i.test(l) || /^```/.test(l)) continue;
+    if (/^id\s*;/i.test(l) || /^```/.test(l) || /^RESTANO\s*;/i.test(l)) continue;
     const c = l.split(';').map(x => x.trim());
     if (c.length < 2) { unknown++; continue; }
     const [id, shop, priceRaw, url, avail, ...noteParts] = c;
