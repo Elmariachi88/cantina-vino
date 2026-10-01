@@ -4534,7 +4534,7 @@ function _wlQuery(it) {
   // massimo 7 parole; l'annata solo se non già nel nome. Un nome ufficiale
   // lunghissimo (con tutte le virgolette e le sigle) dava risultati fuori tema.
   const STOP = new Set(['doc','docg','igt','igp','di','del','della','dello','dei','delle','da','de','la','il','lo','e','con','in','d']);
-  let n = String(it.name || '').replace(/["“”'`’]/g, ' ').replace(/[(),;:/]/g, ' ').replace(/\s+/g, ' ').trim();
+  let n = String(it.name || '').replace(/[\u200b-\u200f\ufeff]/g, '').split('|')[0].replace(/\s-\s/g, ' ').replace(/["“”'`’]/g, ' ').replace(/[(),;:/]/g, ' ').replace(/\s+/g, ' ').trim();
   const words = n.split(' ').filter(w => w && !STOP.has(w.toLowerCase())).slice(0, 7);
   let q = words.join(' ');
   if (it.producer && !q.toLowerCase().includes(String(it.producer).toLowerCase().split(' ')[0])) q += ' ' + it.producer;
@@ -4680,7 +4680,12 @@ function bindWishlist() {
     if (a === 'edit') openWishlistModal(id);
     else if (a === 'remove') deleteWishlistItem(id);
     else if (a === 'buy') markWishlistPurchased(id);
-    else if (a === 'shop') { if (WL.open.has(id)) WL.open.delete(id); else WL.open.add(id); redraw(); }
+    else if (a === 'shop') {
+      if (WL.open.has(id)) WL.open.delete(id); else WL.open.add(id);
+      // il ridisegno riportava la pagina in cima: con liste lunghe sembrava che non succedesse nulla
+      const y = window.scrollY;
+      Promise.resolve(render(currentRoute)).then(() => { window.scrollTo(0, y); });
+    }
   }));
 }
 async function openWishlistModal(id) {
