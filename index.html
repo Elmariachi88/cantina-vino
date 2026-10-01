@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Cantina Vino</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://generativelanguage.googleapis.com; manifest-src 'self' blob: data:; worker-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://generativelanguage.googleapis.com https://www.googleapis.com; manifest-src 'self' blob: data:; worker-src 'self'; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="theme-color" content="#1E1612">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1032,14 +1032,16 @@ const DB = (() => {
       // ripristino da annulla-eliminazione non deve alterare l'ordine di
       // creazione originale.
       if(!data._ts) data._ts = Date.now();
+      data._mt = Date.now();
       if (mode==='idb') {
         try { await p(this.tx(store,'readwrite').add(data)); notify(); return data; }
         catch(e) { markDegraded(e); throw e; }
       }
       const arr = readStore(store); arr.push(data); writeStore(store,arr); notify(); return data;
     },
-    async put(store,data) {
+    async put(store,data,keep) {
       if(!data.id) data.id = uuid();
+      if(!keep) data._mt = Date.now();
       if (mode==='idb') {
         try { await p(this.tx(store,'readwrite').put(data)); notify(); return data; }
         catch(e) { markDegraded(e); throw e; }
@@ -1050,6 +1052,7 @@ const DB = (() => {
       writeStore(store,arr); notify(); return data;
     },
     async del(store,id) {
+      if(arguments[2]!==true){ try{ const t=JSON.parse(localStorage.getItem('cantina-tombs')||'{}'); t[store+':'+id]=Date.now(); localStorage.setItem('cantina-tombs',JSON.stringify(t)); }catch(e){} }
       if (mode==='idb') {
         try { const r = await p(this.tx(store,'readwrite').delete(id)); notify(); return r; }
         catch(e) { markDegraded(e); throw e; }
@@ -6055,6 +6058,19 @@ function viewSettings() {
         <input type="file" id="import-file" accept=".json,application/json" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
       </label>
     </div>
+    <div style="margin-top:14px;padding:12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg)">
+      <div style="font-weight:600;font-size:13px;margin-bottom:6px">☁️ Sincronizzazione Google Drive (cartella "cantina vino")</div>
+      <p style="font-size:12px;color:var(--text-3);margin-bottom:8px">Tiene allineati PC e telefono tramite un file nella cartella "cantina vino": le modifiche dei due dispositivi vengono unite, quella più recente vince. Serve il Client ID Google (impostazione una tantum, da fare su ogni dispositivo).</p>
+      <input type="text" id="gd-client" placeholder="Client ID Google (xxxx.apps.googleusercontent.com)" value="${esc(localStorage.getItem('cantina-gdrive-client')||'')}" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);margin-bottom:8px">
+      <label style="display:flex;gap:8px;align-items:center;font-size:12.5px;margin-bottom:6px;cursor:pointer"><input type="checkbox" ${localStorage.getItem('cantina-gdrive-auto')==='1'?'checked':''} onchange="driveSetAuto(this.checked)"> Sincronizza automaticamente (all'apertura e dopo ogni modifica)</label>
+      <div id="gd-status" style="font-size:12px;color:var(--text-3);margin-bottom:10px">${(()=>{const t=parseInt(localStorage.getItem('cantina-gdrive-last')||'0',10);return t?'Ultima sincronizzazione: '+new Date(t).toLocaleString('it-IT'):'Mai sincronizzato';})()}</div>
+      <div class="action-row">
+        <button type="button" class="btn btn-outline btn-sm" onclick="driveSaveClientId()">Salva Client ID</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="driveSyncNow()">Sincronizza ora</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="driveBackupNow()">Backup datato su Drive</button>
+      </div>
+    </div>
+
   </div>
 
   <div class="card">
@@ -6773,6 +6789,142 @@ async function shareBackup() {
   toast('Su questo dispositivo non posso aprire Drive: scarico il file, poi trascinalo nella cartella "cantina vino" su drive.google.com.', '');
   exportData();
 }
+
+// ===== Sincronizzazione automatica con Google Drive (cartella "cantina vino") =====
+const GD_CLIENT_KEY='cantina-gdrive-client', GD_AUTO_KEY='cantina-gdrive-auto', GD_FOLDER_KEY='cantina-gdrive-folder', GD_FILE_KEY='cantina-gdrive-file', GD_LAST_KEY='cantina-gdrive-last';
+const SYNC_NAME='cantina-vino-sync.json';
+let _gdToken=null, _gdTokenExp=0, _syncing=false, _gdSyncTimer=null;
+function _gdLoadLib(){
+  return new Promise((res,rej)=>{
+    if(window.google&&google.accounts&&google.accounts.oauth2) return res();
+    const s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client'; s.async=true;
+    s.onload=()=>res(); s.onerror=()=>rej(new Error('Impossibile caricare Google (sei online?)'));
+    document.head.appendChild(s);
+  });
+}
+async function _gdAuth(interactive){
+  if(_gdToken && Date.now()<_gdTokenExp-60000) return _gdToken;
+  const cid=localStorage.getItem(GD_CLIENT_KEY);
+  if(!cid) throw new Error('Client ID Google non impostato');
+  await _gdLoadLib();
+  return new Promise((res,rej)=>{
+    const tc=google.accounts.oauth2.initTokenClient({
+      client_id:cid, scope:'https://www.googleapis.com/auth/drive',
+      callback:r=>{ if(r.error) return rej(new Error(r.error)); _gdToken=r.access_token; _gdTokenExp=Date.now()+(r.expires_in||3600)*1000; res(_gdToken); },
+      error_callback:e=>rej(new Error((e&&e.type)||'autorizzazione annullata'))
+    });
+    tc.requestAccessToken({prompt: interactive?'':'none'});
+  });
+}
+async function _gdApi(path,opts,tok,raw){
+  const r=await fetch('https://www.googleapis.com/'+path,Object.assign({},opts,{headers:Object.assign({Authorization:'Bearer '+tok},opts&&opts.headers||{})}));
+  if(!r.ok) throw new Error('Drive '+r.status+': '+(await r.text()).slice(0,160));
+  return raw ? r.text() : r.json();
+}
+async function _gdFolderId(tok){
+  let id=localStorage.getItem(GD_FOLDER_KEY);
+  if(id){ try{ const f=await _gdApi('drive/v3/files/'+id+'?fields=id,trashed',{},tok); if(!f.trashed) return id; }catch(e){} }
+  const q=encodeURIComponent("mimeType='application/vnd.google-apps.folder' and name='cantina vino' and trashed=false");
+  const l=await _gdApi('drive/v3/files?q='+q+'&fields=files(id)',{},tok);
+  if(l.files&&l.files.length) id=l.files[0].id;
+  else id=(await _gdApi('drive/v3/files?fields=id',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'cantina vino',mimeType:'application/vnd.google-apps.folder'})},tok)).id;
+  localStorage.setItem(GD_FOLDER_KEY,id); return id;
+}
+async function _gdUpload(tok,folder,name,text,fileId){
+  const b='cv'+Date.now();
+  const meta = fileId ? {name} : {name,parents:[folder]};
+  const body=`--${b}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(meta)}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${text}\r\n--${b}--`;
+  const path = fileId ? `upload/drive/v3/files/${fileId}?uploadType=multipart&fields=id` : 'upload/drive/v3/files?uploadType=multipart&fields=id';
+  return _gdApi(path,{method: fileId?'PATCH':'POST',headers:{'Content-Type':'multipart/related; boundary='+b},body},tok);
+}
+// Backup datato nella cartella (storico, non sovrascrive)
+async function driveBackup(interactive){
+  const {json,filename,counts}=await buildBackupJson({includePhotos:!backupExcludesPhotos()});
+  const tok=await _gdAuth(interactive);
+  const folder=await _gdFolderId(tok);
+  await _gdUpload(tok,folder,filename,await maybeEncryptBackup(json),null);
+  markBackupDone();
+  return {filename,counts};
+}
+// --- tombstone: ricordano le eliminazioni, altrimenti la fusione le farebbe "risorgere" ---
+function _tombs(){ try{return JSON.parse(localStorage.getItem('cantina-tombs')||'{}');}catch(e){return {};} }
+// --- fusione per record: vince la modifica più recente (_mt); eliminazione vince se più recente ---
+async function _syncMerge(remote){
+  let changed=0;
+  const tl=_tombs(), tr=(remote&&remote.tombs)||{};
+  const tombs=Object.assign({},tr,tl);
+  Object.keys(tr).forEach(k=>{ if(tl[k]&&tr[k]>tl[k]) tombs[k]=tr[k]; });
+  const out={version:1,updated:new Date().toISOString(),tombs};
+  for(const s of DB.ALL_STORES){
+    const loc=await DB.getAll(s), rem=(remote&&remote[s])||[];
+    const map=new Map(loc.map(x=>[x.id,x]));
+    for(const r of rem){
+      const l=map.get(r.id);
+      const tk=s+':'+r.id;
+      if(tombs[tk] && tombs[tk]>=(r._mt||0)){ continue; }
+      if(!l){ await DB.put(s,r,true); map.set(r.id,r); changed++; }
+      else if((r._mt||0)>(l._mt||0)){ await DB.put(s,r,true); map.set(r.id,r); changed++; }
+    }
+    for(const [id,x] of Array.from(map)){
+      const tk=s+':'+id;
+      if(tombs[tk] && tombs[tk]>=(x._mt||0)){ await DB.del(s,id,true); map.delete(id); changed++; }
+    }
+    out[s]=Array.from(map.values());
+  }
+  localStorage.setItem('cantina-tombs',JSON.stringify(tombs));
+  return {out,changed};
+}
+async function driveSync(interactive){
+  if(_syncing) return null;
+  _syncing=true;
+  try{
+    const tok=await _gdAuth(interactive);
+    const folder=await _gdFolderId(tok);
+    let fid=localStorage.getItem(GD_FILE_KEY), remote=null;
+    if(!fid){
+      const q=encodeURIComponent(`name='${SYNC_NAME}' and '${folder}' in parents and trashed=false`);
+      const l=await _gdApi('drive/v3/files?q='+q+'&fields=files(id)',{},tok);
+      if(l.files&&l.files.length) fid=l.files[0].id;
+    }
+    if(fid){
+      try{ remote=JSON.parse(await _gdApi('drive/v3/files/'+fid+'?alt=media',{},tok,true)); }
+      catch(e){ if(String(e.message).includes('404')){ fid=null; } else throw e; }
+    }
+    const {out,changed}=await _syncMerge(remote);
+    const r=await _gdUpload(tok,folder,SYNC_NAME,JSON.stringify(out),fid);
+    localStorage.setItem(GD_FILE_KEY,r.id||fid);
+    localStorage.setItem(GD_LAST_KEY,String(Date.now()));
+    if(changed>0 && typeof render==='function'){ try{ render(currentRoute); }catch(e){} }
+    return {changed};
+  } finally { _syncing=false; _syncUi(); }
+}
+function _syncUi(){
+  const el=document.getElementById('gd-status'); if(!el) return;
+  const t=parseInt(localStorage.getItem(GD_LAST_KEY)||'0',10);
+  el.textContent=t?('Ultima sincronizzazione: '+new Date(t).toLocaleString('it-IT')):'Mai sincronizzato';
+}
+async function driveSyncNow(){
+  if(!localStorage.getItem(GD_CLIENT_KEY)){ toast('Prima imposta il Client ID Google','error'); return; }
+  try{ toast('Sincronizzo con Drive…',''); const r=await driveSync(true); if(r) toast(r.changed?`Sincronizzato: ${r.changed} modifiche ricevute da Drive`:'Sincronizzato: tutto aggiornato','success'); }
+  catch(e){ toast('Drive: '+e.message,'error'); }
+}
+async function driveBackupNow(){
+  if(!localStorage.getItem(GD_CLIENT_KEY)){ toast('Prima imposta il Client ID Google','error'); return; }
+  try{ toast('Salvo su Drive…',''); const r=await driveBackup(true); toast(`Salvato in Drive → "cantina vino": ${r.filename}`,'success'); }
+  catch(e){ toast('Drive: '+e.message,'error'); }
+}
+function driveSaveClientId(){
+  const v=(document.getElementById('gd-client')?.value||'').trim();
+  if(v) localStorage.setItem(GD_CLIENT_KEY,v); else localStorage.removeItem(GD_CLIENT_KEY);
+  _gdToken=null; toast(v?'Client ID salvato':'Client ID rimosso','success');
+}
+function driveSetAuto(on){ localStorage.setItem(GD_AUTO_KEY,on?'1':'0'); if(on) driveSyncNow(); }
+function _autoOn(){ return localStorage.getItem(GD_AUTO_KEY)==='1' && !!localStorage.getItem(GD_CLIENT_KEY); }
+// Sincronizzazione automatica: all'apertura, al ritorno sull'app e ~25 s dopo ogni modifica (in silenzio; se Google chiede conferma, basta "Sincronizza ora")
+async function _autoSync(){ if(!_autoOn()||_syncing) return; try{ await driveSync(false); }catch(e){ console.warn('Sync automatica non riuscita:',e.message); } }
+DB.onChange(()=>{ if(_syncing||!_autoOn()) return; clearTimeout(_gdSyncTimer); _gdSyncTimer=setTimeout(_autoSync,25000); });
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') _autoSync(); });
+setTimeout(_autoSync,4000);
 
 function showExportFallback(json) {
   const existing = document.getElementById('export-fallback-modal');
