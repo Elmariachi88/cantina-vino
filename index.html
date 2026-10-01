@@ -2170,7 +2170,8 @@ function bindWineForm(editId) {
         color: document.getElementById('wf-color')?.value ?? '',   // "" = non specificato, mai forzato a "Rosso"
         type: document.getElementById('wf-type')?.value ?? '',
         quantity: qty!=null?qty:0,
-        purchasePrice: numOrNull(document.getElementById('wf-purchase-price')?.value),
+        // prezzo d'acquisto mancante su un vino NUOVO: si usa la stima di mercato compilata in automatico dal nome
+        purchasePrice: numOrNull(document.getElementById('wf-purchase-price')?.value) ?? (editId ? null : numOrNull(document.getElementById('wf-market-price')?.value)),
         marketPrice: numOrNull(document.getElementById('wf-market-price')?.value),
         peakStart: intOrNull(document.getElementById('wf-peak-start')?.value),
         peakEnd: intOrNull(document.getElementById('wf-peak-end')?.value),
@@ -4937,7 +4938,7 @@ async function viewStats() {
   const allPurchases = purchases.concat(distillatePurchases).map(p => {
     const it = _items[p.wineId] || _items[p.distillateId] || {};
     return Object.assign({}, p, {
-      pricePerBottle: p.pricePerBottle != null ? p.pricePerBottle : (it.purchasePrice != null ? it.purchasePrice : null),
+      pricePerBottle: p.pricePerBottle != null ? p.pricePerBottle : (it.purchasePrice != null ? it.purchasePrice : (it.marketPrice != null ? it.marketPrice : null)),
       date: p.date || it.addedDate || ''
     });
   });
