@@ -1304,9 +1304,9 @@ async function render(route) {
       else if(parts[1]) { view.innerHTML = await viewWineDetail(parts[1]); bindWineDetail(parts[1]); }
       else { view.innerHTML = await viewWines(query); bindWines(query); }
     }
-    else if(main==='purchases') { view.innerHTML = await viewPurchases(); bindPurchases(); }
-    else if(main==='checkouts') { view.innerHTML = await viewCheckouts(); }
-    else if(main==='tastings') { view.innerHTML = await viewTastings(); }
+    else if(main==='purchases') { view.innerHTML = await viewPurchases(); bindPurchases(); bindListFilter('pu'); }
+    else if(main==='checkouts') { view.innerHTML = await viewCheckouts(); bindListFilter('out'); }
+    else if(main==='tastings') { view.innerHTML = await viewTastings(); bindListFilter('ta'); }
     else if(main==='pairing') { view.innerHTML = await viewPairing(); bindPairing(); }
     else if(main==='settings') { view.innerHTML = viewSettings(); bindSettings(); }
     else if(main==='distillates') {
@@ -5482,6 +5482,8 @@ async function viewPurchases() {
   </div>
   ${total>0?`<div class="val-card"><div class="big">${fmt(total)}</div><div class="lbl">Totale speso</div></div>`:''}
   <div class="card">
+    ${sorted.length>0 ? _fltBar('pu', Array.from(new Set(sorted.map(p=>(p.date||'').slice(0,4)).filter(Boolean))).sort().reverse(), 'Tutti i fornitori', Array.from(new Set(sorted.map(p=>(p.seller||'').trim()).filter(Boolean))).sort().map(x=>({v:x,t:x})), false) : ''}
+    <div id="pu-list">
     ${sorted.length===0
       ? (!hasAnyItem
           ? '<div class="empty">Nessun acquisto registrato.<br>Aggiungi prima un vino o un distillato, poi registra i tuoi acquisti qui.</div>'
@@ -5490,13 +5492,20 @@ async function viewPurchases() {
           const isDist = p._kind === 'distillates';
           const item = isDist ? distillates.find(x=>x.id===p.distillateId) : wines.find(x=>x.id===p.wineId);
           const label = item ? (isDist ? esc(item.name) : wineLabel(item)) : (isDist ? 'Distillato eliminato' : 'Vino eliminato');
-          return `<div class="purchase-item">
+          return `<div class="purchase-item flt-row" data-s="${esc(((item&&item.name)||'') + ' ' + (p.seller||'')).toLowerCase()}" data-y="${esc((p.date||'').slice(0,4))}" data-r="${esc((p.seller||'').trim())}">
             <div><div style="font-size:13px;font-weight:500">${isDist?'🥃':'🍷'} ${label}</div>
             <div style="font-size:11.5px;color:var(--text-2)">${fmtDate(p.date)} · ${p.quantity} bott.${p.seller?' · '+esc(p.seller):''}</div></div>
-            <div style="font-size:13.5px;font-weight:500;color:var(--text)">${p.pricePerBottle!=null?fmt(p.quantity*p.pricePerBottle):'—'}</div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="font-size:13.5px;font-weight:500;color:var(--text)">${p.pricePerBottle!=null?fmt(p.quantity*p.pricePerBottle):'—'}</div>
+            <button type="button" class="btn btn-outline btn-sm" title="Elimina dallo storico acquisti" onclick="deletePurchaseRecord('${isDist?'distillatePurchases':'purchases'}','${jsAttr(p.id)}')">✕</button></div>
           </div>`;
         }).join('')}
+    </div>
   </div>`;
+}
+async function deletePurchaseRecord(store, id) {
+  if (!confirm('Eliminare questo acquisto dallo storico?\n\nLe bottiglie in cantina NON cambiano: si toglie solo la riga dall\'elenco acquisti e dal totale speso.')) return;
+  try { await DB.del(store, id); toast('Acquisto eliminato', 'success'); render(currentRoute); }
+  catch(e) { toast('Errore: ' + e.message, 'error'); }
 }
 function bindPurchases() {
   document.getElementById('btn-add-purchase')?.addEventListener('click', openPurchaseModal);
@@ -5568,24 +5577,83 @@ async function savePurchase() {
 }
 
 // ─── Checkouts ───
+// Barra ricerca/filtri riusabile: le righe (.flt-row) hanno data-s (testo), data-y (anno), data-r (motivo o voto)
+function _fltBar(p, years, selLabel, selOptions, selMin) {
+  return `<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+    <input type="search" id="${p}-q" placeholder="Cerca…" style="flex:1;min-width:150px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text)">
+    <select id="${p}-year" class="filter-select"><option value="">Tutti gli anni</option>${years.map(y=>`<option value="${y}">${y}</option>`).join('')}</select>
+    ${selOptions ? `<select id="${p}-sel" class="filter-select" ${selMin?'data-min="1"':''}><option value="">${selLabel}</option>${selOptions.map(o=>`<option value="${esc(String(o.v))}">${esc(o.t)}</option>`).join('')}</select>` : ''}
+    <span id="${p}-count" style="font-size:12px;color:var(--text-3)"></span>
+  </div>`;
+}
+function bindListFilter(p) {
+  const q = document.getElementById(p+'-q'), y = document.getElementById(p+'-year'), sel = document.getElementById(p+'-sel');
+  const list = document.getElementById(p+'-list'), cnt = document.getElementById(p+'-count');
+  if (!list) return;
+  const apply = () => {
+    const t = (q?.value||'').trim().toLowerCase(), yy = y?.value||'', ss = sel?.value||'', min = sel?.dataset.min;
+    let n = 0, tot = 0;
+    list.querySelectorAll('.flt-row').forEach(r => {
+      tot++;
+      let ok = (!t || (r.dataset.s||'').includes(t)) && (!yy || r.dataset.y === yy);
+      if (ok && ss) ok = min ? (parseFloat(r.dataset.r)||0) >= parseFloat(ss) : r.dataset.r === ss;
+      r.style.display = ok ? '' : 'none';
+      if (ok) n++;
+    });
+    if (cnt) cnt.textContent = (t||yy||ss) ? `${n} di ${tot}` : `${tot}`;
+  };
+  q?.addEventListener('input', apply); y?.addEventListener('change', apply); sel?.addEventListener('change', apply);
+  apply();
+}
+async function undoCheckout(kind, id) {
+  const store = kind === 'distillates' ? 'distillateCheckouts' : 'checkouts';
+  const fk = kind === 'distillates' ? 'distillateId' : 'wineId';
+  const c = await DB.get(store, id);
+  if (!c) return;
+  const item = await DB.get(kind, c[fk]);
+  const msg = item
+    ? `Annullare questa uscita?\n\nLe ${c.quantity} bottiglie tornano in cantina (${item.name}).`
+    : `Eliminare questa uscita dallo storico?\n\n(Il vino non esiste più: nessuna bottiglia viene rimessa in cantina.)`;
+  if (!confirm(msg)) return;
+  try {
+    if (item) { item.quantity = (item.quantity||0) + (c.quantity||0); await DB.put(kind, item); }
+    await DB.del(store, id);
+    toast('Uscita annullata', 'success');
+    render(currentRoute);
+  } catch(e) { toast('Errore: ' + e.message, 'error'); }
+}
 async function viewCheckouts() {
-  const [checkouts, wines] = await Promise.all([DB.getAll('checkouts'), DB.getAll('wines')]);
-  const sorted = checkouts.slice().sort(byDateDesc);
+  const [co, dco, wines, dist] = await Promise.all([DB.getAll('checkouts'), DB.getAll('distillateCheckouts'), DB.getAll('wines'), DB.getAll('distillates')]);
+  const rows = co.map(c => ({ c, kind: 'wines', item: wines.find(x => x.id === c.wineId) }))
+    .concat(dco.map(c => ({ c, kind: 'distillates', item: dist.find(x => x.id === c.distillateId) })))
+    .sort((a, b) => byDateDesc(a.c, b.c));
+  const yr = String(new Date().getFullYear());
+  const tot = rows.reduce((s, r) => s + (r.c.quantity||0), 0);
+  const thisYear = rows.filter(r => (r.c.date||'').slice(0,4) === yr).reduce((s, r) => s + (r.c.quantity||0), 0);
+  const byReason = {};
+  rows.forEach(r => { const k = (r.c.reason||'').trim() || 'Altro'; byReason[k] = (byReason[k]||0) + (r.c.quantity||0); });
+  const reasons = Object.keys(byReason).sort((a,b) => byReason[b]-byReason[a]);
+  const years = Array.from(new Set(rows.map(r => (r.c.date||'').slice(0,4)).filter(Boolean))).sort().reverse();
+  const summary = rows.length ? `
+  <div class="val-card"><div class="big">${tot}</div><div class="lbl">Bottiglie uscite in tutto · ${thisYear} nel ${yr}${reasons.length ? ' · più frequente: ' + esc(reasons[0]) + ' (' + byReason[reasons[0]] + ')' : ''}</div></div>` : '';
   return `
   <div class="page-header"><div class="page-title">Le mie uscite</div></div>
+  ${summary}
   <div class="card">
-    ${sorted.length===0
-      ? '<div class="empty">Nessuna uscita registrata.</div>'
-      : sorted.map(c=>{
-          const w=wines.find(x=>x.id===c.wineId);
-          return `<div class="history-item">
-            <div class="hist-icon hist-out"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/></svg></div>
-            <div style="flex:1;min-width:0">
-              <div style="font-size:13px;font-weight:500;cursor:pointer" onclick="navigate('/wines/${jsAttr(c.wineId)}')">${w?esc(w.name):'Vino eliminato'}</div>
-              <div style="font-size:11.5px;color:var(--text-2)">${fmtDate(c.date)} · ${esc(c.reason)} · ${c.quantity} bott.${c.notes?' · '+esc(c.notes):''}</div>
-            </div>
-          </div>`;
-        }).join('')}
+    ${rows.length === 0 ? '<div class="empty">Nessuna uscita registrata.</div>' : _fltBar('out', years, 'Tutti i motivi', reasons.map(r => ({ v: r, t: r + ' (' + byReason[r] + ')' })), false) + `<div id="out-list">` +
+      rows.map(({c, kind, item}) => {
+        const name = item ? (kind === 'distillates' ? esc(item.name) : wineLabel(item)) : (kind === 'distillates' ? 'Distillato eliminato' : 'Vino eliminato');
+        const reason = (c.reason||'').trim() || 'Altro';
+        const bar = kind === 'wines' && item ? colorBar(item.color) : 'bar-u';
+        return `<div class="history-item flt-row" data-s="${esc(((item&&item.name)||'') + ' ' + (c.notes||'') + ' ' + reason).toLowerCase()}" data-y="${esc((c.date||'').slice(0,4))}" data-r="${esc(reason)}">
+          <div class="wine-color-bar ${bar}" style="height:34px"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:500;cursor:pointer" onclick="navigate('/${kind}/${jsAttr(c[kind==='distillates'?'distillateId':'wineId'])}')">${kind === 'distillates' ? '🥃 ' : ''}${name}</div>
+            <div style="font-size:11.5px;color:var(--text-2)">${fmtDate(c.date)} · ${esc(reason)} · ${c.quantity} bott.${c.notes ? ' · ' + esc(c.notes) : ''}</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" title="Annulla questa uscita (le bottiglie tornano in cantina)" onclick="undoCheckout('${kind}','${jsAttr(c.id)}')">↩︎ Annulla</button>
+        </div>`;
+      }).join('') + `</div>`}
   </div>`;
 }
 
@@ -5596,11 +5664,13 @@ async function viewTastings() {
   return `
   <div class="page-header"><div class="page-title">Le mie degustazioni</div></div>
   <div class="card">
+    ${sorted.length>0 ? _fltBar('ta', Array.from(new Set(sorted.map(t=>(t.date||'').slice(0,4)).filter(Boolean))).sort().reverse(), 'Tutti i voti', [5,4,3,2,1].map(n=>({v:n,t:n+'★ e più'})), true) : ''}
+    <div id="ta-list">
     ${sorted.length===0
       ? `<div class="empty"><svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path d="M8 2h8l1 6H7z"/><path d="M7 8c0 5 2 10 5 14 3-4 5-9 5-14"/></svg>Nessuna degustazione.<br><a onclick="navigate('/wines')" style="color:var(--accent);cursor:pointer">Vai ai tuoi vini per aggiungerne una →</a></div>`
       : sorted.map(t=>{
           const w=wines.find(x=>x.id===t.wineId);
-          return `<div class="tasting-item">
+          return `<div class="tasting-item flt-row" data-s="${esc(((w&&w.name)||'') + ' ' + (t.notes||'') + ' ' + (t.food||'')).toLowerCase()}" data-y="${esc((t.date||'').slice(0,4))}" data-r="${esc(String(t.rating||0))}">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">
               <div>
                 <div style="font-size:13.5px;font-weight:500;cursor:pointer" onclick="navigate('/wines/${jsAttr(t.wineId)}')">${w?wineLabel(w):'Vino eliminato'}</div>
@@ -5612,6 +5682,7 @@ async function viewTastings() {
             ${t.food?`<div style="font-size:11.5px;color:var(--text-3)">🍽 ${esc(t.food)}</div>`:''}
           </div>`;
         }).join('')}
+    </div>
   </div>`;
 }
 
