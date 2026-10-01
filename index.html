@@ -4935,7 +4935,17 @@ async function viewStats() {
   // Acquisti senza prezzo/data (es. da importazione): si usano prezzo e data del vino
   const _items = {};
   wines.forEach(w => { _items[w.id] = w; }); distillates.forEach(d => { _items[d.id] = d; });
-  const allPurchases = purchases.concat(distillatePurchases).map(p => {
+  // Vini senza alcun acquisto registrato (es. importati prima): acquisto implicito
+  // = bottiglie in cantina + già uscite, alla data di inserimento
+  const _havePur = new Set(purchases.map(p=>p.wineId).concat(distillatePurchases.map(p=>p.distillateId)));
+  const _outBy = {};
+  checkouts.concat(distillateCheckouts).forEach(c => { const k = c.wineId || c.distillateId; _outBy[k] = (_outBy[k]||0) + (c.quantity||0); });
+  const _implicit = [];
+  wines.concat(distillates).forEach(it => {
+    const q = (it.quantity||0) + (_outBy[it.id]||0);
+    if (!_havePur.has(it.id) && q > 0) _implicit.push({ wineId: it.id, quantity: q, date: it.addedDate || '', pricePerBottle: null, seller: '' });
+  });
+  const allPurchases = purchases.concat(distillatePurchases, _implicit).map(p => {
     const it = _items[p.wineId] || _items[p.distillateId] || {};
     return Object.assign({}, p, {
       pricePerBottle: p.pricePerBottle != null ? p.pricePerBottle : (it.purchasePrice != null ? it.purchasePrice : (it.marketPrice != null ? it.marketPrice : null)),
@@ -6415,7 +6425,13 @@ async function viewCellarMap() {
       // vecchio backup, lo si segnala invece di far sparire il conflitto.
       const conflict = items.length>1;
       const icon = conflict ? '⚠️' : filled ? (items[0].kind==='distillates'?'🥃':'🍷') : '';
-      gridHtml += `<div class="${filled?'map-cell-filled':''}" data-row="${r}" data-col="${c}" title="Fila ${r}, colonna ${c}" style="aspect-ratio:1;border:1px solid ${conflict?'var(--pill-d)':'var(--border)'};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:${filled?'pointer':'default'};background:${conflict?'var(--pill-d-bg,var(--bg))':filled?'var(--pill-p-bg)':'transparent'};color:${conflict?'var(--pill-d)':filled?'var(--pill-p)':'var(--text-3)'}">${icon}</div>`;
+      const it0 = filled ? items[0] : null;
+      const tint = it0 ? ({Rosso:'#c0392b',Bianco:'#e0b100',Rosato:'#d98ba3'}[it0.color] || '') : '';
+      const shortName = it0 ? String(it0.name||'').split(/\s+/).slice(0,3).join(' ') : '';
+      const cellInner = (filled && !conflict)
+        ? `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:100%;height:100%;padding:2px;overflow:hidden;text-align:center;line-height:1.1"><span style="font-size:13px;font-weight:700">${it0.vintage?esc(String(it0.vintage)):icon}</span><span style="font-size:9px;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word">${esc(shortName)}</span></div>`
+        : icon;
+      gridHtml += `<div class="${filled?'map-cell-filled':''}" data-row="${r}" data-col="${c}" title="Fila ${r}, colonna ${c}" style="aspect-ratio:1;border:1px solid ${conflict?'var(--pill-d)':'var(--border)'};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:${filled?'pointer':'default'};background:${conflict?'var(--pill-d-bg,var(--bg))':filled?'var(--pill-p-bg)':'transparent'};${(filled&&!conflict&&tint)?'border-top:5px solid '+tint+';':''}color:${conflict?'var(--pill-d)':filled?'var(--pill-p)':'var(--text-3)'}">${cellInner}</div>`;
     }
   }
   gridHtml += `</div>`;
