@@ -5464,11 +5464,23 @@ function renderInvestmentResults(box, raw, fields) {
 
 // ─── Purchases ─── (vini e distillati insieme: un unico registro acquisti)
 async function viewPurchases() {
-  const [purchases, wines, distPurchases, distillates] = await Promise.all([
-    DB.getAll('purchases'), DB.getAll('wines'), DB.getAll('distillatePurchases'), DB.getAll('distillates')
+  const [purchases, wines, distPurchases, distillates, checkouts, distCheckouts] = await Promise.all([
+    DB.getAll('purchases'), DB.getAll('wines'), DB.getAll('distillatePurchases'), DB.getAll('distillates'),
+    DB.getAll('checkouts'), DB.getAll('distillateCheckouts')
   ]);
+  // Se è (o è stato) in cantina, è stato acquistato: le bottiglie non coperte da un acquisto
+  // registrato compaiono come acquisto "da inventario" (data e prezzo di inserimento del vino).
+  const _have = {}, _out = {};
+  purchases.forEach(p => { _have[p.wineId] = (_have[p.wineId]||0) + (p.quantity||0); });
+  distPurchases.forEach(p => { _have[p.distillateId] = (_have[p.distillateId]||0) + (p.quantity||0); });
+  checkouts.forEach(c => { _out[c.wineId] = (_out[c.wineId]||0) + (c.quantity||0); });
+  distCheckouts.forEach(c => { _out[c.distillateId] = (_out[c.distillateId]||0) + (c.quantity||0); });
+  const _implicit = [];
+  wines.forEach(w => { const miss = (w.quantity||0) + (_out[w.id]||0) - (_have[w.id]||0); if (miss > 0) _implicit.push({ _kind:'wines', _implicit:true, wineId:w.id, date:w.addedDate||'', quantity:miss, pricePerBottle:w.purchasePrice!=null?w.purchasePrice:null, seller:'' }); });
+  distillates.forEach(d => { const miss = (d.quantity||0) + (_out[d.id]||0) - (_have[d.id]||0); if (miss > 0) _implicit.push({ _kind:'distillates', _implicit:true, distillateId:d.id, date:d.addedDate||'', quantity:miss, pricePerBottle:d.purchasePrice!=null?d.purchasePrice:null, seller:'' }); });
   const merged = purchases.map(p => Object.assign({_kind:'wines'}, p))
-    .concat(distPurchases.map(p => Object.assign({_kind:'distillates'}, p)));
+    .concat(distPurchases.map(p => Object.assign({_kind:'distillates'}, p)))
+    .concat(_implicit);
   const sorted = merged.slice().sort(byDateDesc);
   const total = merged.reduce((s,p)=>s+(p.quantity||0)*(p.pricePerBottle||0),0);
   const hasAnyItem = wines.length>0 || distillates.length>0;
@@ -5494,9 +5506,9 @@ async function viewPurchases() {
           const label = item ? (isDist ? esc(item.name) : wineLabel(item)) : (isDist ? 'Distillato eliminato' : 'Vino eliminato');
           return `<div class="purchase-item flt-row" data-s="${esc(((item&&item.name)||'') + ' ' + (p.seller||'')).toLowerCase()}" data-y="${esc((p.date||'').slice(0,4))}" data-r="${esc((p.seller||'').trim())}">
             <div><div style="font-size:13px;font-weight:500">${isDist?'🥃':'🍷'} ${label}</div>
-            <div style="font-size:11.5px;color:var(--text-2)">${fmtDate(p.date)} · ${p.quantity} bott.${p.seller?' · '+esc(p.seller):''}</div></div>
+            <div style="font-size:11.5px;color:var(--text-2)">${fmtDate(p.date)} · ${p.quantity} bott.${p.seller?' · '+esc(p.seller):''}${p._implicit?' · <i>da inventario</i>':''}</div></div>
             <div style="display:flex;align-items:center;gap:8px"><div style="font-size:13.5px;font-weight:500;color:var(--text)">${p.pricePerBottle!=null?fmt(p.quantity*p.pricePerBottle):'—'}</div>
-            <button type="button" class="btn btn-outline btn-sm" title="Elimina dallo storico acquisti" onclick="deletePurchaseRecord('${isDist?'distillatePurchases':'purchases'}','${jsAttr(p.id)}')">✕</button></div>
+            ${p._implicit ? '' : `<button type="button" class="btn btn-outline btn-sm" title="Elimina dallo storico acquisti" onclick="deletePurchaseRecord('${isDist?'distillatePurchases':'purchases'}','${jsAttr(p.id)}')">✕</button>`}</div>
           </div>`;
         }).join('')}
     </div>
