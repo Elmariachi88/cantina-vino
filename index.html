@@ -6060,7 +6060,7 @@ function viewSettings() {
     </div>
     <div style="margin-top:14px;padding:12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg)">
       <div style="font-weight:600;font-size:13px;margin-bottom:6px">☁️ Sincronizzazione Google Drive (cartella "cantina vino")</div>
-      <p style="font-size:12px;color:var(--text-3);margin-bottom:8px">Tiene allineati PC e telefono tramite un file nella cartella "cantina vino": le modifiche dei due dispositivi vengono unite, quella più recente vince. Serve il Client ID Google (impostazione una tantum, da fare su ogni dispositivo).</p>
+      <p style="font-size:12px;color:var(--text-3);margin-bottom:8px">L’app vede solo i file che crea lei in Drive. Tiene allineati PC e telefono tramite un file nella cartella "cantina vino": le modifiche dei due dispositivi vengono unite, quella più recente vince. Serve il Client ID Google (impostazione una tantum, da fare su ogni dispositivo).</p>
       <input type="text" id="gd-client" placeholder="Client ID Google (xxxx.apps.googleusercontent.com)" value="${esc(localStorage.getItem('cantina-gdrive-client')||'')}" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);margin-bottom:8px">
       <label style="display:flex;gap:8px;align-items:center;font-size:12.5px;margin-bottom:6px;cursor:pointer"><input type="checkbox" ${localStorage.getItem('cantina-gdrive-auto')==='1'?'checked':''} onchange="driveSetAuto(this.checked)"> Sincronizza automaticamente (all'apertura e dopo ogni modifica)</label>
       <div id="gd-status" style="font-size:12px;color:var(--text-3);margin-bottom:10px">${(()=>{const t=parseInt(localStorage.getItem('cantina-gdrive-last')||'0',10);return t?'Ultima sincronizzazione: '+new Date(t).toLocaleString('it-IT'):'Mai sincronizzato';})()}</div>
@@ -6809,7 +6809,7 @@ async function _gdAuth(interactive){
   await _gdLoadLib();
   return new Promise((res,rej)=>{
     const tc=google.accounts.oauth2.initTokenClient({
-      client_id:cid, scope:'https://www.googleapis.com/auth/drive',
+      client_id:cid, scope:'https://www.googleapis.com/auth/drive.file',
       callback:r=>{ if(r.error) return rej(new Error(r.error)); _gdToken=r.access_token; _gdTokenExp=Date.now()+(r.expires_in||3600)*1000; res(_gdToken); },
       error_callback:e=>rej(new Error((e&&e.type)||'autorizzazione annullata'))
     });
