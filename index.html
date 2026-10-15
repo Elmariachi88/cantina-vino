@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Cantina Vino</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://generativelanguage.googleapis.com https://www.googleapis.com; manifest-src 'self' blob: data:; worker-src 'self'; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="theme-color" content="#1E1612">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1039,6 +1038,11 @@ const DB = (() => {
       }
       const arr = readStore(store); arr.push(data); writeStore(store,arr); notify(); return data;
     },
+    // Il terzo argomento (keep) è usato SOLO dalla fusione della sincronizzazione
+    // Drive: un record che arriva da un altro dispositivo porta già il proprio
+    // _mt (quando è stato modificato davvero), che non va toccato — altrimenti
+    // ogni sincronizzazione sembrerebbe "appena modificata" e vincerebbe sempre
+    // lei nel prossimo confronto, anche quando è più vecchia.
     async put(store,data,keep) {
       if(!data.id) data.id = uuid();
       if(!keep) data._mt = Date.now();
@@ -1051,8 +1055,14 @@ const DB = (() => {
       if(i >= 0) arr[i] = data; else arr.push(data);
       writeStore(store,arr); notify(); return data;
     },
-    async del(store,id) {
-      if(arguments[2]!==true){ try{ const t=JSON.parse(localStorage.getItem('cantina-tombs')||'{}'); t[store+':'+id]=Date.now(); localStorage.setItem('cantina-tombs',JSON.stringify(t)); }catch(e){} }
+    // Il terzo argomento (true) salta la lapide: usato quando la fusione della
+    // sincronizzazione applica un'eliminazione già registrata altrove — non è
+    // una nuova eliminazione locale da propagare, è quella che si sta già
+    // ricevendo.
+    async del(store,id,fromSync) {
+      if (fromSync !== true) {
+        try { const t = JSON.parse(localStorage.getItem('cantina-tombs')||'{}'); t[store+':'+id] = Date.now(); localStorage.setItem('cantina-tombs', JSON.stringify(t)); } catch(e){}
+      }
       if (mode==='idb') {
         try { const r = await p(this.tx(store,'readwrite').delete(id)); notify(); return r; }
         catch(e) { markDegraded(e); throw e; }
@@ -1346,11 +1356,16 @@ function onTopSearch(v) {
 }
 
 // ─── Aggiungi (+): scelta tra vino singolo e import da file ───
-function openAddChoice() { openModal('add-choice-modal'); }
+// La lista desideri riusa la stessa pipeline di import (file/incolla) dei
+// vini: questo flag dice a doImportSheet() dove far atterrare le righe.
+// Si azzera ogni volta che si riapre il flusso "Aggiungi alla cantina",
+// così un target impostato dalla lista desideri non resta appiccicato.
+let _importTarget = 'wines';
+function openAddChoice() { _importTarget = 'wines'; openModal('add-choice-modal'); }
 function triggerGlobalImport() { document.getElementById('global-sheet-file').click(); }
-document.getElementById('choice-single')?.addEventListener('click', () => { _importTarget = 'wines'; closeModal('add-choice-modal'); navigate('/wines/add'); });
-document.getElementById('choice-file')?.addEventListener('click', () => { _importTarget = 'wines'; closeModal('add-choice-modal'); });
-document.getElementById('choice-paste')?.addEventListener('click', () => { _importTarget = 'wines'; closeModal('add-choice-modal'); showPasteImport(); });
+document.getElementById('choice-single')?.addEventListener('click', () => { closeModal('add-choice-modal'); navigate('/wines/add'); });
+document.getElementById('choice-file')?.addEventListener('click', () => { closeModal('add-choice-modal'); });
+document.getElementById('choice-paste')?.addEventListener('click', () => { closeModal('add-choice-modal'); showPasteImport(); });
 document.getElementById('global-sheet-file')?.addEventListener('change', function() { importSheet(this); });
 
 // ════════════ VIEWS ════════════
@@ -1843,12 +1858,12 @@ async function viewWines(query = {}) {
         <option value="Declino" ${activePhase==='Declino'?'selected':''}>Declino</option>
         <option value="Non definita" ${activePhase==='Non definita'?'selected':''}>Non definita</option>
       </select>
-      <select id="wine-fav-filter" class="filter-select" onchange="filterWines()" aria-label="Preferiti">
-        <option value="">Tutti i vini</option>
-        <option value="fav">⭐ Solo preferiti</option>
-      </select>
       <select id="wine-sort" class="filter-select" onchange="setWineSort(this.value)" aria-label="Ordina">
         ${Object.entries(WINE_SORTS).map(([k,v]) => `<option value="${k}"${k===effSort?' selected':''}>↕ ${esc(v.label)}</option>`).join('')}
+      </select>
+      <select id="wine-fav-filter" class="filter-select" onchange="filterWines()" aria-label="Preferiti">
+        <option value="">Tutti</option>
+        <option value="fav">⭐ Solo preferiti</option>
       </select>
     </div>
     ${activePeak ? `<div id="peak-filter-chip" style="display:flex;align-items:center;gap:8px;margin:-4px 0 14px;font-size:12.5px;color:var(--text-2)">
@@ -1923,6 +1938,7 @@ async function viewWineForm(id) {
         <input type="text" id="wf-name" value="${esc(w.name||'')}" placeholder="es. Barolo 2016, Franciacorta Brut...">
         <div id="wf-ai-box"></div>
         <div id="wf-ai-offer"></div>
+        <div id="wf-personal-match"></div>
       </div>
       ${photoBlockHtml('wf', w.photo, {withRecognize:true})}
       <div class="form-group">
@@ -2059,6 +2075,52 @@ function bindWineForm(editId) {
       if (offerEl && offerEl.innerHTML) { offerEl.innerHTML = ''; offerEl.dataset.forName = ''; }
     }
   };
+  // ── Riconoscimento "personale": incrocia il nome con ciò che hai GIÀ
+  // nell'app — un desiderio non ancora comprato, o un vino già bevuto in
+  // passato (quantità 0) — prima di arrivare qui da un file importato
+  // (lista desideri / vini bevuti). Solo per un vino nuovo: in modifica
+  // l'etichetta è già quella in cantina, non ha senso incrociarla con sé
+  // stessa. Confronto sul nome esatto (normalizzato): niente di indovinato.
+  let personalMatchTimer;
+  const checkPersonalMatch = async () => {
+    const box = document.getElementById('wf-personal-match');
+    if (!box || editId) return;
+    const nm = _kbNorm(nameInput.value);
+    if (nm.split(' ').filter(Boolean).length < 2) { box.innerHTML = ''; return; }
+    const [wishlist, wines] = await Promise.all([DB.getAll('wishlist'), DB.getAll('wines')]);
+    const wl = wishlist.find(it => it.kind !== 'distillates' && _kbNorm(it.name) === nm);
+    const drunk = !wl && wines.find(w => (w.quantity||0) === 0 && _kbNorm(w.name) === nm);
+    const hit = wl || drunk;
+    // Il nome può essere cambiato di nuovo nel tempo che la query ha richiesto.
+    if (_kbNorm(nameInput.value) !== nm) return;
+    if (!hit) { box.innerHTML = ''; return; }
+    const src = wl ? 'lista desideri' : 'vini già bevuti';
+    const fields = [hit.producer && `produttore <b>${esc(hit.producer)}</b>`, hit.region && `zona <b>${esc(hit.region)}</b>`, hit.vintage && `annata <b>${esc(hit.vintage)}</b>`].filter(Boolean).join(', ');
+    box.innerHTML = `<div class="assist-box" style="margin-top:8px">
+      <div class="assist-meta">📂 Trovato nei tuoi ${src}${fields ? ': '+fields : ''}.</div>
+      <button type="button" class="btn btn-outline btn-sm" id="wf-personal-apply" style="margin-top:6px;align-self:flex-start">Usa questi dati</button>
+    </div>`;
+    document.getElementById('wf-personal-apply')?.addEventListener('click', () => {
+      // Scrittura diretta, SENZA il marchio "autofilled" che userebbe
+      // clearStaleAutofill(): questo è un dato confermato da un clic
+      // esplicito dell'utente, non un suggerimento automatico da poter
+      // ritenere "superato" al prossimo giro di runAssist().
+      const setPlain = (id, value) => {
+        const el = document.getElementById(id);
+        if (el && !el.value.trim()) el.value = value;
+      };
+      if (hit.producer) setPlain('wf-producer', hit.producer);
+      if (hit.region) setPlain('wf-region', hit.region);
+      if (hit.vintage) setPlain('wf-vintage', hit.vintage);
+      if (hit.notes) setPlain('wf-notes', hit.notes);
+      if (wl) { wishlistSourceId = wl.id; toast('Dati applicati: il desiderio verrà rimosso dalla lista quando salvi', 'success'); }
+      else toast('Dati applicati', 'success');
+      box.innerHTML = '';
+    });
+  };
+  nameInput?.addEventListener('input', () => { clearTimeout(personalMatchTimer); personalMatchTimer = setTimeout(checkPersonalMatch, 500); });
+  if (nameInput?.value.trim()) checkPersonalMatch();
+
   nameInput?.addEventListener('input', () => { clearTimeout(aiTimer); aiTimer = setTimeout(() => runAssist(true), 450); });
   // L'anno apice si calcola dall'annata: se il nome è già riconosciuto e
   // l'annata arriva DOPO (ordine naturale: prima il vino, poi quando è
@@ -2155,8 +2217,7 @@ function bindWineForm(editId) {
     nameEl?.classList.remove('error');
 
     const qty = intOrNull(document.getElementById('wf-quantity')?.value);
-    if(qty==null) { document.getElementById('wf-quantity')?.focus(); toast('Inserisci quante bottiglie hai (anche 0, se non ne hai più)','error'); return; }
-    if(qty<0) { toast('La quantità non può essere negativa','error'); return; }
+    if(qty!=null && qty<0) { toast('La quantità non può essere negativa','error'); return; }
 
     // Disable button & show spinner
     saveBtn.disabled = true;
@@ -2173,8 +2234,7 @@ function bindWineForm(editId) {
         color: document.getElementById('wf-color')?.value ?? '',   // "" = non specificato, mai forzato a "Rosso"
         type: document.getElementById('wf-type')?.value ?? '',
         quantity: qty!=null?qty:0,
-        // prezzo d'acquisto mancante su un vino NUOVO: si usa la stima di mercato compilata in automatico dal nome
-        purchasePrice: numOrNull(document.getElementById('wf-purchase-price')?.value) ?? (editId ? null : numOrNull(document.getElementById('wf-market-price')?.value)),
+        purchasePrice: numOrNull(document.getElementById('wf-purchase-price')?.value),
         marketPrice: numOrNull(document.getElementById('wf-market-price')?.value),
         peakStart: intOrNull(document.getElementById('wf-peak-start')?.value),
         peakEnd: intOrNull(document.getElementById('wf-peak-end')?.value),
@@ -2395,64 +2455,16 @@ function aiPrompt(name, producer, region) {
 // Estratta in un'unica funzione condivisa (usata sia dal riconoscimento
 // testuale sia da quello per foto, vedi più sotto) così i due percorsi non
 // possono disallinearsi su gestione errori/grounding.
-
-// Chiamata unica a Gemini: chiave nell'intestazione (non nell'URL), messaggio
-// REALE di Google negli errori, e modelli di riserva se il primo dà 429/404.
-const GEMINI_FALLBACK_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
-async function _aiFetchGemini(bodyObj) {
-  const key = aiGetKey();
-  const models = [GEMINI_MODEL, ...GEMINI_FALLBACK_MODELS.filter(m => m !== GEMINI_MODEL)];
-  // La ricerca Google (grounding) ha una quota gratuita a parte che su molti
-  // progetti è 0: se dà 429 la disattivo per 24 ore e uso solo il modello leggero.
-  const GK = 'cantina-ai-nogrounding-until';
-  let groundingOff = false;
-  try { groundingOff = Date.now() < Number(localStorage.getItem(GK) || 0); } catch(e) {}
-  let lastErr = null;
-  for (const model of models) {
-    for (const withTools of (bodyObj.tools && !groundingOff) ? [true, false] : [false]) {
-      const b = { ...bodyObj };
-      if (!withTools) delete b.tools;
-      let res;
-      try {
-        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-          body: JSON.stringify(b)
-        });
-      } catch(e) {
-        throw new Error('Impossibile contattare Google (rete assente o bloccata).');
-      }
-      if (res.ok) return res;
-      let detail = '';
-      try { const j = await res.json(); detail = j?.error?.message || ''; } catch(e) {}
-      detail = detail.replace(/\s+/g, ' ').slice(0, 220);
-      const withDetail = (msg) => new Error(detail ? `${msg} Dettaglio Google: ${detail}` : msg);
-      if (res.status === 429 && withTools) {
-        // probabile quota della ricerca web: ricordalo e riprova subito senza
-        try { localStorage.setItem(GK, String(Date.now() + 24*3600*1000)); } catch(e) {}
-        groundingOff = true;
-        continue;
-      }
-      if (res.status === 429 || res.status === 404) {
-        lastErr = withDetail(res.status === 429
-          ? `Quota o limite di richieste superato per ${model} (può essere il limite al minuto, non per forza quello giornaliero).`
-          : `Modello ${model} non disponibile.`);
-        break; // passa al modello successivo
-      }
-      if (res.status === 401 || res.status === 403) throw withDetail('Chiave rifiutata da Google (verifica che sia attiva su aistudio.google.com).');
-      if (res.status === 400) {
-        if (/API key/i.test(detail)) throw withDetail('Chiave non valida: controllala in Impostazioni.');
-        throw withDetail('Richiesta non accettata da Google (non è un problema di chiave).');
-      }
-      throw withDetail(`Google ha risposto con un errore (${res.status}).`);
-    }
-  }
-  throw lastErr || new Error('Nessun modello disponibile.');
-}
 async function _aiCallGemini(parts, schema) {
   const key = aiGetKey();
   if (!key) throw new Error('Nessuna chiave configurata. Aggiungila da Impostazioni → Assistente AI.');
-  const res = await _aiFetchGemini({
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(key)}`;
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         contents: [{ parts }],
         // Grounding con Google Search: il modello cerca davvero sul web
         // prima di rispondere, invece di affidarsi solo a ciò che ricorda
@@ -2464,7 +2476,15 @@ async function _aiCallGemini(parts, schema) {
         // compatibile con la risposta JSON vincolata da responseSchema.
         tools: [{ google_search: {} }],
         generationConfig: { responseMimeType: 'application/json', responseSchema: schema, temperature: 0.1 }
-  });
+      })
+    });
+  } catch(e) {
+    throw new Error('Impossibile contattare Google (rete assente o bloccata).');
+  }
+  if (res.status === 400) throw new Error('Chiave non valida: controllala in Impostazioni.');
+  if (res.status === 403) throw new Error('Chiave rifiutata da Google (verifica che sia attiva su aistudio.google.com).');
+  if (res.status === 429) throw new Error('Limite giornaliero gratuito raggiunto: riprova più tardi.');
+  if (!res.ok) throw new Error(`Google ha risposto con un errore (${res.status}).`);
   const data = await res.json();
   const cand = data?.candidates?.[0];
   const txt = cand?.content?.parts?.[0]?.text;
@@ -3244,10 +3264,8 @@ async function viewWineDetail(id) {
   const wineCells = wineZoneCells(w).map(c => Object.assign({}, c, { zone: cellarZones.find(z => z.id === c.zoneId) })).filter(c => c.zone);
   const ph = phase(w.peakStart,w.peakEnd);
   const adv = wineAdvice(w);
+  const totalPurchased = purchases.reduce((s,p)=>s+(p.quantity||0),0);
   const totalOut = checkouts.reduce((s,c)=>s+(c.quantity||0),0);
-  // Un vino importato da file non ha acquisti registrati: le bottiglie acquistate
-  // non possono essere meno di quelle in cantina più quelle già uscite.
-  const totalPurchased = Math.max(purchases.reduce((s,p)=>s+(p.quantity||0),0), (w.quantity||0) + totalOut);
   const priceHistSorted = priceHistory.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'') || (b._ts||0)-(a._ts||0));
   // Solo i punti realmente disegnabili finiscono nel grafico: un singolo
   // punto con il prezzo mancante (capita in un backup vecchio o rovinato)
@@ -3294,7 +3312,6 @@ async function viewWineDetail(id) {
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 2h8l1 6H7z"/><path d="M7 8c0 5 2 10 5 14 3-4 5-9 5-14"/></svg>
         Degustare
       </button>
-      <button type="button" class="btn btn-outline btn-sm" data-action="favorite" title="Aggiungi o togli dai preferiti">${w.favorite ? '⭐ Nei preferiti' : '☆ Preferito'}</button>
       <button type="button" class="btn btn-outline btn-sm" data-action="edit">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         Modifica
@@ -3302,6 +3319,7 @@ async function viewWineDetail(id) {
       <button type="button" class="btn btn-outline btn-sm" data-action="pro" title="Riservate, prezzo di vendita, posizione sulla mappa">
         🍾 Dati professionali
       </button>
+      <button type="button" class="btn btn-outline btn-sm" data-action="favorite" title="Aggiungi o togli dai preferiti">${w.favorite ? '⭐ Nei preferiti' : '☆ Preferito'}</button>
       <button type="button" class="btn btn-outline btn-sm" data-action="delete" style="color:var(--pill-d);border-color:var(--pill-d)">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
         Elimina
@@ -3452,8 +3470,8 @@ function bindWineDetail(id) {
       if(action==='checkout') openCheckoutModal(id, name, qty);
       else if(action==='tasting') openTastingModal(id, name);
       else if(action==='edit') navigate('/wines/'+id+'/edit');
-      else if(action==='delete') deleteWine(id);
       else if(action==='favorite') toggleWineFavorite(id);
+      else if(action==='delete') deleteWine(id);
     });
   });
   document.querySelector('#view [data-action="investment"]')?.addEventListener('click', () => {
@@ -3669,7 +3687,6 @@ async function removeCriticScore(id, ts) {
     render(currentRoute);
   } catch(e) { toast('Errore: '+e.message, 'error'); }
 }
-
 
 // Se la voce ha più bottiglie, "Elimina" chiede quante toglierne: togliendone
 // meno del totale si corregge solo la quantità (non è un consumo, non finisce
@@ -4273,7 +4290,7 @@ async function viewDistillateDetail(id) {
     DB.getByIndex('distillatePurchases','distillateId',id)
   ]);
   const totalOut = checkouts.reduce((s,c)=>s+(c.quantity||0),0);
-  const totalPurchased = Math.max(purchases.reduce((s,p)=>s+(p.quantity||0),0), (d.quantity||0) + totalOut);
+  const totalPurchased = purchases.reduce((s,p)=>s+(p.quantity||0),0);
   const cellarZones = await DB.getAll('cellarZones');
   const dCells = wineZoneCells(d).map(c => Object.assign({}, c, { zone: cellarZones.find(z => z.id === c.zoneId) })).filter(c => c.zone);
 
@@ -4523,98 +4540,56 @@ async function printDistillates() {
 }
 
 // ─── Lista desideri ───
-// Vini/distillati che NON possiedi ancora: un elenco separato dalla cantina
-// vera. Pensata anche per liste GRANDI (migliaia di righe): ricerca, pagine da
-// 50, selezione multipla, import da file/incolla come per i vini.
-// "Dove comprarlo": l'app NON interroga nessun negozio da sola (sarebbe
-// traffico da bot, e verrebbe bloccato). Prepara link di ricerca che apri TU
-// con un clic, e un prompt istruito per un Gem/agente che lavora a lotti lenti.
-const WL = { q: '', page: 0, size: 50, sel: new Set(), open: new Set(), refocus: false };
-let _importTarget = 'wines';   // 'wines' | 'wishlist': dove finisce un import da file/incolla
+// Vini/distillati che NON possiedi ancora: un elenco separato dalla
+// cantina vera, senza quantità né valore di collezione (non sono
+// bottiglie che hai). "Segna come acquistato" è l'unico ponte verso
+// l'inventario reale: precompila il form di aggiunta vero e proprio,
+// così i dati non si riscrivono a mano due volte, e rimuove la voce
+// dalla lista desideri solo DOPO che il salvataggio è andato a buon fine.
+// Stato dell'elenco: ricerca, pagina e selezione multipla sopravvivono ai
+// render() (stesso motivo del resto della pagina: si ridisegna spesso), ma
+// NON alla navigazione via hash — si azzerano solo quando si lascia la
+// pagina (vedi bindWishlist).
+const WL = { q:'', page:0, size:20, sel:new Set(), open:new Set() };
 
 function _wlQuery(it) {
-  // Nome "pulito": via virgolette, sigle di denominazione e parole di contorno,
-  // massimo 7 parole; l'annata solo se non già nel nome. Un nome ufficiale
-  // lunghissimo (con tutte le virgolette e le sigle) dava risultati fuori tema.
-  const STOP = new Set(['doc','docg','igt','igp','di','del','della','dello','dei','delle','da','de','la','il','lo','e','con','in','d']);
-  let n = String(it.name || '').replace(/[\u200b-\u200f\ufeff]/g, '').split('|')[0].replace(/\s-\s/g, ' ').replace(/["“”'`’]/g, ' ').replace(/[(),;:/]/g, ' ').replace(/\s+/g, ' ').trim();
-  const words = n.split(' ').filter(w => w && !STOP.has(w.toLowerCase())).slice(0, 7);
-  let q = words.join(' ');
-  if (it.producer && !q.toLowerCase().includes(String(it.producer).toLowerCase().split(' ')[0])) q += ' ' + it.producer;
-  if (it.vintage && !q.includes(String(it.vintage))) q += ' ' + it.vintage;
-  return q.trim();
+  return [it.name, it.producer, it.notes, it.region].filter(Boolean).join(' ').toLowerCase();
 }
+// Solo http/https: un'offerta importata da testo incollato (Gem) non deve
+// mai poter produrre un link javascript:/data: cliccabile nell'app.
+function _wlSafeUrl(u) {
+  try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch(e) { return ''; }
+}
+// Link di ricerca generati al volo (mai salvati): Wine-Searcher/Google
+// Shopping/Vivino più uno per ciascun negozio già configurato in Impostazioni.
 function _wlLinks(it) {
-  const q = _wlQuery(it), e = encodeURIComponent(q);
+  const q = encodeURIComponent([it.name, it.producer].filter(Boolean).join(' '));
   const links = [
-    ['Wine-Searcher', 'https://www.wine-searcher.com/find/' + encodeURIComponent(q).replace(/%20/g, '+')],
-    ['Google Shopping', 'https://www.google.com/search?tbm=shop&q=' + e],
-    ['Vivino', 'https://www.vivino.com/search/wines?q=' + e],
+    {label:'Wine-Searcher', url:`https://www.wine-searcher.com/find/${q}`},
+    {label:'Google Shopping', url:`https://www.google.com/search?tbm=shop&q=${q}`},
+    {label:'Vivino', url:`https://www.vivino.com/search/wines?q=${q}`},
   ];
-  // I negozi scelti in Impostazioni: ricerca Google limitata al sito (nessun
-  // formato di URL da indovinare, funziona con qualunque negozio).
-  aiGetShops().forEach(s => links.push([s, 'https://www.google.com/search?q=' + e + '+site%3A' + encodeURIComponent(s)]));
+  aiGetShops().forEach(shop => links.push({label: shop, url:`https://www.google.com/search?q=${q}+site:${encodeURIComponent(shop)}`}));
   return links;
 }
-function _wlSafeUrl(u) { return /^https?:\/\//i.test(u || '') ? u : ''; }
 
-function _wlColor(it) {
-  if (it.color) return it.color;
-  try { const sg = kbSuggestFields(it.name, it.producer, it.region, it.vintage); if (sg && sg.color) return sg.color; } catch(e) {}
-  const t = ((it.name||'') + ' ' + (it.notes||'')).toLowerCase();
-  if (/\brosato\b|ros[eé]\b/.test(t)) return 'Rosato';
-  if (/\brosso\b|\bred\b/.test(t)) return 'Rosso';
-  if (/\bbianco\b|\bwhite\b|\bbrut\b|spumante|prosecco|franciacorta|champagne/.test(t)) return 'Bianco';
-  return '';
-}
 async function viewWishlist() {
-  const all = (await DB.getAll('wishlist')).slice().sort((a, b) => (b._ts || 0) - (a._ts || 0));
+  const all = (await DB.getAll('wishlist')).slice().sort((a,b)=>(b._ts||0)-(a._ts||0));
   const q = WL.q.trim().toLowerCase();
-  const items = q ? all.filter(it => [it.name, it.producer, it.region, it.notes].join(' ').toLowerCase().includes(q)) : all;
-  const pages = Math.max(1, Math.ceil(items.length / WL.size));
-  if (WL.page >= pages) WL.page = pages - 1;
+  const items = q ? all.filter(it => _wlQuery(it).includes(q)) : all;
+  const totalPages = Math.max(1, Math.ceil(items.length / WL.size));
+  if (WL.page >= totalPages) WL.page = totalPages - 1;
   if (WL.page < 0) WL.page = 0;
-  const slice = items.slice(WL.page * WL.size, (WL.page + 1) * WL.size);
-  const nSel = WL.sel.size;
-  const rows = slice.map(it => {
-    const open = WL.open.has(it.id);
-    const offers = Array.isArray(it.offers) ? it.offers : [];
-    const bestOffer = offers.length ? offers.slice().sort((a, b) => (a.price ?? 1e9) - (b.price ?? 1e9))[0] : null;
-    const links = open ? `
-      <div style="padding:8px 0 4px 34px;font-size:12px">
-        <div style="color:var(--text-3);margin-bottom:6px">Ricerca «${esc(_wlQuery(it))}» — si apre solo quando tocchi un link:</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">${_wlLinks(it).map(([n, u]) =>
-          `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="text-decoration:none">${esc(n)} ↗</a>`).join('')}</div>
-        ${offers.length ? `<div style="margin-top:8px"><b>Trovati dal Gem/agente:</b>${offers.map(o => `
-          <div style="padding:3px 0">${_wlSafeUrl(o.url) ? `<a href="${esc(o.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">${esc(o.shop || 'negozio')} ↗</a>` : esc(o.shop || 'negozio')}
-          ${o.price != null ? ' · ' + fmt(o.price) : ''}${o.avail ? ' · ' + esc(o.avail) : ''}${o.note ? ' · ' + esc(o.note) : ''}${o.date ? ' <span style="color:var(--text-3)">(' + esc(o.date) + ')</span>' : ''}</div>`).join('')}
-          <div style="color:var(--text-3);margin-top:4px">Prezzi riportati dall'agente: verificali sul sito prima di comprare.</div></div>` : ''}
-      </div>` : '';
-    return `
-      <div style="border-bottom:1px solid var(--border)">
-        <div class="wine-item" style="cursor:default;border-bottom:none">
-          <input type="checkbox" data-wl-sel="${esc(it.id)}" ${WL.sel.has(it.id) ? 'checked' : ''} style="margin-right:8px;flex-shrink:0" aria-label="Seleziona">
-          <div class="wine-color-bar ${colorBar(_wlColor(it))}"></div>
-          <div class="wine-info">
-            <div class="wine-name">${it.kind === 'distillates' ? '🥃' : '🍷'} ${esc(it.name)}</div>
-            <div class="wine-sub">${esc([it.producer, it.vintage, it.priceEstimate != null ? fmt(it.priceEstimate) : ''].filter(Boolean).join(' · ') || '—')}${bestOffer ? ' · 🏷 da ' + (bestOffer.price != null ? fmt(bestOffer.price) : '?') + ' (' + esc(bestOffer.shop || '') + ')' : ''}${it.notes ? ' · ' + esc(it.notes.slice(0, 60)) + (it.notes.length > 60 ? '…' : '') : ''}</div>
-          </div>
-          <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end">
-            <button type="button" class="btn btn-outline btn-sm" data-wl="shop" data-id="${esc(it.id)}" title="Dove comprarlo">🛒${open ? ' ▾' : ''}</button>
-            <button type="button" class="btn btn-outline btn-sm" data-wl="buy" data-id="${esc(it.id)}" title="Segna come acquistato">✓ Acquistato</button>
-            <button type="button" class="btn btn-outline btn-sm" data-wl="edit" data-id="${esc(it.id)}" title="Modifica">✎</button>
-            <button type="button" class="btn btn-outline btn-sm" data-wl="remove" data-id="${esc(it.id)}" style="color:var(--pill-d);border-color:var(--pill-d)" title="Rimuovi solo questo">✕</button>
-          </div>
-        </div>${links}
-      </div>`;
-  }).join('');
+  const pageItems = items.slice(WL.page*WL.size, WL.page*WL.size + WL.size);
+  const selCount = WL.sel.size;
+
   return `
   <div class="page-header">
-    <div class="page-title">Lista desideri <span style="font-size:13px;color:var(--text-3);font-weight:400">${all.length}</span></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap">
-      <button type="button" class="btn btn-outline" id="wl-import-file">📄 Da file</button>
-      <button type="button" class="btn btn-outline" id="wl-import-paste">📋 Incolla</button>
-      <button type="button" class="btn btn-outline" id="wl-gem">🤖 Ricerca con Gem</button>
+    <div class="page-title">Lista desideri</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn btn-outline btn-sm" id="btn-wl-import-file" title="Importa da file">📄 Importa</button>
+      <button type="button" class="btn btn-outline btn-sm" id="btn-wl-import-paste" title="Incolla da Google Sheets">📋 Incolla</button>
+      <button type="button" class="btn btn-outline btn-sm" id="btn-wl-gem" title="Cerca le offerte con un Gem di Gemini">🔍 Ricerca offerte</button>
       <button type="button" class="btn btn-accent" id="btn-add-wishlist">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Aggiungi
@@ -4622,74 +4597,102 @@ async function viewWishlist() {
     </div>
   </div>
   <div class="card">
-    ${all.length === 0 ? '' : `
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
-      <input type="search" id="wl-search" value="${esc(WL.q)}" placeholder="Cerca nella lista desideri…" style="flex:1;min-width:180px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:13px">
-      <span style="font-size:12px;color:var(--text-3)">${items.length}${q ? ' trovati' : ''}</span>
-    </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px;font-size:12.5px">
-      <button type="button" class="btn btn-outline btn-sm" id="wl-sel-page">Seleziona questa pagina</button>
-      <button type="button" class="btn btn-outline btn-sm" id="wl-sel-all">Seleziona tutti (${items.length})</button>
-      <button type="button" class="btn btn-outline btn-sm" id="wl-sel-none" ${nSel ? '' : 'disabled'}>Deseleziona</button>
-      <span style="color:var(--text-2)">${nSel} selezionati</span>
-      <button type="button" class="btn btn-primary btn-sm" id="wl-bulk-buy" ${nSel ? '' : 'disabled'}>✓ Acquistati (${nSel})</button>
-      <button type="button" class="btn btn-outline btn-sm" id="wl-bulk-del" ${nSel ? '' : 'disabled'} style="color:var(--pill-d);border-color:var(--pill-d)">Rimuovi selezionati</button>
+    ${all.length===0 ? '' : `
+    <div class="search-filter" style="margin-bottom:12px">
+      <div class="search-wrap" style="flex:1;min-width:180px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="wl-search" placeholder="Cerca: nome, produttore, note…" value="${esc(WL.q)}">
+      </div>
     </div>`}
-    ${all.length === 0
-      ? '<div class="empty">La lista desideri è vuota.<br>Aggiungi i vini a mano, oppure importali da un file Excel/CSV/PDF/Word o incollandoli da Google Sheets — restano separati dalla tua cantina finché non li segni come acquistati.</div>'
-      : (items.length === 0 ? '<div class="empty">Nessun risultato per questa ricerca.</div>' : rows)}
-    ${pages > 1 ? `
-    <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-top:12px;font-size:12.5px">
-      <button type="button" class="btn btn-outline btn-sm" id="wl-prev" ${WL.page === 0 ? 'disabled' : ''}>← Prec.</button>
-      <span>Pagina ${WL.page + 1} di ${pages}</span>
-      <button type="button" class="btn btn-outline btn-sm" id="wl-next" ${WL.page >= pages - 1 ? 'disabled' : ''}>Succ. →</button>
+    ${selCount > 0 ? `
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:8px 10px;background:var(--accent-light);border-radius:var(--rs)">
+      <span style="font-size:12.5px">${selCount} selezionati</span>
+      <button type="button" class="btn btn-outline btn-sm" id="btn-wl-deselect">Deseleziona</button>
+      <button type="button" class="btn btn-outline btn-sm" id="btn-wl-bulk-buy">✓ Segna acquistati</button>
+      <button type="button" class="btn btn-outline btn-sm" style="color:var(--pill-d);border-color:var(--pill-d)" id="btn-wl-bulk-remove">✕ Rimuovi</button>
     </div>` : ''}
+    ${items.length===0
+      ? `<div class="empty">${all.length===0
+          ? 'La lista desideri è vuota.<br>Aggiungi qui i vini o i distillati che vorresti comprare — restano separati dalla tua cantina finché non li segni come acquistati.'
+          : 'Nessun risultato trovato.'}</div>`
+      : `
+      ${pageItems.length > 1 ? `<div style="margin-bottom:8px"><button type="button" class="btn btn-outline btn-sm" id="btn-wl-sel-page">Seleziona pagina</button></div>` : ''}
+      <div id="wl-list-body">${pageItems.map(it => _wlItemHtml(it)).join('')}</div>
+      ${totalPages > 1 ? `
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px">
+        <button type="button" class="btn btn-outline btn-sm" id="btn-wl-prev" ${WL.page<=0?'disabled':''}>← Precedente</button>
+        <span style="font-size:12px;color:var(--text-3)">Pagina ${WL.page+1} di ${totalPages}</span>
+        <button type="button" class="btn btn-outline btn-sm" id="btn-wl-next" ${WL.page>=totalPages-1?'disabled':''}>Successiva →</button>
+      </div>` : ''}
+      `}
   </div>`;
 }
+
+function _wlItemHtml(it) {
+  const isOpen = WL.open.has(it.id);
+  const offers = Array.isArray(it.offers) ? it.offers : [];
+  return `
+  <div class="wine-item" style="cursor:default;align-items:flex-start;flex-wrap:wrap">
+    <input type="checkbox" data-wl-sel="${it.id}" ${WL.sel.has(it.id)?'checked':''} style="margin-top:14px;width:16px;height:16px;flex-shrink:0;cursor:pointer" aria-label="Seleziona">
+    <div class="wine-color-bar bar-w"></div>
+    <div class="wine-info">
+      <div class="wine-name">${it.kind==='distillates'?'🥃':'🍷'} ${esc(it.name)}</div>
+      <div class="wine-sub">${esc([it.producer, it.priceEstimate!=null?fmt(it.priceEstimate):''].filter(Boolean).join(' · ')||'—')}${it.notes?' · '+esc(it.notes.slice(0,60))+(it.notes.length>60?'…':''):''}</div>
+      ${isOpen ? `<div style="margin-top:8px;padding:8px 10px;background:var(--bg);border-radius:var(--rs);font-size:12px">
+        <div style="font-weight:600;margin-bottom:6px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;font-size:10.5px">🛒 Dove comprarlo</div>
+        ${offers.length ? offers.map(o => `<div style="margin-bottom:4px">${_wlSafeUrl(o.url) ? `<a href="${esc(_wlSafeUrl(o.url))}" target="_blank" rel="noopener">${esc(o.shop||o.url)}</a>` : esc(o.shop||'')}${o.price?' — '+esc(o.price+'')+' €':''}${o.availability?' · '+esc(o.availability):''}</div>`).join('') : ''}
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+        ${_wlLinks(it).map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(l.label)} ↗</a>`).join('')}
+        </div>
+      </div>` : ''}
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">
+      <button type="button" class="btn btn-outline btn-sm" data-action="toggle-shop" data-id="${it.id}" title="Dove comprarlo">🛒</button>
+      <button type="button" class="btn btn-outline btn-sm" data-action="buy" data-id="${it.id}" title="Segna come acquistato">✓ Acquistato</button>
+      <button type="button" class="btn btn-outline btn-sm" data-action="edit" data-id="${it.id}" title="Modifica">✎</button>
+      <button type="button" class="btn btn-outline btn-sm" data-action="remove" data-id="${it.id}" style="color:var(--pill-d);border-color:var(--pill-d)" title="Rimuovi">✕</button>
+    </div>
+  </div>`;
+}
+
 let _wiEditId = null;
-async function _wlCurrentItems() {
-  const all = await DB.getAll('wishlist');
-  const q = WL.q.trim().toLowerCase();
-  return q ? all.filter(it => [it.name, it.producer, it.region, it.notes].join(' ').toLowerCase().includes(q)) : all;
+function _wlCurrentItems() {
+  return [...document.querySelectorAll('#wl-list-body [data-wl-sel]')].map(cb => cb.dataset.wlSel);
 }
 function bindWishlist() {
-  const $ = id => document.getElementById(id);
-  const redraw = () => render(currentRoute);
-  $('btn-add-wishlist')?.addEventListener('click', () => openWishlistModal());
-  $('wl-import-file')?.addEventListener('click', () => { _importTarget = 'wishlist'; triggerGlobalImport(); });
-  $('wl-import-paste')?.addEventListener('click', () => { _importTarget = 'wishlist'; showPasteImport(); });
-  $('wl-gem')?.addEventListener('click', () => openWishlistGem());
-  $('wl-prev')?.addEventListener('click', () => { WL.page--; redraw(); });
-  $('wl-next')?.addEventListener('click', () => { WL.page++; redraw(); });
-  $('wl-sel-none')?.addEventListener('click', () => { WL.sel.clear(); redraw(); });
-  $('wl-sel-page')?.addEventListener('click', () => {
-    document.querySelectorAll('#view [data-wl-sel]').forEach(c => WL.sel.add(c.dataset.wlSel)); redraw();
-  });
-  $('wl-sel-all')?.addEventListener('click', async () => { (await _wlCurrentItems()).forEach(it => WL.sel.add(it.id)); redraw(); });
-  $('wl-bulk-del')?.addEventListener('click', () => wishlistBulkRemove());
-  $('wl-bulk-buy')?.addEventListener('click', () => wishlistBulkPurchased());
-  const s = $('wl-search');
-  if (s) {
-    let t;
-    s.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => { WL.q = s.value; WL.page = 0; WL.refocus = true; redraw(); }, 300); });
-    if (WL.refocus) { WL.refocus = false; s.focus(); const n = s.value.length; try { s.setSelectionRange(n, n); } catch (e) {} }
+  document.getElementById('btn-add-wishlist')?.addEventListener('click', () => openWishlistModal());
+  document.getElementById('btn-wl-import-file')?.addEventListener('click', () => { _importTarget = 'wishlist'; triggerGlobalImport(); });
+  document.getElementById('btn-wl-import-paste')?.addEventListener('click', () => { _importTarget = 'wishlist'; showPasteImport(); });
+  document.getElementById('btn-wl-gem')?.addEventListener('click', () => openWishlistGem());
+
+  const search = document.getElementById('wl-search');
+  if (search) {
+    search.addEventListener('input', () => {
+      clearTimeout(window._wlSearchTimer);
+      window._wlSearchTimer = setTimeout(() => { WL.q = search.value; WL.page = 0; render(currentRoute); }, 300);
+    });
   }
-  document.querySelectorAll('#view [data-wl-sel]').forEach(c => c.addEventListener('change', () => {
-    if (c.checked) WL.sel.add(c.dataset.wlSel); else WL.sel.delete(c.dataset.wlSel);
-    redraw();
+
+  document.querySelectorAll('[data-wl-sel]').forEach(cb => cb.addEventListener('change', () => {
+    const id = cb.dataset.wlSel;
+    if (cb.checked) WL.sel.add(id); else WL.sel.delete(id);
+    render(currentRoute);
   }));
-  document.querySelectorAll('#view [data-wl][data-id]').forEach(btn => btn.addEventListener('click', () => {
-    const id = btn.dataset.id, a = btn.dataset.wl;
-    if (a === 'edit') openWishlistModal(id);
-    else if (a === 'remove') deleteWishlistItem(id);
-    else if (a === 'buy') markWishlistPurchased(id);
-    else if (a === 'shop') {
-      if (WL.open.has(id)) WL.open.delete(id); else WL.open.add(id);
-      // il ridisegno riportava la pagina in cima: con liste lunghe sembrava che non succedesse nulla
-      const y = window.scrollY;
-      Promise.resolve(render(currentRoute)).then(() => { window.scrollTo(0, y); });
-    }
+  document.getElementById('btn-wl-deselect')?.addEventListener('click', () => { WL.sel.clear(); render(currentRoute); });
+  document.getElementById('btn-wl-sel-page')?.addEventListener('click', () => { _wlCurrentItems().forEach(id => WL.sel.add(id)); render(currentRoute); });
+  document.getElementById('btn-wl-bulk-remove')?.addEventListener('click', () => wishlistBulkRemove());
+  document.getElementById('btn-wl-bulk-buy')?.addEventListener('click', () => wishlistBulkPurchased());
+  document.getElementById('btn-wl-prev')?.addEventListener('click', () => { WL.page--; render(currentRoute); });
+  document.getElementById('btn-wl-next')?.addEventListener('click', () => { WL.page++; render(currentRoute); });
+
+  document.querySelectorAll('#view [data-action="toggle-shop"][data-id]').forEach(btn => btn.addEventListener('click', () => {
+    const id = btn.dataset.id;
+    if (WL.open.has(id)) WL.open.delete(id); else WL.open.add(id);
+    render(currentRoute);
   }));
+  document.querySelectorAll('#view [data-action="edit"][data-id]').forEach(btn => btn.addEventListener('click', () => openWishlistModal(btn.dataset.id)));
+  document.querySelectorAll('#view [data-action="remove"][data-id]').forEach(btn => btn.addEventListener('click', () => deleteWishlistItem(btn.dataset.id)));
+  document.querySelectorAll('#view [data-action="buy"][data-id]').forEach(btn => btn.addEventListener('click', () => markWishlistPurchased(btn.dataset.id)));
 }
 async function openWishlistModal(id) {
   _wiEditId = id || null;
@@ -4714,78 +4717,101 @@ async function saveWishlistItem() {
   };
   try {
     if (_wiEditId) {
-      // si conservano i dati che il form non mostra (annata, regione, offerte trovate…)
-      const prev = (await DB.get('wishlist', _wiEditId)) || {};
-      await DB.put('wishlist', Object.assign({}, prev, fields, { id: _wiEditId }));
+      // Si fonde sui dati esistenti invece di sostituirli: un desiderio
+      // importato da file può avere annata/regione/offerte che questo
+      // modale semplificato non mostra e non deve cancellare.
+      const prev = await DB.get('wishlist', _wiEditId) || {};
+      await DB.put('wishlist', Object.assign({}, prev, fields, {id: _wiEditId}));
       toast('Desiderio aggiornato', 'success');
-    } else { await DB.add('wishlist', Object.assign({ addedDate: today() }, fields)); toast('Aggiunto alla lista desideri', 'success'); }
+    } else {
+      await DB.add('wishlist', Object.assign({addedDate: today()}, fields));
+      toast('Aggiunto alla lista desideri', 'success');
+    }
   } catch(e) { toast('Errore nel salvataggio: '+e.message, 'error'); return; }
   closeModal('wishlist-modal');
   _wiEditId = null;
+  // render(), non navigate(): si è già su #/wishlist, e ri-navigare allo
+  // STESSO hash non genera un nuovo hashchange (quindi nessun ridisegno) —
+  // stesso motivo per cui savePurchase() usa render(currentRoute) sopra.
   render(currentRoute);
 }
-// Rimozione di UNA voce, senza conferma bloccante: c'è "Annulla" nell'avviso.
 async function deleteWishlistItem(id) {
-  let backup;
-  try {
-    backup = await DB.get('wishlist', id);
-    await DB.del('wishlist', id);
-  } catch(e) { toast('Errore: '+e.message, 'error'); return; }
-  WL.sel.delete(id); WL.open.delete(id);
-  toast('Rimosso dalla lista desideri', '', backup ? { label: 'Annulla', fn: async () => { await DB.put('wishlist', backup); render(currentRoute); } } : null);
+  const backup = await DB.get('wishlist', id);
+  if (!backup) return;
+  try { await DB.del('wishlist', id); } catch(e) { toast('Errore: '+e.message, 'error'); return; }
+  WL.sel.delete(id);
+  toast('Rimosso dalla lista desideri', '', {label:'Annulla', fn: async () => { await DB.put('wishlist', backup); render(currentRoute); }});
   render(currentRoute);
 }
 async function wishlistBulkRemove() {
   const ids = [...WL.sel];
   if (!ids.length) return;
-  if (!confirm(`Rimuovere ${ids.length} voci dalla lista desideri?`)) return;
+  if (!confirm(`Rimuovere ${ids.length} elementi dalla lista desideri?`)) return;
   const backups = [];
-  for (const id of ids) { try { const b = await DB.get('wishlist', id); if (b) backups.push(b); await DB.del('wishlist', id); } catch(e) {} }
+  for (const id of ids) {
+    const it = await DB.get('wishlist', id);
+    if (it) { backups.push(it); try { await DB.del('wishlist', id); } catch(e) {} }
+  }
   WL.sel.clear();
-  toast(`${backups.length} voci rimosse`, '', backups.length ? { label: 'Annulla', fn: async () => { for (const b of backups) { try { await DB.put('wishlist', b); } catch(e) {} } render(currentRoute); } } : null);
+  toast(`${backups.length} elementi rimossi`, '', {label:'Annulla', fn: async () => {
+    for (const it of backups) await DB.put('wishlist', it);
+    render(currentRoute);
+  }});
   render(currentRoute);
 }
-// Acquistati in blocco: crea direttamente i vini in cantina (quantità e
-// prezzo da qui), li registra fra gli acquisti e li toglie dai desideri.
+// Acquisto multiplo: come markWishlistPurchased ma senza passare dal form —
+// si chiede una sola volta la quantità per riga e si registra subito
+// l'acquisto iniziale (coerente con la correzione del conteggio "Bottiglie
+// acquistate"). I distillati restano esclusi: hanno già il flusso singolo.
 async function wishlistBulkPurchased() {
   const ids = [...WL.sel];
   if (!ids.length) return;
-  const ans = prompt(`Quante bottiglie hai preso di ciascuno dei ${ids.length} vini selezionati?`, '1');
-  if (ans === null) return;
-  const qty = parseInt(ans, 10);
-  if (!Number.isFinite(qty) || qty < 1) { toast('Scrivi un numero di bottiglie da 1 in su', 'error'); return; }
+  const items = [];
+  for (const id of ids) { const it = await DB.get('wishlist', id); if (it) items.push(it); }
+  const wineItems = items.filter(it => it.kind !== 'distillates');
+  const skipped = items.length - wineItems.length;
+  if (!wineItems.length) { toast('Per i distillati usa "✓ Acquistato" singolo', 'error'); return; }
+  const qtyStr = prompt(`Quante bottiglie per ciascuno dei ${wineItems.length} vini selezionati?`, '1');
+  if (qtyStr === null) return;
+  const qty = Math.max(1, parseInt(qtyStr) || 1);
   const fav = confirm('Vuoi metterli anche tra i PREFERITI?\n\nOK = sì, aggiungili ai preferiti\nAnnulla = no, solo in cantina');
-  let done = 0, skipped = 0;
-  for (const id of ids) {
+  let added = 0;
+  for (const it of wineItems) {
+    const sug = kbSuggestFields(it.name, it.producer, it.region, it.vintage) || {};
+    const wine = {
+      name: it.name,
+      producer: it.producer || '',
+      region: it.region || sug.region || '',
+      country: sug.country || '',
+      vintage: it.vintage ?? null,
+      color: sug.color || '',
+      type: sug.type || '',
+      quantity: qty,
+      purchasePrice: it.priceEstimate ?? null,
+      marketPrice: null,
+      peakStart: sug.peakStart ?? null,
+      peakEnd: sug.peakEnd ?? null,
+      notes: it.notes || '',
+      foodPairing: sug.food || '',
+      location: '',
+      addedDate: today(),
+      favorite: fav,
+    };
     try {
-      const it = await DB.get('wishlist', id);
-      if (!it) continue;
-      if (it.kind === 'distillates') { skipped++; continue; }   // per i distillati usa "✓ Acquistato" singolo
-      const wine = {
-        name: it.name, producer: it.producer || '', region: it.region || '', country: '',
-        vintage: it.vintage != null ? it.vintage : null, color: _wlColor(it), type: '',
-        quantity: qty, purchasePrice: it.priceEstimate != null ? it.priceEstimate : null, marketPrice: null,
-        peakStart: null, peakEnd: null, notes: it.notes || '', foodPairing: '', location: '',
-        addedDate: today(), favorite: fav
-      };
-      const sug = kbSuggestFields(wine.name, wine.producer, wine.region, wine.vintage);
-      if (sug) {
-        if (sug.color) wine.color = sug.color; if (sug.type) wine.type = sug.type;
-        if (!wine.region && sug.region) wine.region = sug.region; if (sug.country) wine.country = sug.country;
-        if (wine.vintage == null && sug.vintage) wine.vintage = sug.vintage;
-        if (sug.peakStart) wine.peakStart = sug.peakStart; if (sug.peakEnd) wine.peakEnd = sug.peakEnd;
-        if (sug.food) wine.foodPairing = sug.food;
-      }
       const saved = await DB.add('wines', wine);
-      try { await DB.add('purchases', { wineId: saved.id, date: today(), quantity: qty, pricePerBottle: wine.purchasePrice, seller: '' }); } catch(e) {}
-      await DB.del('wishlist', id);
-      WL.sel.delete(id);
-      done++;
-    } catch(e) { skipped++; }
+      await DB.add('purchases', {wineId: saved.id, date: wine.addedDate, quantity: qty, pricePerBottle: wine.purchasePrice, seller: ''});
+      await DB.del('wishlist', it.id);
+      added++;
+    } catch(e) {}
   }
-  toast(`✅ ${done} vini spostati in cantina${fav ? ' e nei preferiti' : ''}${skipped ? ` · ${skipped} non spostati` : ''}`, 'success');
+  WL.sel.clear();
+  toast(`${added} vini aggiunti alla cantina${skipped?` · ${skipped} distillati saltati`:''}`, 'success');
   render(currentRoute);
 }
+// Il "ponte" verso la cantina vera: precompila il form di aggiunta (mai un
+// nuovo store separato per gli stessi dati) e rimuove la voce dalla lista
+// desideri SOLO dopo che il vino/distillato è stato salvato per davvero —
+// se l'utente annulla a metà, il desiderio resta lì, non sparisce nel nulla.
 let _wishlistPrefill = null, _wishlistPrefillId = null;
 async function markWishlistPurchased(id) {
   const it = await DB.get('wishlist', id);
@@ -4795,7 +4821,7 @@ async function markWishlistPurchased(id) {
   navigate(it.kind === 'distillates' ? '/distillates/add' : '/wines/add');
 }
 
-// ─── Ricerca "dove comprarlo" con un Gem / agente esterno ───
+// ─── Lista desideri: ricerca "dove comprarlo" con un Gem / agente esterno ───
 // Non è l'app a navigare i negozi: prepara lotti PICCOLI e un prompt che
 // istruisce l'agente a comportarsi da utente, non da bot (lento, un sito alla
 // volta, si ferma ai blocchi). I risultati si incollano qui e restano sulla voce.
@@ -4916,8 +4942,10 @@ async function openWishlistGem() {
     if (res.ok) { div.remove(); toast(`✅ ${res.saved} offerte salvate su ${res.items} vini${res.notFound ? ` · ${res.notFound} non trovati/bloccati` : ''}${res.unknown ? ` · ${res.unknown} righe non riconosciute` : ''}`, 'success'); render(currentRoute); }
   });
 }
+// Parsing permissivo: righe malformate vengono ignorate invece di far
+// fallire l'intero import. Franco aggiunge in coda "---MEMORIA---" + blocco
+// memoria: lo conserviamo per il prossimo lotto, invece di scartarlo.
 async function wishlistImportOffers(text) {
-  // Franco aggiunge in coda "---MEMORIA---" + blocco memoria: lo conserviamo per il prossimo lotto
   const _mi = String(text || '').search(/-{2,}\s*MEMORIA\s*-{2,}/i);
   if (_mi >= 0) {
     const mem = String(text).slice(_mi).replace(/^-{2,}\s*MEMORIA\s*-{2,}/i, '').replace(/```/g, '').trim();
@@ -4937,7 +4965,7 @@ async function wishlistImportOffers(text) {
     if (/NON_TROVATO|BLOCCATO/i.test(l) && !priceRaw) { notFound++; (byId[id] = byId[id] || []).push({ _skip: true }); continue; }
     const price = priceRaw ? numOrNull(String(priceRaw).replace(',', '.')) : null;
     if (price == null && !_wlSafeUrl(url)) { unknown++; continue; }
-    (byId[id] = byId[id] || []).push({ shop: shop || '', price, url: _wlSafeUrl(url), avail: avail || '', note: note || '', date: today() });
+    (byId[id] = byId[id] || []).push({ shop: shop || '', price, url: _wlSafeUrl(url), availability: avail || '', note: note || '', date: today() });
   }
   let items = 0;
   for (const [id, offers] of Object.entries(byId)) {
@@ -4984,26 +5012,7 @@ async function viewStats() {
     DB.getAll('wines'), DB.getAll('purchases'), DB.getAll('checkouts'),
     DB.getAll('distillates'), DB.getAll('distillatePurchases'), DB.getAll('distillateCheckouts')
   ]);
-  // Acquisti senza prezzo/data (es. da importazione): si usano prezzo e data del vino
-  const _items = {};
-  wines.forEach(w => { _items[w.id] = w; }); distillates.forEach(d => { _items[d.id] = d; });
-  // Vini senza alcun acquisto registrato (es. importati prima): acquisto implicito
-  // = bottiglie in cantina + già uscite, alla data di inserimento
-  const _havePur = new Set(purchases.map(p=>p.wineId).concat(distillatePurchases.map(p=>p.distillateId)));
-  const _outBy = {};
-  checkouts.concat(distillateCheckouts).forEach(c => { const k = c.wineId || c.distillateId; _outBy[k] = (_outBy[k]||0) + (c.quantity||0); });
-  const _implicit = [];
-  wines.concat(distillates).forEach(it => {
-    const q = (it.quantity||0) + (_outBy[it.id]||0);
-    if (!_havePur.has(it.id) && q > 0) _implicit.push({ wineId: it.id, quantity: q, date: it.addedDate || '', pricePerBottle: null, seller: '' });
-  });
-  const allPurchases = purchases.concat(distillatePurchases, _implicit).map(p => {
-    const it = _items[p.wineId] || _items[p.distillateId] || {};
-    return Object.assign({}, p, {
-      pricePerBottle: p.pricePerBottle != null ? p.pricePerBottle : (it.purchasePrice != null ? it.purchasePrice : (it.marketPrice != null ? it.marketPrice : null)),
-      date: p.date || it.addedDate || ''
-    });
-  });
+  const allPurchases = purchases.concat(distillatePurchases);
   const allCheckouts = checkouts.concat(distillateCheckouts);
 
   // ── Spesa per anno (solo acquisti con un prezzo indicato: mai una spesa
@@ -5049,7 +5058,7 @@ async function viewStats() {
     <div class="card-title">Spesa per anno</div>
     ${spendRows.length
       ? _barTableHtml(spendRows, {labelCol:'Anno', valueCol:'Speso', currency:true})
-      : '<div class="empty">Nessun vino ha un prezzo di acquisto: inseriscilo nella scheda del vino (Modifica) o nelle colonne del file importato, e comparirà qui la spesa per anno.</div>'}
+      : '<div class="empty">Nessun acquisto con un prezzo registrato: qui vedrai la spesa per anno non appena ne registri uno.</div>'}
   </div>
 
   <div class="card">
@@ -5063,7 +5072,7 @@ async function viewStats() {
     <div class="card-title">Spesa per fornitore</div>
     ${sellerRows.length
       ? _barTableHtml(sellerRows, {labelCol:'Fornitore', valueCol:'Speso', currency:true})
-      : '<div class="empty">Serve il fornitore: usa "Registra acquisto" nella scheda del vino indicando venditore e prezzo (i vini importati da file non hanno il fornitore).</div>'}
+      : '<div class="empty">Nessun acquisto con venditore e prezzo indicati insieme: qui vedrai quanto spendi presso ciascun fornitore.</div>'}
   </div>
 
   <div class="card">
@@ -5466,13 +5475,15 @@ function renderInvestmentResults(box, raw, fields) {
 }
 
 // ─── Purchases ─── (vini e distillati insieme: un unico registro acquisti)
+// Se è (o è stato) in cantina, è stato acquistato: le bottiglie non coperte da
+// un acquisto registrato compaiono come acquisto "da inventario" (data e
+// prezzo di inserimento del vino) — copre anche i vini aggiunti prima che
+// l'inserimento registrasse da solo l'acquisto iniziale, o modificati a mano.
 async function viewPurchases() {
   const [purchases, wines, distPurchases, distillates, checkouts, distCheckouts] = await Promise.all([
     DB.getAll('purchases'), DB.getAll('wines'), DB.getAll('distillatePurchases'), DB.getAll('distillates'),
     DB.getAll('checkouts'), DB.getAll('distillateCheckouts')
   ]);
-  // Se è (o è stato) in cantina, è stato acquistato: le bottiglie non coperte da un acquisto
-  // registrato compaiono come acquisto "da inventario" (data e prezzo di inserimento del vino).
   const _have = {}, _out = {};
   purchases.forEach(p => { _have[p.wineId] = (_have[p.wineId]||0) + (p.quantity||0); });
   distPurchases.forEach(p => { _have[p.distillateId] = (_have[p.distillateId]||0) + (p.quantity||0); });
@@ -5626,10 +5637,6 @@ async function undoCheckout(kind, id) {
   const c = await DB.get(store, id);
   if (!c) return;
   const item = await DB.get(kind, c[fk]);
-  const msg = item
-    ? `Annullare questa uscita?\n\nLe ${c.quantity} bottiglie tornano in cantina (${item.name}).`
-    : `Eliminare questa uscita dallo storico?\n\n(Il vino non esiste più: nessuna bottiglia viene rimessa in cantina.)`;
-  if (!confirm(msg)) return;
   try {
     if (item) { item.quantity = (item.quantity||0) + (c.quantity||0); await DB.put(kind, item); }
     await DB.del(store, id);
@@ -5926,10 +5933,24 @@ async function aiAskPairing(dish, wines) {
   const key = aiGetKey();
   if (!key) throw new Error('Nessuna chiave configurata. Aggiungila da Impostazioni → Assistente AI.');
   if (!wines.length) throw new Error('Non ci sono bottiglie disponibili in cantina da proporre.');
-  const res = await _aiFetchGemini({
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(key)}`;
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         contents: [{ parts: [{ text: aiPairingPrompt(dish, buildWineListForAi(wines)) }] }],
         generationConfig: { responseMimeType: 'application/json', responseSchema: AI_PAIRING_SCHEMA, temperature: 0.3 }
-  });
+      })
+    });
+  } catch(e) {
+    throw new Error('Impossibile contattare Google (rete assente o bloccata).');
+  }
+  if (res.status === 400) throw new Error('Chiave non valida: controllala in Impostazioni.');
+  if (res.status === 403) throw new Error('Chiave rifiutata da Google (verifica che sia attiva su aistudio.google.com).');
+  if (res.status === 429) throw new Error('Limite giornaliero gratuito raggiunto: riprova più tardi.');
+  if (!res.ok) throw new Error(`Google ha risposto con un errore (${res.status}).`);
   const data = await res.json();
   const txt = data?.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!txt) {
@@ -6037,7 +6058,7 @@ function viewSettings() {
     <p style="font-size:13px;color:var(--text-2);margin-bottom:8px">Esporta tutti i tuoi dati in un file JSON. Puoi reimportarlo in qualsiasi momento, anche su un altro telefono o PC.</p>
     <div style="font-size:12px;color:var(--text-3);margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:var(--rs);border:1px solid var(--border);line-height:1.7">
       📁 <b>Dove finisce il file:</b> "Esporta JSON" lo scarica nella cartella <b>Download</b> del dispositivo (su iPhone: app <i>File → Download</i>).<br>
-      ☁️ <b>Salva su Drive</b> apre il menu di condivisione: scegli <b>Drive</b>, poi la cartella <b>"cantina vino"</b> (la prima volta cercala o creala; Drive la ricorda tra le recenti). Su PC il file viene scaricato: trascinalo nella cartella su drive.google.com.
+      ☁️ <b>Condividi backup</b> apre il menu di condivisione del telefono, da cui puoi salvarlo su <b>Google Drive</b>, iCloud, Mail o WhatsApp.
     </div>
     <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2);margin-bottom:12px;cursor:pointer">
       <input type="checkbox" id="backup-nophotos-toggle" ${backupExcludesPhotos()?'checked':''} onchange="setBackupExcludesPhotos(this.checked)">
@@ -6050,7 +6071,7 @@ function viewSettings() {
       </button>
       <button type="button" class="btn btn-outline" onclick="shareBackup()">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Salva su Drive
+        Condividi backup
       </button>
       <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;position:relative;overflow:hidden">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -6060,17 +6081,16 @@ function viewSettings() {
     </div>
     <div style="margin-top:14px;padding:12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg)">
       <div style="font-weight:600;font-size:13px;margin-bottom:6px">☁️ Sincronizzazione Google Drive (cartella "cantina vino")</div>
-      <p style="font-size:12px;color:var(--text-3);margin-bottom:8px">L’app vede solo i file che crea lei in Drive. Tiene allineati PC e telefono tramite un file nella cartella "cantina vino": le modifiche dei due dispositivi vengono unite, quella più recente vince. Serve il Client ID Google (impostazione una tantum, da fare su ogni dispositivo).</p>
-      <input type="text" id="gd-client" placeholder="Client ID Google (xxxx.apps.googleusercontent.com)" value="${esc(localStorage.getItem('cantina-gdrive-client')||'')}" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);margin-bottom:8px">
-      <label style="display:flex;gap:8px;align-items:center;font-size:12.5px;margin-bottom:6px;cursor:pointer"><input type="checkbox" ${localStorage.getItem('cantina-gdrive-auto')==='1'?'checked':''} onchange="driveSetAuto(this.checked)"> Sincronizza automaticamente (all'apertura e dopo ogni modifica)</label>
-      <div id="gd-status" style="font-size:12px;color:var(--text-3);margin-bottom:10px">${(()=>{const t=parseInt(localStorage.getItem('cantina-gdrive-last')||'0',10);return t?'Ultima sincronizzazione: '+new Date(t).toLocaleString('it-IT'):'Mai sincronizzato';})()}</div>
+      <p style="font-size:12px;color:var(--text-3);margin-bottom:8px">L'app vede solo i file che crea lei in Drive. Tiene allineati PC e telefono tramite un file nella cartella "cantina vino": le modifiche dei due dispositivi vengono unite, quella più recente vince. Serve il Client ID Google (impostazione una tantum, da fare su ogni dispositivo).</p>
+      <input type="text" id="gd-client" placeholder="Client ID Google (xxxx.apps.googleusercontent.com)" value="${esc(_lsGet('cantina-gdrive-client'))}" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);margin-bottom:8px">
+      <label style="display:flex;gap:8px;align-items:center;font-size:12.5px;margin-bottom:6px;cursor:pointer"><input type="checkbox" ${_lsGet('cantina-gdrive-auto')==='1'?'checked':''} onchange="driveSetAuto(this.checked)"> Sincronizza automaticamente (all'apertura e dopo ogni modifica)</label>
+      <div id="gd-status" style="font-size:12px;color:var(--text-3);margin-bottom:10px">${(()=>{const t=parseInt(_lsGet('cantina-gdrive-last')||'0',10);return t?'Ultima sincronizzazione: '+new Date(t).toLocaleString('it-IT'):'Mai sincronizzato';})()}</div>
       <div class="action-row">
         <button type="button" class="btn btn-outline btn-sm" onclick="driveSaveClientId()">Salva Client ID</button>
         <button type="button" class="btn btn-primary btn-sm" onclick="driveSyncNow()">Sincronizza ora</button>
         <button type="button" class="btn btn-outline btn-sm" onclick="driveBackupNow()">Backup datato su Drive</button>
       </div>
     </div>
-
   </div>
 
   <div class="card">
@@ -6089,8 +6109,10 @@ function viewSettings() {
     <p style="font-size:13px;color:var(--text-2);margin-bottom:14px">Il backup JSON serve a rimettere i dati nell'app. Questo serve invece a <b>portarli fuori</b>: aprirli in Excel, mandarli a qualcuno, stamparli o salvarli in PDF dalla finestra di stampa.</p>
     <div class="action-row">
       <button type="button" class="btn btn-primary" onclick="exportCsv('all')">⬇ Esporta tutti i vini (CSV)</button>
+      <button type="button" class="btn btn-outline" onclick="exportCellarXlsx()">📊 Esporta per Excel (cantina, bevuti, desideri)</button>
       <button type="button" class="btn btn-outline" onclick="printWines('all')">🖨 Stampa la cantina</button>
     </div>
+    <p style="font-size:11.5px;color:var(--text-3);margin-top:10px">"Esporta per Excel" crea un file con 3 fogli (In cantina, Vini bevuti, Lista desideri) nella stessa forma di un file importato: comodo per avere sempre una copia aggiornata al posto di un vecchio foglio Excel tenuto a mano.</p>
   </div>
 
   <div class="card">
@@ -6204,6 +6226,11 @@ function viewComingSoon(title, desc='Funzione in arrivo.') {
 const BACKUP_KEY = 'cantina-last-backup';
 const BACKUP_NOPHOTOS_KEY = 'cantina-backup-nophotos';
 function backupExcludesPhotos() { try { return localStorage.getItem(BACKUP_NOPHOTOS_KEY) === '1'; } catch(e) { return false; } }
+// Letture/scritture di localStorage sicure anche in modalità "solo memoria"
+// (navigazione privata, storage bloccato): mai un errore non gestito che
+// spezza il disegno di una pagina solo perché una preferenza non si legge.
+function _lsGet(k) { try { return localStorage.getItem(k) || ''; } catch(e) { return ''; } }
+function _lsSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch(e) {} }
 function setBackupExcludesPhotos(on) { try { localStorage.setItem(BACKUP_NOPHOTOS_KEY, on ? '1' : '0'); } catch(e){} }
 function markBackupDone() {
   try { localStorage.setItem(BACKUP_KEY, new Date().toISOString()); } catch(e){}
@@ -6524,10 +6551,6 @@ ${distGroups.map(sectionHtml).join('')}
 // vino (vedi openProModal) — qui la mappa è solo lettura + navigazione,
 // nessuna nuova assegnazione dalla griglia stessa: tenerla di sola lettura
 // evita un drag&drop complesso per un beneficio marginale. ───
-function assignFromMap(kind, id) {
-  navigate('/' + kind + '/' + id);
-  setTimeout(async () => { try { await openProModal(id, kind); const l = document.getElementById('pro-cells-list'); if (l && !l.querySelector('.pro-cell-row')) addProCellRow(); } catch(e) {} }, 700);
-}
 let _mapSelectedZoneId = '';
 async function viewCellarMap() {
   const [zones, wines, distillates] = await Promise.all([DB.getAll('cellarZones'), DB.getAll('wines'), DB.getAll('distillates')]);
@@ -6573,13 +6596,7 @@ async function viewCellarMap() {
       // vecchio backup, lo si segnala invece di far sparire il conflitto.
       const conflict = items.length>1;
       const icon = conflict ? '⚠️' : filled ? (items[0].kind==='distillates'?'🥃':'🍷') : '';
-      const it0 = filled ? items[0] : null;
-      const tint = it0 ? ({Rosso:'#c0392b',Bianco:'#e0b100',Rosato:'#d98ba3'}[it0.color] || '') : '';
-      const shortName = it0 ? String(it0.name||'').split(/\s+/).slice(0,3).join(' ') : '';
-      const cellInner = (filled && !conflict)
-        ? `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:100%;height:100%;padding:2px;overflow:hidden;text-align:center;line-height:1.1"><span style="font-size:13px;font-weight:700">${it0.vintage?esc(String(it0.vintage)):icon}</span><span style="font-size:9px;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word">${esc(shortName)}</span></div>`
-        : icon;
-      gridHtml += `<div class="${filled?'map-cell-filled':''}" data-row="${r}" data-col="${c}" title="Fila ${r}, colonna ${c}" style="aspect-ratio:1;border:1px solid ${conflict?'var(--pill-d)':'var(--border)'};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:${filled?'pointer':'default'};background:${conflict?'var(--pill-d-bg,var(--bg))':filled?'var(--pill-p-bg)':'transparent'};${(filled&&!conflict&&tint)?'border-top:5px solid '+tint+';':''}color:${conflict?'var(--pill-d)':filled?'var(--pill-p)':'var(--text-3)'}">${cellInner}</div>`;
+      gridHtml += `<div class="${filled?'map-cell-filled':''}" data-row="${r}" data-col="${c}" title="Fila ${r}, colonna ${c}" style="aspect-ratio:1;border:1px solid ${conflict?'var(--pill-d)':'var(--border)'};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:${filled?'pointer':'default'};background:${conflict?'var(--pill-d-bg,var(--bg))':filled?'var(--pill-p-bg)':'transparent'};color:${conflict?'var(--pill-d)':filled?'var(--pill-p)':'var(--text-3)'}">${icon}</div>`;
     }
   }
   gridHtml += `</div>`;
@@ -6602,9 +6619,16 @@ async function viewCellarMap() {
     ${unassignedRows.length===0 ? '<div class="empty">Ogni bottiglia in cantina ha una cella assegnata.</div>' : unassignedRows.map(({w,missing}) => `
     <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px">
       <span>${w.kind==='distillates'?'🥃':'🍷'} ${esc(w.name)}${w.vintage?' '+w.vintage:''} <span style="color:var(--text-3)">— ${missing} di ${w.quantity} da posizionare</span></span>
-      <a onclick="assignFromMap('${w.kind}','${jsAttr(w.id)}')" style="color:var(--accent);cursor:pointer;white-space:nowrap">Assegna →</a>
+      <a onclick="assignFromMap('${jsAttr(w.kind)}','${jsAttr(w.id)}')" style="color:var(--accent);cursor:pointer;white-space:nowrap">Assegna →</a>
     </div>`).join('')}
   </div>`;
+}
+// Dalla mappa si apre direttamente "Dati professionali" con una riga cella
+// già pronta da compilare, invece di lasciare l'utente a cercarla da sé
+// nella scheda del vino.
+function assignFromMap(kind, id) {
+  navigate('/' + kind + '/' + id);
+  setTimeout(async () => { try { await openProModal(id, kind); const l = document.getElementById('pro-cells-list'); if (l && !l.querySelector('.pro-cell-row')) addProCellRow(); } catch(e) {} }, 700);
 }
 function bindCellarMap() {
   document.querySelectorAll('#view .map-cell-filled').forEach(cell => {
@@ -6786,11 +6810,18 @@ async function shareBackup() {
     if (e && e.name === 'AbortError') return;   // condivisione annullata dall'utente
     console.warn('Condivisione non riuscita', e);
   }
-  toast('Su questo dispositivo non posso aprire Drive: scarico il file, poi trascinalo nella cartella "cantina vino" su drive.google.com.', '');
+  toast('Condivisione diretta non disponibile: scarico il backup completo.', '');
   exportData();
 }
 
 // ===== Sincronizzazione automatica con Google Drive (cartella "cantina vino") =====
+// Nessuna chiave nostra: ogni utente crea il proprio Client ID OAuth su Google
+// Cloud Console e lo incolla in Impostazioni — l'app non parla con nessun
+// server proprio, solo con l'API di Google autorizzata dall'utente stesso.
+// La fusione è per record, non per file intero: ogni record porta il proprio
+// _mt (ultima modifica) e vince il più recente; le eliminazioni si ricordano
+// come "lapidi" (tombstone) in localStorage, altrimenti una fusione
+// successiva farebbe "risorgere" una voce eliminata su un altro dispositivo.
 const GD_CLIENT_KEY='cantina-gdrive-client', GD_AUTO_KEY='cantina-gdrive-auto', GD_FOLDER_KEY='cantina-gdrive-folder', GD_FILE_KEY='cantina-gdrive-file', GD_LAST_KEY='cantina-gdrive-last';
 const SYNC_NAME='cantina-vino-sync.json';
 let _gdToken=null, _gdTokenExp=0, _syncing=false, _gdSyncTimer=null;
@@ -6804,7 +6835,7 @@ function _gdLoadLib(){
 }
 async function _gdAuth(interactive){
   if(_gdToken && Date.now()<_gdTokenExp-60000) return _gdToken;
-  const cid=localStorage.getItem(GD_CLIENT_KEY);
+  const cid=_lsGet(GD_CLIENT_KEY);
   if(!cid) throw new Error('Client ID Google non impostato');
   await _gdLoadLib();
   return new Promise((res,rej)=>{
@@ -6822,13 +6853,13 @@ async function _gdApi(path,opts,tok,raw){
   return raw ? r.text() : r.json();
 }
 async function _gdFolderId(tok){
-  let id=localStorage.getItem(GD_FOLDER_KEY);
+  let id=_lsGet(GD_FOLDER_KEY);
   if(id){ try{ const f=await _gdApi('drive/v3/files/'+id+'?fields=id,trashed',{},tok); if(!f.trashed) return id; }catch(e){} }
   const q=encodeURIComponent("mimeType='application/vnd.google-apps.folder' and name='cantina vino' and trashed=false");
   const l=await _gdApi('drive/v3/files?q='+q+'&fields=files(id)',{},tok);
   if(l.files&&l.files.length) id=l.files[0].id;
   else id=(await _gdApi('drive/v3/files?fields=id',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'cantina vino',mimeType:'application/vnd.google-apps.folder'})},tok)).id;
-  localStorage.setItem(GD_FOLDER_KEY,id); return id;
+  _lsSet(GD_FOLDER_KEY,id); return id;
 }
 async function _gdUpload(tok,folder,name,text,fileId){
   const b='cv'+Date.now();
@@ -6847,7 +6878,7 @@ async function driveBackup(interactive){
   return {filename,counts};
 }
 // --- tombstone: ricordano le eliminazioni, altrimenti la fusione le farebbe "risorgere" ---
-function _tombs(){ try{return JSON.parse(localStorage.getItem('cantina-tombs')||'{}');}catch(e){return {};} }
+function _tombs(){ try{return JSON.parse(_lsGet('cantina-tombs')||'{}');}catch(e){return {};} }
 // --- fusione per record: vince la modifica più recente (_mt); eliminazione vince se più recente ---
 async function _syncMerge(remote){
   let changed=0;
@@ -6871,7 +6902,7 @@ async function _syncMerge(remote){
     }
     out[s]=Array.from(map.values());
   }
-  localStorage.setItem('cantina-tombs',JSON.stringify(tombs));
+  _lsSet('cantina-tombs',JSON.stringify(tombs));
   return {out,changed};
 }
 async function driveSync(interactive){
@@ -6880,7 +6911,7 @@ async function driveSync(interactive){
   try{
     const tok=await _gdAuth(interactive);
     const folder=await _gdFolderId(tok);
-    let fid=localStorage.getItem(GD_FILE_KEY), remote=null;
+    let fid=_lsGet(GD_FILE_KEY), remote=null;
     if(!fid){
       const q=encodeURIComponent(`name='${SYNC_NAME}' and '${folder}' in parents and trashed=false`);
       const l=await _gdApi('drive/v3/files?q='+q+'&fields=files(id)',{},tok);
@@ -6892,34 +6923,34 @@ async function driveSync(interactive){
     }
     const {out,changed}=await _syncMerge(remote);
     const r=await _gdUpload(tok,folder,SYNC_NAME,JSON.stringify(out),fid);
-    localStorage.setItem(GD_FILE_KEY,r.id||fid);
-    localStorage.setItem(GD_LAST_KEY,String(Date.now()));
+    _lsSet(GD_FILE_KEY,r.id||fid);
+    _lsSet(GD_LAST_KEY,String(Date.now()));
     if(changed>0 && typeof render==='function'){ try{ render(currentRoute); }catch(e){} }
     return {changed};
   } finally { _syncing=false; _syncUi(); }
 }
 function _syncUi(){
   const el=document.getElementById('gd-status'); if(!el) return;
-  const t=parseInt(localStorage.getItem(GD_LAST_KEY)||'0',10);
+  const t=parseInt(_lsGet(GD_LAST_KEY)||'0',10);
   el.textContent=t?('Ultima sincronizzazione: '+new Date(t).toLocaleString('it-IT')):'Mai sincronizzato';
 }
 async function driveSyncNow(){
-  if(!localStorage.getItem(GD_CLIENT_KEY)){ toast('Prima imposta il Client ID Google','error'); return; }
+  if(!_lsGet(GD_CLIENT_KEY)){ toast('Prima imposta il Client ID Google','error'); return; }
   try{ toast('Sincronizzo con Drive…',''); const r=await driveSync(true); if(r) toast(r.changed?`Sincronizzato: ${r.changed} modifiche ricevute da Drive`:'Sincronizzato: tutto aggiornato','success'); }
   catch(e){ toast('Drive: '+e.message,'error'); }
 }
 async function driveBackupNow(){
-  if(!localStorage.getItem(GD_CLIENT_KEY)){ toast('Prima imposta il Client ID Google','error'); return; }
+  if(!_lsGet(GD_CLIENT_KEY)){ toast('Prima imposta il Client ID Google','error'); return; }
   try{ toast('Salvo su Drive…',''); const r=await driveBackup(true); toast(`Salvato in Drive → "cantina vino": ${r.filename}`,'success'); }
   catch(e){ toast('Drive: '+e.message,'error'); }
 }
 function driveSaveClientId(){
   const v=(document.getElementById('gd-client')?.value||'').trim();
-  if(v) localStorage.setItem(GD_CLIENT_KEY,v); else localStorage.removeItem(GD_CLIENT_KEY);
+  _lsSet(GD_CLIENT_KEY,v);
   _gdToken=null; toast(v?'Client ID salvato':'Client ID rimosso','success');
 }
-function driveSetAuto(on){ localStorage.setItem(GD_AUTO_KEY,on?'1':'0'); if(on) driveSyncNow(); }
-function _autoOn(){ return localStorage.getItem(GD_AUTO_KEY)==='1' && !!localStorage.getItem(GD_CLIENT_KEY); }
+function driveSetAuto(on){ _lsSet(GD_AUTO_KEY,on?'1':''); if(on) driveSyncNow(); }
+function _autoOn(){ return _lsGet(GD_AUTO_KEY)==='1' && !!_lsGet(GD_CLIENT_KEY); }
 // Sincronizzazione automatica: all'apertura, al ritorno sull'app e ~25 s dopo ogni modifica (in silenzio; se Google chiede conferma, basta "Sincronizza ora")
 async function _autoSync(){ if(!_autoOn()||_syncing) return; try{ await driveSync(false); }catch(e){ console.warn('Sync automatica non riuscita:',e.message); } }
 DB.onChange(()=>{ if(_syncing||!_autoOn()) return; clearTimeout(_gdSyncTimer); _gdSyncTimer=setTimeout(_autoSync,25000); });
@@ -7183,7 +7214,7 @@ function viewFileSyncCard() {
 }
 // ─── Settings bind ───
 function bindSettings() {
-  document.getElementById('import-sheet-file')?.addEventListener('change', function() { _importTarget = 'wines'; importSheet(this); });
+  document.getElementById('import-sheet-file')?.addEventListener('change', function() { importSheet(this); });
   document.getElementById('import-file')?.addEventListener('change', function() { importData(this); });
   document.getElementById('btn-paste-import')?.addEventListener('click', showPasteImport);
   CUSTOM_COLORS.forEach(c => {
@@ -7300,9 +7331,8 @@ function showPasteImport() {
     const headers = rows[0].map(h => (h+'').trim());
     const dataRows = rows.slice(1).filter(r => r.some(c => (c+'').trim()));
     if (!headers.length || !dataRows.length) { toast('Il foglio sembra vuoto', 'error'); return; }
-    const _sheet = prepareSheet('Dati incollati', rows);
-    if (!_sheet) { toast('Il foglio sembra vuoto', 'error'); return; }
-    showSheetPreview(_sheet, [_sheet], 'dati incollati');
+    const sheet = {name:'Dati incollati', headers, dataRows, mapping: autoMapColumns(headers)};
+    showSheetPreview(sheet, [sheet], 'dati incollati');
   });
 }
 
@@ -7565,6 +7595,162 @@ function _xlsxSheetRows(doc, shared) {
   return rows;
 }
 
+// ═══ Scrittura di un .xlsx (per "Esporta per Excel") ═══
+// Nessuna libreria: un minimo file ZIP con voci "stored" (senza
+// compressione) — valido per lo standard ZIP e già quello che unzip() sa
+// leggere, quindi un file esportato da qui si può anche re-importare.
+function _crc32(bytes) {
+  let c, crc = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++) {
+    c = (crc ^ bytes[i]) & 0xFF;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    crc = (crc >>> 8) ^ c;
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+function _zipStore(files) {
+  const enc = new TextEncoder();
+  const parts = [], central = [];
+  let offset = 0;
+  const dosTime = 0, dosDate = 0x21;   // data fissa: non serve una vera data di modifica in questo archivio
+  for (const name of Object.keys(files)) {
+    const nameBytes = enc.encode(name);
+    const data = files[name] instanceof Uint8Array ? files[name] : enc.encode(files[name]);
+    const crc = _crc32(data);
+    const local = new Uint8Array(30 + nameBytes.length);
+    const lv = new DataView(local.buffer);
+    lv.setUint32(0, 0x04034b50, true);
+    lv.setUint16(4, 20, true);       // versione minima
+    lv.setUint16(6, 0, true);        // flag
+    lv.setUint16(8, 0, true);        // metodo: 0 = stored
+    lv.setUint16(10, dosTime, true);
+    lv.setUint16(12, dosDate, true);
+    lv.setUint32(14, crc, true);
+    lv.setUint32(18, data.length, true);
+    lv.setUint32(22, data.length, true);
+    lv.setUint16(26, nameBytes.length, true);
+    lv.setUint16(28, 0, true);
+    local.set(nameBytes, 30);
+    parts.push(local, data);
+
+    const centralEntry = new Uint8Array(46 + nameBytes.length);
+    const cv = new DataView(centralEntry.buffer);
+    cv.setUint32(0, 0x02014b50, true);
+    cv.setUint16(4, 20, true);
+    cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0, true);
+    cv.setUint16(10, 0, true);
+    cv.setUint16(12, dosTime, true);
+    cv.setUint16(14, dosDate, true);
+    cv.setUint32(16, crc, true);
+    cv.setUint32(20, data.length, true);
+    cv.setUint32(24, data.length, true);
+    cv.setUint16(28, nameBytes.length, true);
+    cv.setUint16(30, 0, true);
+    cv.setUint16(32, 0, true);
+    cv.setUint16(34, 0, true);
+    cv.setUint16(36, 0, true);
+    cv.setUint32(38, 0, true);
+    cv.setUint32(42, offset, true);
+    centralEntry.set(nameBytes, 46);
+    central.push(centralEntry);
+
+    offset += local.length + data.length;
+  }
+  const centralStart = offset;
+  let centralSize = 0;
+  for (const c of central) centralSize += c.length;
+  const eocd = new Uint8Array(22);
+  const ev = new DataView(eocd.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(4, 0, true);
+  ev.setUint16(6, 0, true);
+  ev.setUint16(8, central.length, true);
+  ev.setUint16(10, central.length, true);
+  ev.setUint32(12, centralSize, true);
+  ev.setUint32(16, centralStart, true);
+  ev.setUint16(20, 0, true);
+  const all = parts.concat(central, [eocd]);
+  const total = all.reduce((s,a)=>s+a.length, 0);
+  const out = new Uint8Array(total);
+  let p = 0;
+  for (const a of all) { out.set(a, p); p += a.length; }
+  return out;
+}
+// Una cella per colonna, in ordine: numeri come numero, il resto come
+// stringa inline (niente sharedStrings.xml — più semplice da generare e
+// comunque già letto correttamente da readXlsxRows, che gestisce entrambi).
+function _xlsxSheetXmlFromRows(headers, rows) {
+  const colLetter = (i) => { let n = i+1, s=''; while(n>0){ const r=(n-1)%26; s=String.fromCharCode(65+r)+s; n=Math.floor((n-1)/26); } return s; };
+  const cellXml = (v, ci, ri) => {
+    const ref = colLetter(ci) + ri;
+    if (v == null || v === '') return `<c r="${ref}"/>`;
+    if (typeof v === 'number' && Number.isFinite(v)) return `<c r="${ref}"><v>${v}</v></c>`;
+    return `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${esc(String(v))}</t></is></c>`;
+  };
+  const rowXml = (vals, ri) => `<row r="${ri}">${vals.map((v,ci)=>cellXml(v,ci,ri)).join('')}</row>`;
+  const all = [headers].concat(rows);
+  const body = all.map((vals, i) => rowXml(vals, i+1)).join('');
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${body}</sheetData></worksheet>`;
+}
+// Le 3 schede documentate dal foglio "Leggimi" del database Excel
+// dell'utente: stessa forma, così il file esportato si può reimportare
+// con lo stesso procedimento (o aprire e confrontare) senza sorprese.
+async function buildCellarXlsxBytes() {
+  const [wines, wishlist] = await Promise.all([DB.getAll('wines'), DB.getAll('wishlist')]);
+  const inCantina = wines.filter(w => (w.quantity||0) > 0)
+    .sort((a,b) => (a.name||'').localeCompare(b.name||''));
+  const bevuti = wines.filter(w => (w.quantity||0) === 0)
+    .sort((a,b) => (a.name||'').localeCompare(b.name||''));
+  const desideri = wishlist.slice().sort((a,b) => (a.name||'').localeCompare(b.name||''));
+
+  const sheets = [
+    { name: 'In cantina', headers: ['Nome','Produttore','Annata','Quantità','Prezzo acquisto','Prezzo totale'],
+      rows: inCantina.map(w => [w.name||'', w.producer||'', w.vintage||'', w.quantity||0, w.purchasePrice ?? '', (w.purchasePrice!=null && w.quantity) ? Math.round(w.purchasePrice*w.quantity*100)/100 : '']) },
+    { name: 'Vini bevuti', headers: ['Nome','Produttore','Annata','Quantità','Note'],
+      rows: bevuti.map(w => [w.name||'', w.producer||'', w.vintage||'', 0, w.notes||'']) },
+    { name: 'Lista desideri', headers: ['Nome','Produttore','Regione','Annata','Tipo','Note'],
+      rows: desideri.map(it => [it.name||'', it.producer||'', it.region||'', it.vintage||'', it.kind==='distillates'?'Distillato':'Vino', it.notes||'']) },
+  ];
+
+  const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>${sheets.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`;
+  const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
+  const workbook = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s,i)=>`<sheet name="${esc(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets></workbook>`;
+  const workbookRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((s,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+  const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="1"><font><sz val="11"/><name val="Calibri"/></font></fonts><fills count="1"><fill><patternFill patternType="none"/></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf/></cellStyleXfs><cellXfs count="1"><xf/></cellXfs></styleSheet>`;
+
+  const files = {
+    '[Content_Types].xml': contentTypes,
+    '_rels/.rels': rootRels,
+    'xl/workbook.xml': workbook,
+    'xl/_rels/workbook.xml.rels': workbookRels,
+    'xl/styles.xml': styles,
+  };
+  sheets.forEach((s,i) => { files[`xl/worksheets/sheet${i+1}.xml`] = _xlsxSheetXmlFromRows(s.headers, s.rows); });
+  return _zipStore(files);
+}
+async function exportCellarXlsx() {
+  try {
+    const bytes = await buildCellarXlsxBytes();
+    const filename = `cantina-vino-${today()}.xlsx`;
+    const blob = new Blob([bytes], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    toast(`File Excel salvato in "Download": ${filename}`, 'success');
+  } catch(e) {
+    toast('Non è stato possibile creare il file Excel: ' + e.message, 'error');
+  }
+}
+
 // ODS (LibreOffice/OpenOffice) — lettura nativa di tutte le tabelle
 async function readOdsRows(file) {
   const files = await unzip(await file.arrayBuffer());
@@ -7750,7 +7936,7 @@ const SHEET_FIELD_ALIASES = {
   vintage:       ['annata','vintage','year','anno','millesimo','vin'],
   color:         ['colore','color','colour','tipo_colore'],
   type:          ['tipo','type','stile','style','tipologia'],
-  quantity:      ['quantità','quantity','bottiglie','bottles','qty','pezzi','num','numero','qta','q_ta','qt','n_bottiglie','n_bott','nr_bottiglie','bott','bottiglia','pz','nr','giacenza','stock','scorta','disponibili','in_cantina'],
+  quantity:      ['quantità','quantity','bottiglie','bottles','qty','pezzi','num','numero','qta'],
   purchasePrice: ['prezzo_acquisto','purchase_price','prezzo','price','costo','cost','acquisto','p_acquisto'],
   marketPrice:   ['valore','market_price','prezzo_mercato','stima','valore_mercato'],
   peakStart:     ['apice_inizio','peak_start','bere_da','drink_from','matura_da','finestra_inizio'],
@@ -7785,10 +7971,9 @@ function autoMapColumns(headers) {
       // Un'intestazione vuota o di una-due lettere non identifica nulla: senza
       // questo controllo "" era considerata l'inizio di qualsiasi alias e una
       // colonna senza nome finiva per essere presa come nome del vino.
-      const h = norm[i].replace(/_+/g,'_').replace(/^_|_$/g,'');
-      if (!h) continue;
-      if (h.length < 3) { if (!na.includes(h)) continue; }
-      if (na.some(a => h === a || h.startsWith(a) || (h.length >= 3 && a.startsWith(h)))) {
+      const h = norm[i];
+      if (!h || h.length < 3) continue;
+      if (na.some(a => h === a || h.startsWith(a) || a.startsWith(h))) {
         mapping[field] = i; used.add(i);
       }
     }
@@ -7909,13 +8094,13 @@ async function importAllSheets(allSheets, filename) {
   const skippedSheets = allSheets.length - usable.length;
   document.getElementById('sheet-import-modal')?.remove();
   let total = 0;
-  const _toWl = _importTarget === 'wishlist';
   for (const sh of usable) {
     total += await doImportSheet(sh.dataRows, sh.mapping, 1, {silent:true});
   }
+  const toWishlist = _importTarget === 'wishlist';
+  toast(`✅ ${total} ${toWishlist?'elementi aggiunti alla lista desideri':'vini importati'} da ${usable.length} fogli${skippedSheets ? ` · ${skippedSheets} fogli senza vini ignorati` : ''}!`, 'success');
+  goto(toWishlist ? '/wishlist' : '/wines');
   _importTarget = 'wines';
-  toast(`✅ ${total} vini ${_toWl ? 'aggiunti alla lista desideri' : 'importati'} da ${usable.length} fogli${skippedSheets ? ` · ${skippedSheets} fogli senza vini ignorati` : ''}!`, 'success');
-  goto(_toWl ? '/wishlist' : '/wines');
 }
 
 // Prepara un foglio: trova l'intestazione, scarta titoli e separatori e
@@ -8006,7 +8191,7 @@ function showSheetPreview(sheet, allSheets, filename) {
         ${fieldRows}
       </table>
 
-      ${mapping.quantity === undefined ? `
+      ${(mapping.quantity === undefined && _importTarget !== 'wishlist') ? `
       <div style="margin-top:14px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs)">
         <div style="font-size:12.5px;color:var(--text);margin-bottom:6px">Il file non indica quante bottiglie hai. Quante ne conto per ogni riga?</div>
         <select id="sheet-default-qty" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text);font-size:13px">
@@ -8021,7 +8206,7 @@ function showSheetPreview(sheet, allSheets, filename) {
       <div class="form-footer" style="margin-top:18px">
         <button type="button" class="btn btn-outline" onclick="document.getElementById('sheet-import-modal').remove()">Annulla</button>
         <button type="button" class="btn btn-accent" id="sheet-import-confirm">
-          ${_importTarget==='wishlist' ? 'Aggiungi '+dataRows.length+' alla lista desideri' : 'Importa '+dataRows.length+' vini'}
+          ${_importTarget === 'wishlist' ? `Aggiungi ${dataRows.length} alla lista desideri` : `Importa ${dataRows.length} vini`}
         </button>
       </div>
     </div>`;
@@ -8041,14 +8226,11 @@ function showSheetPreview(sheet, allSheets, filename) {
     selects.forEach(s => { if (s.value !== '') finalMap[s.dataset.field] = parseInt(s.value); });
     if (finalMap.name === undefined) { toast('Seleziona almeno la colonna "Nome vino"', 'error'); return; }
     const defQtyEl = document.getElementById('sheet-default-qty');
-    // Se l'utente ha scelto esplicitamente "0" lo rispetto; se la colonna
-    // quantità è mappata ma una cella è vuota, conto 1 bottiglia (uno 0
-    // farebbe sparire il vino da tutti i conteggi "in cantina").
-    const _dq = defQtyEl ? parseInt(defQtyEl.value, 10) : NaN;
-    const defaultQty = Number.isFinite(_dq) ? _dq : 1;
+    const defaultQty = defQtyEl ? parseInt(defQtyEl.value) || 0 : 0;
     confirmBtn.disabled = true;
     confirmBtn.innerHTML = '<span class="spinner"></span>';
     await doImportSheet(dataRows, finalMap, defaultQty);
+    _importTarget = 'wines';
     div.remove();
   });
 }
@@ -8073,14 +8255,11 @@ function _normType(s) {
 }
 
 async function doImportSheet(rows, mapping, defaultQty = 0, opts = {}) {
+  if (_importTarget === 'wishlist') return await _doImportSheetWishlist(rows, mapping, opts);
   let imported = 0, skipped = 0, guessed = 0;
-  const toWishlist = _importTarget === 'wishlist';
-  const _wlKey = x => [x.name, x.producer, x.vintage].map(v => String(v == null ? '' : v).trim().toLowerCase()).join('|');
-  const wlSeen = toWishlist ? new Set((await DB.getAll('wishlist')).map(_wlKey)) : null;
   for (const row of rows) {
     const name = ((row[mapping.name])||'').toString().trim();
     if (!name) { skipped++; continue; }
-    if (/^(totale|totali|total|somma|subtotale|totale generale)\b/i.test(name)) { skipped++; continue; }   // riga dei totali del foglio, non un vino
 
     // Valori grezzi dal file: stringa vuota se la colonna non è mappata O se
     // per QUESTA riga la cella è vuota — in entrambi i casi il campo va
@@ -8114,20 +8293,6 @@ async function doImportSheet(rows, mapping, defaultQty = 0, opts = {}) {
       addedDate:     today(),
     };
 
-    if (toWishlist) {
-      // Lista desideri: niente quantità/cantina. Si tiene ciò che serve a cercarlo.
-      const item = {
-        kind: 'wines', name: wine.name, producer: wine.producer, region: wine.region,
-        vintage: wine.vintage, priceEstimate: wine.purchasePrice ?? wine.marketPrice ?? null,
-        notes: wine.notes, addedDate: today(), color: wine.color || ''
-      };
-      if (!item.color) item.color = _wlColor(item);
-      const k = _wlKey(item);
-      if (wlSeen.has(k)) { skipped++; continue; }   // già in lista: nessun doppione
-      wlSeen.add(k);
-      try { await DB.add('wishlist', item); imported++; } catch(e) { skipped++; }
-      continue;
-    }
     // Assistente: completa SOLO ciò che manca nel file, riconoscendo la
     // denominazione dal nome (mai sovrascrive un dato presente nel file).
     const sug = kbSuggestFields(wine.name, wine.producer, wine.region, wine.vintage);
@@ -8148,23 +8313,46 @@ async function doImportSheet(rows, mapping, defaultQty = 0, opts = {}) {
     // scheda) invece di un valore a caso spacciato per dato certo. Si
     // possono sempre completare a mano dalla scheda del vino.
 
-    try {
-      const savedW = await DB.add('wines', wine); imported++;
-      if (wine.quantity > 0 && savedW && savedW.id) {
-        // carico iniziale: così "Bottiglie acquistate" non resta a 0 per i vini importati
-        try { await DB.add('purchases', { wineId: savedW.id, date: wine.addedDate, quantity: wine.quantity, pricePerBottle: wine.purchasePrice, seller: '' }); } catch(e) {}
-      }
-    } catch(e) { skipped++; }
-  }
-  if (toWishlist && !opts.silent) {
-    _importTarget = 'wines';
-    toast(`✅ ${imported} vini aggiunti alla lista desideri${skipped ? ` · ${skipped} saltati (già presenti o senza nome)` : ''}`, 'success');
-    goto('/wishlist');
-    return imported;
+    try { await DB.add('wines', wine); imported++; } catch(e) { skipped++; }
   }
   if (!opts.silent) {
     toast(`✅ ${imported} vini importati${guessed ? ` · ${guessed} completati dall'assistente` : ''}${skipped ? ` · ${skipped} saltati` : ''}!`, 'success');
     goto('/wines');
+  }
+  return imported;
+}
+
+// Import da file/incolla direttamente nella lista desideri: niente
+// quantità/prezzo di mercato/posizione (non sono desideri, sono dati di
+// cantina reale), solo i campi che servono a riconoscere il vino più tardi.
+// Deduplica su nome+produttore+annata per non riempire la lista di doppioni
+// se lo stesso file viene incollato due volte.
+async function _doImportSheetWishlist(rows, mapping, opts = {}) {
+  let imported = 0, skipped = 0;
+  const existing = await DB.getAll('wishlist');
+  const key = x => [(x.name||'').toLowerCase().trim(), (x.producer||'').toLowerCase().trim(), x.vintage||''].join('|');
+  const existingKeys = new Set(existing.map(key));
+  for (const row of rows) {
+    const name = ((row[mapping.name])||'').toString().trim();
+    if (!name) { skipped++; continue; }
+    const cell = (idx) => idx !== undefined ? (row[idx] ?? '').toString().trim() : '';
+    const item = {
+      kind: 'wines',
+      name,
+      producer: cell(mapping.producer),
+      region: cell(mapping.region),
+      vintage: mapping.vintage !== undefined ? intOrNull(row[mapping.vintage]) : null,
+      priceEstimate: mapping.purchasePrice !== undefined ? numOrNull(cell(mapping.purchasePrice).replace(',','.'))
+        : (mapping.marketPrice !== undefined ? numOrNull(cell(mapping.marketPrice).replace(',','.')) : null),
+      notes: cell(mapping.notes),
+      addedDate: today(),
+    };
+    if (existingKeys.has(key(item))) { skipped++; continue; }
+    try { await DB.add('wishlist', item); existingKeys.add(key(item)); imported++; } catch(e) { skipped++; }
+  }
+  if (!opts.silent) {
+    toast(`✅ ${imported} elementi aggiunti alla lista desideri${skipped ? ` · ${skipped} saltati` : ''}!`, 'success');
+    goto('/wishlist');
   }
   return imported;
 }
@@ -9614,15 +9802,13 @@ DB.open().then(mode => {
   showStorageBanner('mem');
   bootRender();
 });
-</script>
 
-<script>
-// Aggiornamento automatico: quando l'app è pubblicata su internet (https), il
-// service worker serve SEMPRE prima la versione più recente dal sito e tiene
-// una copia per l'uso offline. Da file locale (file://) non fa nulla.
+// Registrato solo su un'origine http/https vera (GitHub Pages): da file://
+// (uso locale) il service worker non serve e non è comunque raggiungibile.
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
 }
 </script>
+
 </body>
 </html>
