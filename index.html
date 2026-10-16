@@ -9191,9 +9191,14 @@ function kbName(kb) {
 // resta tale, non viene presentato come "dato mancante".
 function discSummaryHtml(disc) {
   if (!disc) return '';
+  // Il disciplinare a volte elenca un intero gruppo di vitigni intercambiabili
+  // in una sola voce (es. Lambrusco: "Marani, Salamino, Montericco..."): un
+  // nome così lungo in una pillola che non va a capo (pensata per tag brevi
+  // come "Aperitivo") sfondava la larghezza della pagina su telefono,
+  // spingendo fuori schermo tutto quello che veniva dopo nella scheda.
   const vitigniHtml = (disc.vitigni||[]).map(v => {
     const pct = v.min === v.max ? `${v.min}%` : `${v.min}–${v.max}%`;
-    return `<span class="food-chip">🍇 ${esc(v.nome)} (${pct})</span>`;
+    return `<span class="food-chip" style="white-space:normal;max-width:100%">🍇 ${esc(v.nome)} (${pct})</span>`;
   }).join('');
   let invecchiamento;
   if (disc.invecchiamentoMinMesi == null && disc.invecchiamentoRiservaMesi == null) {
