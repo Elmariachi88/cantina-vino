@@ -5127,6 +5127,12 @@ async function viewInvestment() {
     <div class="assist-meta">Nessuna fonte — nemmeno quelle professionali a pagamento — può dire con certezza quale vino aumenterà di valore: se lo sapesse già, quel vino non sarebbe più una "perla nascosta". Questo strumento cerca solo segnali pubblici indiretti (rivalutazioni dei critici, notizie di scarsità, movimenti di mercato riportati dalla stampa di settore) perché tu li valuti da solo. Non è un consiglio di investimento.</div>
   </div>
 
+  <div class="card" id="radar-card">
+    <div class="card-title"><span>🔭 Radar: scopri candidati</span></div>
+    <p style="font-size:11.5px;color:var(--text-3);margin:-6px 0 12px">Elenco di vini valutato con regole fisse, senza AI e senza quota: stessi dati, stesso risultato, sempre. Sono stime a regole (e, dove indicato, dati reali di guida e produzione), non previsioni di prezzo.</p>
+    <div id="radar-body"><div style="font-size:12.5px;color:var(--text-3)">Caricamento del radar…</div></div>
+  </div>
+
   <div class="card">
     <div class="card-title">Cerca segnali</div>
     <label style="font-size:11.5px;color:var(--text-2);display:block;margin-bottom:4px">Oppure scegli un vino dalla tua cantina</label>
@@ -5209,6 +5215,134 @@ async function viewInvestment() {
   </div>
   `;
 }
+// ── Radar (motore a regole + pacchetti dati multi-fonte, in radar/) ──
+// Ogni pacchetto è una fonte/edizione (es. Berebene 2026): una nuova edizione
+// si aggiunge con un file pack-*.js e il suo nome qui sotto, senza toccare
+// le precedenti. Le schede uguali in più fonti vengono unite (RADAR.mergePacks).
+const RADAR_PACK_FILES = ['radar/pack-berebene-2026.js'];
+const RADAR_DEFAULTS = { assumedPrice: 15 };
+const RADAR_CLASS_LABEL = { scoperta:'🔎 Scoperta', emergente:'📈 Emergente', blue:'💎 Blue chip', valore:'⚖️ Valore', bere:'🍷 Da bere' };
+let _radarLoading = null, _radarScored = null, _radarShown = 20, _radarList = [];
+function _radarLoadScript(src) {
+  return new Promise((res, rej) => {
+    const el = document.createElement('script');
+    el.src = src; el.onload = res; el.onerror = () => rej(new Error('Impossibile caricare ' + src));
+    document.head.appendChild(el);
+  });
+}
+function loadRadar() {
+  if (_radarScored) return Promise.resolve(_radarScored);
+  if (!_radarLoading) {
+    _radarLoading = (async () => {
+      await _radarLoadScript('radar/engine.js');
+      await _radarLoadScript('radar/core.js');
+      for (const f of RADAR_PACK_FILES) await _radarLoadScript(f);
+      _radarScored = RADAR.scoreAll(RADAR.mergePacks(window.RADAR_PACKS));
+      return _radarScored;
+    })().catch(e => { _radarLoading = null; throw e; });
+  }
+  return _radarLoading;
+}
+async function bindRadar() {
+  const body = document.getElementById('radar-body');
+  if (!body) return;
+  try { await loadRadar(); }
+  catch (e) {
+    body.innerHTML = `<div class="assist-meta" style="color:var(--pill-d)">⚠️ ${esc(e.message)}. Il radar richiede i file della cartella radar/ (online o già in cache).</div>`;
+    return;
+  }
+  if (!document.getElementById('radar-body')) return;
+  const srcOpts = RADAR.sourceOptions(window.RADAR_PACKS);
+  body.innerHTML = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+      <input type="text" id="radar-text" class="inv-field" placeholder="Cerca per nome, produttore, regione" style="flex:2;min-width:150px">
+      <select id="radar-class" class="inv-field" style="flex:1;min-width:130px">
+        <option value="scoperta,emergente">Scoperte ed emergenti</option>
+        <option value="scoperta">Solo scoperte</option>
+        <option value="emergente">Solo emergenti</option>
+        <option value="blue">Blue chip</option>
+        <option value="valore">Valore</option>
+        <option value="bere">Da bere</option>
+        <option value="">Tutte</option>
+      </select>
+      <select id="radar-source" class="inv-field" style="flex:1;min-width:130px">
+        <option value="">Tutte le fonti</option>
+        ${srcOpts.map(o => `<option value="${esc(o.value)}">${esc(o.label)}</option>`).join('')}
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;font-size:12px;color:var(--text-2)">
+      <label style="display:flex;align-items:center;gap:6px">Prezzo ipotizzato (€)
+        <input type="number" id="radar-price" class="inv-field" min="0" step="0.5" value="${RADAR_DEFAULTS.assumedPrice}" style="width:80px"></label>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="radar-multi"> Solo segnalati da più fonti</label>
+    </div>
+    <div id="radar-count" class="assist-meta" style="margin-bottom:6px"></div>
+    <div id="radar-list"></div>`;
+  const rerender = () => { _radarShown = 20; renderRadarList(); };
+  ['radar-text','radar-class','radar-source','radar-price','radar-multi'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener(el.type === 'text' || el.type === 'number' ? 'input' : 'change', rerender);
+  });
+  renderRadarList();
+}
+function renderRadarList() {
+  const listEl = document.getElementById('radar-list');
+  if (!listEl || !_radarScored) return;
+  const cls = document.getElementById('radar-class').value;
+  _radarList = RADAR.sortRadar(RADAR.filterRadar(_radarScored, {
+    text: document.getElementById('radar-text').value,
+    classes: new Set(cls ? cls.split(',') : []),
+    source: document.getElementById('radar-source').value,
+    multiOnly: document.getElementById('radar-multi').checked
+  }));
+  const price = parseFloat(document.getElementById('radar-price').value);
+  const shown = _radarList.slice(0, _radarShown);
+  document.getElementById('radar-count').textContent = `${_radarList.length} vini · primi ${shown.length}, ordinati per indice`;
+  listEl.innerHTML = shown.map((w, i) => {
+    const idx = w.cls === 'blue' ? w.BC : w.DI;
+    const ec = price > 0 ? ENG.economics(price, { sc: w.sc, DI: w.DI, BC: w.BC, cls: w.cls }, ENG.DEFAULT_SETTINGS) : null;
+    const conf = w.dataConfidence === 'alta' ? '🔒 dati verificati' : w.dataConfidence === 'media' ? '◐ parzialmente verificati' : '◯ stima a regole';
+    return `<div class="radar-item" style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+        <div style="min-width:0;overflow-wrap:anywhere">
+          <div style="font-size:13px;font-weight:600">${esc(w.n)}</div>
+          <div style="font-size:11.5px;color:var(--text-2)">${esc([w.p, w.r, w.t].filter(Boolean).join(' · '))}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:15px;font-weight:700">${idx}</div><div style="font-size:10.5px;color:var(--text-3)">${esc(RADAR_CLASS_LABEL[w.cls]||w.cls)}</div></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">
+        ${w.sources.map(s => `<span class="pill pill-m">${esc(s.label)}</span>`).join('')}
+        ${w.multiSource ? '<span class="pill pill-m">★ più fonti</span>' : ''}
+        <span class="pill pill-m">${conf}</span>
+      </div>
+      ${w.reasons.length ? `<div style="font-size:11.5px;color:var(--text-2);margin-top:6px">${w.reasons.slice(0,3).map(esc).join(' · ')}</div>` : ''}
+      ${w.flags.length ? `<div style="font-size:11.5px;color:var(--pill-d);margin-top:3px">${w.flags.map(esc).join(' · ')}</div>` : ''}
+      ${ec ? `<div style="font-size:11.5px;color:var(--text-3);margin-top:4px">Ipotesi a ${ec.T} anni su ${esc(fmt(price))}: netto costi ${esc(fmt(Math.round(ec.lo)))} – ${esc(fmt(Math.round(ec.base)))} – ${esc(fmt(Math.round(ec.hi)))} (basso · base · alto; non è una previsione)</div>` : ''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+        <button type="button" class="btn btn-outline btn-sm" data-action="radar-add" data-idx="${i}">+ Candidato</button>
+        <button type="button" class="btn btn-outline btn-sm" data-action="radar-signals" data-idx="${i}">🔎 Segnali</button>
+      </div>
+    </div>`;
+  }).join('') + (_radarList.length > shown.length ? `<button type="button" class="btn btn-outline btn-sm" id="radar-more" style="margin-top:10px">Mostra altri</button>` : '')
+    + (shown.length === 0 ? '<div class="empty">Nessun vino con questi filtri.</div>' : '');
+  listEl.querySelectorAll('[data-action="radar-add"]').forEach(b => b.addEventListener('click', () => {
+    const w = shown[parseInt(b.dataset.idx)]; if (!w) return;
+    openInvestmentCandidateModal(null, {
+      name: w.n, producer: w.p, zone: w.r,
+      notes: `Dal radar (${w.sources.map(s => s.label).join(', ')}): ${RADAR_CLASS_LABEL[w.cls]||w.cls}, indice ${w.cls === 'blue' ? w.BC : w.DI}.` + (w.reasons.length ? ' ' + w.reasons.slice(0,3).join('; ') + '.' : '')
+    });
+  }));
+  listEl.querySelectorAll('[data-action="radar-signals"]').forEach(b => b.addEventListener('click', () => {
+    const w = shown[parseInt(b.dataset.idx)]; if (!w) return;
+    document.getElementById('inv-name').value = w.n.replace(/\s*\b(19|20)\d{2}\s*$/, '');
+    document.getElementById('inv-producer').value = w.p || '';
+    document.getElementById('inv-vintage').value = w.v || '';
+    const sel = document.getElementById('inv-wine-select'); if (sel) sel.value = '';
+    _invLinkedWineId = null;
+    document.getElementById('inv-search-btn')?.click();
+    document.getElementById('inv-results')?.scrollIntoView({behavior:'smooth', block:'start'});
+  }));
+  document.getElementById('radar-more')?.addEventListener('click', () => { _radarShown += 20; renderRadarList(); });
+}
 async function bindInvestment() {
   const btn = document.getElementById('inv-search-btn');
   const nameInput = document.getElementById('inv-name');
@@ -5266,6 +5400,7 @@ async function bindInvestment() {
   document.querySelectorAll('#view [data-action="ic-remove"][data-id]').forEach(b => b.addEventListener('click', () => deleteInvestmentCandidate(b.dataset.id)));
 
   document.getElementById('inv-satellite-btn')?.addEventListener('click', runSatelliteSearch);
+  bindRadar();
 }
 async function runSatelliteSearch() {
   const nameInput = document.getElementById('inv-name');
