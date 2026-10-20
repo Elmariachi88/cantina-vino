@@ -5219,9 +5219,9 @@ async function viewInvestment() {
 // Ogni pacchetto è una fonte/edizione (es. Berebene 2026): una nuova edizione
 // si aggiunge con un file pack-*.js e il suo nome qui sotto, senza toccare
 // le precedenti. Le schede uguali in più fonti vengono unite (RADAR.mergePacks).
-const RADAR_PACK_FILES = ['radar/pack-berebene-2026.js'];
+const RADAR_PACK_FILES = ['radar/pack-berebene-2026.js', 'radar/pack-triple-a-2026.js'];
 const RADAR_DEFAULTS = { assumedPrice: 15 };
-const RADAR_CLASS_LABEL = { scoperta:'🔎 Scoperta', emergente:'📈 Emergente', blue:'💎 Blue chip', valore:'⚖️ Valore', bere:'🍷 Da bere' };
+const RADAR_CLASS_LABEL = { scoperta:'🔎 Scoperta', emergente:'📈 Emergente', blue:'💎 Blue chip', valore:'⚖️ Valore', bere:'🍷 Da bere', produttore:'🌿 Produttore' };
 let _radarLoading = null, _radarScored = null, _radarShown = 20, _radarList = [];
 function _radarLoadScript(src) {
   return new Promise((res, rej) => {
@@ -5263,6 +5263,7 @@ async function bindRadar() {
         <option value="blue">Blue chip</option>
         <option value="valore">Valore</option>
         <option value="bere">Da bere</option>
+        <option value="produttore">Solo produttori (senza punteggio)</option>
         <option value="">Tutte</option>
       </select>
       <select id="radar-source" class="inv-field" style="flex:1;min-width:130px">
@@ -5298,21 +5299,22 @@ function renderRadarList() {
   const shown = _radarList.slice(0, _radarShown);
   document.getElementById('radar-count').textContent = `${_radarList.length} vini · primi ${shown.length}, ordinati per indice`;
   listEl.innerHTML = shown.map((w, i) => {
-    const idx = w.cls === 'blue' ? w.BC : w.DI;
-    const ec = price > 0 ? ENG.economics(price, { sc: w.sc, DI: w.DI, BC: w.BC, cls: w.cls }, ENG.DEFAULT_SETTINGS) : null;
+    const isProd = w.kind === 'producer';
+    const idx = isProd ? '—' : (w.cls === 'blue' ? w.BC : w.DI);
+    const ec = !isProd && price > 0 ? ENG.economics(price, { sc: w.sc, DI: w.DI, BC: w.BC, cls: w.cls }, ENG.DEFAULT_SETTINGS) : null;
     const conf = w.dataConfidence === 'alta' ? '🔒 dati verificati' : w.dataConfidence === 'media' ? '◐ parzialmente verificati' : '◯ stima a regole';
     return `<div class="radar-item" style="padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
         <div style="min-width:0;overflow-wrap:anywhere">
           <div style="font-size:13px;font-weight:600">${esc(w.n)}</div>
-          <div style="font-size:11.5px;color:var(--text-2)">${esc([w.p, w.r, w.t].filter(Boolean).join(' · '))}</div>
+          <div style="font-size:11.5px;color:var(--text-2)">${esc((isProd ? [w.nation, w.r] : [w.p, w.r, w.t]).filter(x => x && x !== '-').join(' · '))}</div>
         </div>
         <div style="text-align:right;flex-shrink:0"><div style="font-size:15px;font-weight:700">${idx}</div><div style="font-size:10.5px;color:var(--text-3)">${esc(RADAR_CLASS_LABEL[w.cls]||w.cls)}</div></div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">
         ${w.sources.map(s => `<span class="pill pill-m">${esc(s.label)}</span>`).join('')}
         ${w.multiSource ? '<span class="pill pill-m">★ più fonti</span>' : ''}
-        <span class="pill pill-m">${conf}</span>
+        ${isProd ? '' : `<span class="pill pill-m">${conf}</span>`}
       </div>
       ${w.reasons.length ? `<div style="font-size:11.5px;color:var(--text-2);margin-top:6px">${w.reasons.slice(0,3).map(esc).join(' · ')}</div>` : ''}
       ${w.flags.length ? `<div style="font-size:11.5px;color:var(--pill-d);margin-top:3px">${w.flags.map(esc).join(' · ')}</div>` : ''}
@@ -5328,7 +5330,9 @@ function renderRadarList() {
     const w = shown[parseInt(b.dataset.idx)]; if (!w) return;
     openInvestmentCandidateModal(null, {
       name: w.n, producer: w.p, zone: w.r,
-      notes: `Dal radar (${w.sources.map(s => s.label).join(', ')}): ${RADAR_CLASS_LABEL[w.cls]||w.cls}, indice ${w.cls === 'blue' ? w.BC : w.DI}.` + (w.reasons.length ? ' ' + w.reasons.slice(0,3).join('; ') + '.' : '')
+      notes: w.kind === 'producer'
+        ? `Dal radar (${w.sources.map(s => s.label).join(', ')}): produttore${w.nation ? ' · ' + w.nation : ''}. Scegliere quali vini guardare.`
+        : `Dal radar (${w.sources.map(s => s.label).join(', ')}): ${RADAR_CLASS_LABEL[w.cls]||w.cls}, indice ${w.cls === 'blue' ? w.BC : w.DI}.` + (w.reasons.length ? ' ' + w.reasons.slice(0,3).join('; ') + '.' : '')
     });
   }));
   listEl.querySelectorAll('[data-action="radar-signals"]').forEach(b => b.addEventListener('click', () => {
