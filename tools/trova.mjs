@@ -132,7 +132,8 @@ async function runShop(shop) {
   st.urls = shop.products = list.length;
   const cand = new Map();     // id vino → [{url, score}]
   for (const e of list) {
-    const path = decodeURIComponent(e.url.replace(/^https?:\/\/[^/]+/, '').replace(/\+/g, ' '));
+    let path = e.url.replace(/^https?:\/\/[^/]+/, '').replace(/\+/g, ' ');
+    try { path = decodeURIComponent(path); } catch (err) { path = unescape(path); }
     const set = new Set([...tokens(path.replace(/[_/.-]+/g, ' ')), ...tokens(e.title)]);
     const seen = new Set();
     for (const t of set) for (const p of byTok.get(t) || []) {
@@ -167,12 +168,12 @@ async function runShop(shop) {
   }
   if (shop.blocked) shop.note = 'il negozio ha rifiutato le richieste: ricerca interrotta';
 }
-await Promise.all(SHOPS.map(runShop));
+await Promise.all(SHOPS.map(s => runShop(s).catch(e => { s.note = 'errore: ' + String(e.message || e).slice(0, 120); console.error(s.id, e); })));
 
 const found = Object.keys(offers).length;
 const out = {
   generated: new Date().toISOString(), source: pack.label, total: wines.length, found,
-  shops: SHOPS.map(s => ({ id: s.id, name: s.name, host: s.host, tried: s.tried, products: s.products || 0, offers: debug.perShop[s.id].ok, note: s.note || '' })),
+  shops: SHOPS.map(s => ({ id: s.id, name: s.name, host: s.host, tried: s.tried, products: s.products || 0, offers: (debug.perShop[s.id] || {}).ok || 0, note: s.note || '' })),
   offers
 };
 fs.writeFileSync('radar/offerte.json', JSON.stringify(out));
