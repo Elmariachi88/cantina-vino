@@ -1,0 +1,3034 @@
+{
+ "rejects": [
+  {
+   "shop": "signorvino",
+   "wine": "b257",
+   "title": "Collio Friulano Mario Schiopetto",
+   "brand": "Signorvino",
+   "why": "parole in più: mario"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b002",
+   "title": "Pecorino Giocheremo con i Fiori Torre dei Beati 2025",
+   "brand": "Torre dei Beati",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b048",
+   "title": "Cerasuolo d",
+   "brand": "",
+   "why": "produttore diverso"
+  },
+  {
+   "shop": "signorvino",
+   "wine": "b891",
+   "title": "Morellino di Scansano San Giuseppe",
+   "brand": "Signorvino",
+   "why": "parole in più: giuseppe"
+  },
+  {
+   "shop": "signorvino",
+   "wine": "b912",
+   "title": "Trento Brut Giulio Ferrari Riserva Del Fondatore",
+   "brand": "Signorvino",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b160",
+   "title": "Lacryma Christi del Vesuvio Vesevus Sorrentino 2022",
+   "brand": "",
+   "why": "parole in più: vesevus"
+  },
+  {
+   "shop": "signorvino",
+   "wine": "b912",
+   "title": "Trento Brut Giulio Ferrari Riserva Del Fondatore",
+   "brand": "Signorvino",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "signorvino",
+   "wine": "b912",
+   "title": "Trento Brut Giulio Ferrari Riserva del Fondatore Collezione",
+   "brand": "Signorvino",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b256",
+   "title": "Refosco dal Peduncolo Rosso Rodaro 2021",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "signorvino",
+   "wine": "b1018",
+   "title": "Amarone Della Valpolicella Classico Riserva Sergio Zenato",
+   "brand": "Signorvino",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b359",
+   "title": "Sciacchetrà Cantina Cinque Terre 2021 (37.5 cl)",
+   "brand": "",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b002",
+   "title": "Pecorino 'Giocheremo con i Fiori' Torre dei Beati 2025",
+   "brand": "Torre dei Beati",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b027",
+   "title": "Colline Pescaresi Pecorino IGT Tiberio 2024 0,75 ℓ",
+   "brand": "",
+   "why": "parole in più: pescaresi"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b359",
+   "title": "Cinque Terre Costa de Séra Cantina Cinque Terre 2022",
+   "brand": "",
+   "why": "parole in più: sera"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b359",
+   "title": "Cinque Terre Costa da Posa Cantina Cinque Terre 2022",
+   "brand": "",
+   "why": "parole in più: posa"
+  },
+  {
+   "shop": "signorvino",
+   "wine": "b1046",
+   "title": "Soave Classico",
+   "brand": "Signorvino",
+   "why": "la pagina aggiunge classico"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b384",
+   "title": "Valtellina Superiore Sassella Riserva Rainoldi 2016",
+   "brand": "",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "signorvino",
+   "wine": "b1046",
+   "title": "Recioto di Soave Le Colombare",
+   "brand": "Signorvino",
+   "why": "la pagina aggiunge recioto"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b410",
+   "title": "Giorgio Odero Pinot Nero Frecciarossa 2017",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b034",
+   "title": "Montepulciano d'Abruzzo DOP Cantina Tollo 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "signorvino",
+   "wine": "b1046",
+   "title": "Soave Classico Vin Soave",
+   "brand": "Signorvino",
+   "why": "la pagina aggiunge classico"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b034",
+   "title": "Montepulciano d'Abruzzo Riserva DOC Mo Cantina Tollo 2020 0,75 ℓ",
+   "brand": "",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b030",
+   "title": "Trebbiano D'Abruzzo Masciarelli 2024",
+   "brand": "Masciarelli",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "signorvino",
+   "wine": "b1069",
+   "title": "Amarone Della Valpolicella Classico Famiglia Farina",
+   "brand": "Signorvino",
+   "why": "la pagina non dice superiore"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b034",
+   "title": "Montepulciano d'Abruzzo Riserva DOP Cagiòlo Cantina Tollo 2020 0,75 ℓ",
+   "brand": "",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b028",
+   "title": "\"Marina Cvetic\" Montepulciano D'Abruzzo DOC Riserva S. Martino 2021",
+   "brand": "Masciarelli",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b035",
+   "title": "Cerasuolo d'Abruzzo DOP Cantina Tollo 2025 3 ℓ, Bag in Box",
+   "brand": "",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b030",
+   "title": "Montepulciano D'Abruzzo Masciarelli 2024",
+   "brand": "Masciarelli",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b710",
+   "title": "Vermentino di Sardegna Cala Silente Santadi 2024",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b035",
+   "title": "Montepulciano d'Abruzzo DOP Cantina Tollo 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b035",
+   "title": "Montepulciano d'Abruzzo Riserva DOC Mo Cantina Tollo 2020 0,75 ℓ",
+   "brand": "",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b030",
+   "title": "Trebbiano D'Abruzzo Riserva Marina Cvetic Masciarelli 2023",
+   "brand": "Masciarelli",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b036",
+   "title": "Terre di Chieti IGP Pecorino Cantina Tollo 2025 3 ℓ, Bag in Box",
+   "brand": "",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b826",
+   "title": "Vino Nobile di Montepulciano Poliziano 2020",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b826",
+   "title": "Vino Nobile di Montepulciano Asinone Poliziano 2019",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b841",
+   "title": "Grappa Chianti Classico Dievole",
+   "brand": "",
+   "why": "la pagina aggiunge grappa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b049",
+   "title": "Vino Spumante di Qualità Brut Pecorino Tenuta Ulisse 0,75 ℓ",
+   "brand": "",
+   "why": "la pagina aggiunge spumante"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b049",
+   "title": "Terre di Chieti IGP Pecorino Premium Tenuta Ulisse 2025 0,75 ℓ",
+   "brand": "",
+   "why": "parole in più: premium"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b037",
+   "title": "Magnum Montepulciano D'Abruzzo Modà Talamonti 2023",
+   "brand": "Talamonti",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b028",
+   "title": "Montepulciano d’Abruzzo DOC \"Marina Cvetic\" 2021 - Masciarelli",
+   "brand": "Masciarelli",
+   "why": "parole in più: marina cvetic"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b891",
+   "title": "Morellino di Scansano Mentore Mantellassi 2023",
+   "brand": "",
+   "why": "parole in più: mentore mantellassi"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b029",
+   "title": "Trebbiano d’Abruzzo DOC \"Marina Cvetic\" 2024 - Masciarelli",
+   "brand": "Masciarelli",
+   "why": "parole in più: marina cvetic"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b029",
+   "title": "Trebbiano d’Abruzzo DOC \"Marina Cvetic\" 2024 - Masciarelli",
+   "brand": "Masciarelli",
+   "why": "parole in più: marina cvetic"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b029",
+   "title": "Trebbiano D'Abruzzo DOC \"Castello di Semivicoli\" 2022 - Masciarelli",
+   "brand": "Masciarelli",
+   "why": "parole in più: castello semivicoli"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b893",
+   "title": "Vernaccia di San Gimignano I Macchioni Casa alle Vacche 2023",
+   "brand": "",
+   "why": "parole in più: macchioni"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b030",
+   "title": "Cerasuolo d’Abruzzo DOC \"Villa Gemma\" 2025 - Masciarelli",
+   "brand": "Masciarelli",
+   "why": "parole in più: villa gemma"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b030",
+   "title": "Cerasuolo d’Abruzzo DOC \"Villa Gemma\" 2025 - Masciarelli",
+   "brand": "Masciarelli",
+   "why": "parole in più: villa gemma"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b059",
+   "title": "Basilicata IGT Bianca degli Svevi Re Manfredi 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b908",
+   "title": "Marzemino Letrari 2018",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b030",
+   "title": "Montepulciano d’Abruzzo DOC 2024 - Masciarelli (tappo a vite)",
+   "brand": "Masciarelli",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b029",
+   "title": "Trebbiano d'Abruzzo 'Castello di Semivicoli' Masciarelli 2019",
+   "brand": "Masciarelli",
+   "why": "parole in più: castello semivicoli"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b029",
+   "title": "Trebbiano d'Abruzzo 'Castello di Semivicoli' Masciarelli 2022",
+   "brand": "Masciarelli",
+   "why": "parole in più: castello semivicoli"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b030",
+   "title": "\"Villa Gemma\" Cerasuolo d'Abruzzo Superiore DOC 2025",
+   "brand": "Masciarelli",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b945",
+   "title": "Montefalco Sagrantino Adanti 2014",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b059",
+   "title": "Bianca Degli Svevi Manfredi Bianco Re Manfredi 2025",
+   "brand": "Re Manfredi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b029",
+   "title": "Trebbiano d'Abruzzo Riserva 'Marina Cvetic' Masciarelli 2021",
+   "brand": "Masciarelli",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b077",
+   "title": "Cirò Bianco \"Segno\" DOC 2025 - Librandi",
+   "brand": "Librandi",
+   "why": "parole in più: segno"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b070",
+   "title": "Basilicata IGT L'Atto Cantine del Notaio 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b077",
+   "title": "Cirò Bianco \"Segno\" DOC 2025 - Librandi",
+   "brand": "Librandi",
+   "why": "parole in più: segno"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b1046",
+   "title": "Soave Albare Portinari 2018",
+   "brand": "",
+   "why": "parole in più: albare portinari"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b077",
+   "title": "Calabria Bianco IGT \"Efeso\" 2024 - Librandi",
+   "brand": "Librandi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b030",
+   "title": "Cerasuolo d'Abruzzo Superiore 'Villa Gemma' Masciarelli 2023",
+   "brand": "Masciarelli",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b1046",
+   "title": "Soave Santo Stefano Portinari 2017",
+   "brand": "",
+   "why": "la pagina aggiunge santo"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b070",
+   "title": "Basilicata IGT Il Rogito Cantine del Notaio 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b1046",
+   "title": "Recioto di Soave Oro Portinari 2015 (37.5 cl)",
+   "brand": "",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b086",
+   "title": "Cirò Rosso Classico Superiore Riserva DOC 2020 - 'A Vita",
+   "brand": "A Vita",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b077",
+   "title": "Cirò DOC Bianco Segno Librandi 2025 0,75 ℓ, vino bianco",
+   "brand": "",
+   "why": "parole in più: segno"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b086",
+   "title": "Cirò Rosso Classico Superiore Riserva DOC 2020 - 'A Vita",
+   "brand": "A Vita",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b030",
+   "title": "Montepulciano d'Abruzzo Masciarelli 2024",
+   "brand": "Masciarelli",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b1049",
+   "title": "Colli Euganei Bianco Olivetani Ca",
+   "brand": "",
+   "why": "produttore diverso"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b1065",
+   "title": "Bardolino Tantini Giovanna 2021",
+   "brand": "",
+   "why": "parole in più: tantini giovanna"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b077",
+   "title": "Cirò DOC Rosato Segno Librandi 2025 0,75 ℓ, vino rosato",
+   "brand": "",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b112",
+   "title": "Greco di Tufo DOCG \"Cutizzi\" Riserva 2024 - Feudi di San Gregorio",
+   "brand": "Feudi di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b030",
+   "title": "Montepulciano d'Abruzzo Masciarelli 2021",
+   "brand": "Masciarelli",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "wineshop",
+   "wine": "b1065",
+   "title": "Chiaretto di Bardolino Tantini Giovanna 2022",
+   "brand": "",
+   "why": "parole in più: tantini giovanna"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b112",
+   "title": "Greco di Tufo DOCG \"Cutizzi\" Riserva 2024 - Feudi di San Gregorio",
+   "brand": "Feudi di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b070",
+   "title": "Rosato Il Rogito Cantine Del Notaio 2024",
+   "brand": "Cantine Del Notaio",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b077",
+   "title": "Calabria IGT Bianco Critone Librandi 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b112",
+   "title": "Greco di Tufo DOCG \"Cutizzi\" Riserva 2024 Magnum - Feudi di San Gregorio (astuccio)",
+   "brand": "Feudi di San Gregorio",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b084",
+   "title": "Cirò Rosso Classico DOC Scala 2024 0,75 ℓ, vino rosso",
+   "brand": "",
+   "why": "la pagina aggiunge classico"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b088",
+   "title": "Cirò Bianco DOC L'Arciglione di Cataldo Calabretta 2024 0,75 ℓ",
+   "brand": "",
+   "why": "parole in più: arciglione"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b116",
+   "title": "Lacryma Christi del Vesuvio Rosso DOC \"Gelsonero\" 2023 - Villa Dora",
+   "brand": "Villa Dora",
+   "why": "parole in più: gelsonero"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b102",
+   "title": "Ara Mundi Galluccio Riserva Telaro 2020",
+   "brand": "Telaro",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b116",
+   "title": "Lacryma Christi del Vesuvio Rosso DOC \"Gelsonero\" 2023 - Villa Dora",
+   "brand": "Villa Dora",
+   "why": "parole in più: gelsonero"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b088",
+   "title": "Cirò Rosato DOC L'Arciglione di Cataldo Calabretta 2025 0,75 ℓ",
+   "brand": "",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b116",
+   "title": "Lacryma Christi del Vesuvio Rosso DOC \"Gelsonero\" 2021 - Villa Dora",
+   "brand": "Villa Dora",
+   "why": "parole in più: gelsonero"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b088",
+   "title": "Cirò Rosso Classico Superiore DOC L'Arciglione di Cataldo Calabrett...",
+   "brand": "",
+   "why": "produttore diverso"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b033",
+   "title": "\"Cagiolo\" Montepulciano d'Abruzzo Riserva DOP 2020",
+   "brand": "Tollo",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b112",
+   "title": "Greco Di Tufo Riserva Cutizzi Feudi Di San Gregorio 2024",
+   "brand": "Feudi Di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b033",
+   "title": "\"Mo\" Montepulciano D'Abruzzo DOP Riserva 2020",
+   "brand": "Tollo",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b139",
+   "title": "Taurasi Riserva Piano Di Montevergine Feudi Di San Gregorio 2019",
+   "brand": "Feudi Di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b112",
+   "title": "Greco di Tufo DOCG Riserva Cutizzi Feudi di San Gregorio 2024 0,75 ℓ",
+   "brand": "",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b139",
+   "title": "Taurasi Riserva DOCG \"Piano di Montevergine\" 2019 Magnum - Feudi di San Gregorio (cassetta di legno)",
+   "brand": "Feudi di San Gregorio",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b048",
+   "title": "Montepulciano d'Abruzzo 'Ulisse' Tenuta Ulisse 2024",
+   "brand": "Tenuta Ulisse",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b139",
+   "title": "Taurasi Riserva DOCG \"Piano di Montevergine\" 2019 Magnum - Feudi di San Gregorio (cassetta di legno)",
+   "brand": "Feudi di San Gregorio",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b165",
+   "title": "Aglianico Fidelis Cantina Del Taburno 2021",
+   "brand": "Cantina Del Taburno",
+   "why": "parole in più: fidelis"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b139",
+   "title": "Taurasi Riserva DOCG \"Piano di Montevergine\" 2018 - Feudi di San Gregorio",
+   "brand": "Feudi di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b146",
+   "title": "Paestum Fiano IGP \"Pian di Stio\" 2025 - San Salvatore 1988",
+   "brand": "San Salvatore 1988",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b146",
+   "title": "Paestum Fiano IGP \"Pian di Stio\" 2025 - San Salvatore 1988",
+   "brand": "San Salvatore 1988",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b034",
+   "title": "\"Cagiolo\" Montepulciano d'Abruzzo Riserva DOP 2020",
+   "brand": "Tollo",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b120",
+   "title": "Fiano di Avellino DOCG Riserva Tognano Rocca del Principe 2023 0,75 ℓ",
+   "brand": "",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b167",
+   "title": "Paestum Fiano IGP \"Cecerale\" 2024 - San Salvatore 1988",
+   "brand": "San Salvatore 1988",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b139",
+   "title": "Taurasi DOCG Riserva Piano di Montevergine Feudi di San Gregorio 20...",
+   "brand": "",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b257",
+   "title": "Friulano Schiopetto 2024",
+   "brand": "Schiopetto",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b059",
+   "title": "Manfredi Bianco Terre degli Svevi - Re Manfredi 2024",
+   "brand": "Terre degli Svevi - Re Manfredi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b167",
+   "title": "Paestum Fiano IGP \"Cecerale\" 2024 - San Salvatore 1988",
+   "brand": "San Salvatore 1988",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b167",
+   "title": "Paestum Fiano IGP \"Trentenare\" 2025 - San Salvatore 1988",
+   "brand": "San Salvatore 1988",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b158",
+   "title": "Fiano di Avellino DOCG Radici Mastroberardino 2025 0,75 ℓ",
+   "brand": "",
+   "why": "parole in più: radici"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b257",
+   "title": "Friulano Del Pompiere Schiopetto 2025",
+   "brand": "Schiopetto",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b035",
+   "title": "\"Cagiolo\" Montepulciano d'Abruzzo Riserva DOP 2020",
+   "brand": "Tollo",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b168",
+   "title": "Taurasi DOCG \"Candriano\" 2020 - FeudiStudi, Feudi di San Gregorio",
+   "brand": "Feudi di San Gregorio",
+   "why": "parole in più: candriano feudistudi"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b168",
+   "title": "Taurasi DOCG \"Vallicelli\" 2020 - FeudiStudi, Feudi di San Gregorio",
+   "brand": "Feudi di San Gregorio",
+   "why": "parole in più: vallicelli feudistudi"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b165",
+   "title": "Aglianico del Taburno DOCG Safinos Il Poggio 2020 0,75 ℓ",
+   "brand": "",
+   "why": "parole in più: safinos"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b168",
+   "title": "Taurasi DOCG \"Candriano\" 2020 - FeudiStudi, Feudi di San Gregorio",
+   "brand": "Feudi di San Gregorio",
+   "why": "parole in più: candriano feudistudi"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b169",
+   "title": "Lambrusco di Sorbara Frizzante Secco DOC \"Leclisse\" 2025 - Paltrinieri",
+   "brand": "Paltrinieri",
+   "why": "la pagina aggiunge frizzante"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b259",
+   "title": "Friulano Feudi Di Romans 2025",
+   "brand": "Feudi di Romans",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b259",
+   "title": "Pinot Grigio Feudi Di Romans 2024",
+   "brand": "Feudi di Romans",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b176",
+   "title": "Lambrusco di Sorbara DOC Rosé del Cristo Metodo Classico Brut Cavic...",
+   "brand": "",
+   "why": "produttore diverso"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b192",
+   "title": "Romagna Sangiovese Superiore Riserva Marzeno \"Pietramora\" 2021 - Fattoria Zerbina",
+   "brand": "Fattoria Zerbina",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b192",
+   "title": "Romagna Sangiovese Superiore Riserva Marzeno \"Pietramora\" 2021 - Fattoria Zerbina",
+   "brand": "Fattoria Zerbina",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b070",
+   "title": "Rosato 'Il Rogito' Cantine del Notaio 2023",
+   "brand": "Cantine del Notaio",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b259",
+   "title": "Chardonnay Feudi Di Romans 2025",
+   "brand": "Feudi di Romans",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b197",
+   "title": "Sangiovese di Romagna Riserva DOC Laurento Umberto Cesari 2023 0,75 ℓ",
+   "brand": "",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b267",
+   "title": "Merlot Venica 2022",
+   "brand": "Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b238",
+   "title": "Collio DOC Sauvignon Blanc Russiz Superiore 2025 0,75 ℓ",
+   "brand": "",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b205",
+   "title": "Lambrusco di Sorbara Frizzante Secco DOC “Sant'Agata” 2025 - Paltrinieri",
+   "brand": "Paltrinieri",
+   "why": "la pagina aggiunge frizzante"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b238",
+   "title": "Collio DOC Pinot Grigio Russiz Superiore 2025 0,75 ℓ",
+   "brand": "",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b267",
+   "title": "Malvasia Petris Venica 2023",
+   "brand": "Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b205",
+   "title": "Lambrusco di Sorbara Frizzante Secco DOC “Sant'Agata” 2025 - Paltrinieri",
+   "brand": "Paltrinieri",
+   "why": "la pagina aggiunge frizzante"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b238",
+   "title": "Collio DOC Ribolla Gialla Russiz Superiore 2025 0,75 ℓ",
+   "brand": "",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b073",
+   "title": "Cirò Rosso Riserva 'Duca Sanfelice' Librandi 2022",
+   "brand": "Librandi",
+   "why": "la pagina non dice superiore"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b214",
+   "title": "Albana di Romagna DOCG \"Cru Artigianale\" 2024 - Tenuta Santa Lucia",
+   "brand": "Tenuta Santa Lucia",
+   "why": "la pagina aggiunge cru"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b059",
+   "title": "\"Bianca degli Svevi\" Basilicata IGT 2025",
+   "brand": "Re Manfredi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b214",
+   "title": "Albana di Romagna DOCG \"Cru Artigianale\" 2024 - Tenuta Santa Lucia",
+   "brand": "Tenuta Santa Lucia",
+   "why": "la pagina aggiunge cru"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b214",
+   "title": "Albana di Romagna DOCG \"Albarara\" 2025 - Tenuta Santa Lucia",
+   "brand": "Tenuta Santa Lucia",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b267",
+   "title": "Cabernet Franc Venica 2023",
+   "brand": "Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b243",
+   "title": "Collio DOC Ribolla Gialla Maralba Marco Felluga 2025 0,75 ℓ",
+   "brand": "",
+   "why": "parole in più: maralba"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b077",
+   "title": "Cirò Bianco 'Segno' Librandi 2025",
+   "brand": "Librandi",
+   "why": "parole in più: segno"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b220",
+   "title": "Colli Bolognesi DOCG Pignoletto Superiore \"Zigant\" 2022 - Lodi Corazza",
+   "brand": "Lodi Corazza",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b220",
+   "title": "Colli Bolognesi DOCG Pignoletto Superiore \"Zigant\" 2022 - Lodi Corazza",
+   "brand": "Lodi Corazza",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b077",
+   "title": "Cirò Rosso 'Segno' Librandi 2024",
+   "brand": "Librandi",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b267",
+   "title": "Collio DOC Friulano Primarûl Venica & Venica 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b070",
+   "title": "\"Il Preliminare\" Basilicata IGT 2024",
+   "brand": "Cantine del Notaio",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b241",
+   "title": "Collio Bianco DOC \"Stare Brajde\" 2024 - Muzic",
+   "brand": "Muzic",
+   "why": "parole in più: stare brajde"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b267",
+   "title": "Collio DOC Malvasia Pètris Venica & Venica 2024 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b241",
+   "title": "Collio Bianco DOC \"Stare Brajde\" 2024 - Muzic",
+   "brand": "Muzic",
+   "why": "parole in più: stare brajde"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b241",
+   "title": "Collio Chardonnay DOC 2024 - Muzic",
+   "brand": "Muzic",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b077",
+   "title": "Cirò Rosato 'Segno' Librandi 2025",
+   "brand": "Librandi",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b270",
+   "title": "Pinot Grigio Gris Lis Neris 2022",
+   "brand": "Lis Neris",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b071",
+   "title": "\"Mare Chiaro\" Cir&ograve; DOC Bianco 2025",
+   "brand": "Ippolito 1845",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b267",
+   "title": "Collio DOC Chardonnay Ronco Bernizza Venica & Venica 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b276",
+   "title": "Sauvignon Primosic 2022",
+   "brand": "Primosic",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b084",
+   "title": "Cirò Rosato 'Etichetta Storica' Scala 2025",
+   "brand": "Scala",
+   "why": "parole in più: storica"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b077",
+   "title": "Cir&ograve; Bianco DOC \"Segno Librandi\" 2025",
+   "brand": "Librandi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b273",
+   "title": "Venezia Giulia IGT Ribolla Gialla Vinnae Jermann 2025 0,75 ℓ",
+   "brand": "",
+   "why": "parole in più: vinnae"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b261",
+   "title": "Friuli Colli Orientali Refosco dal Peduncolo Rosso DOC 2024 - Zorzettig",
+   "brand": "Zorzettig",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b278",
+   "title": "Friuli Colli Orientali DOC Vini Orsone Sauvignon Bastianich Winery ...",
+   "brand": "",
+   "why": "parole in più: orsone"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b276",
+   "title": "Chardonnay Primosic 2023",
+   "brand": "Primosic",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b261",
+   "title": "Friuli Colli Orientali Refosco dal Peduncolo Rosso DOC 2024 - Zorzettig",
+   "brand": "Zorzettig",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b278",
+   "title": "Friuli Colli Orientali DOC Friulano Vini Orsone Bastianich Winery 2...",
+   "brand": "",
+   "why": "parole in più: orsone"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b084",
+   "title": "Cirò Rosso Classico Superiore 'Etichetta Storica' Scala 2024",
+   "brand": "Scala",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b261",
+   "title": "Friuli Colli Orientali Schioppettino DOC \"Myò\" 2019 - Zorzettig",
+   "brand": "Zorzettig",
+   "why": "parole in più: schioppettino myo"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b077",
+   "title": "\"Asylia\" Bianco Melissa DOC 2025",
+   "brand": "Librandi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b278",
+   "title": "Friuli Colli Orientali DOC Vini Orsone Ribolla Gialla Bastianich Wi...",
+   "brand": "",
+   "why": "parole in più: orsone wi"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b276",
+   "title": "Friulano Primosic 2025",
+   "brand": "Primosic",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b267",
+   "title": "Collio Friulano DOC “Primarûl” 2025 - Venica & Venica",
+   "brand": "Venica & Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b267",
+   "title": "Collio Malvasia DOC “Pètris” 2025 - Venica & Venica",
+   "brand": "Venica & Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b278",
+   "title": "Refosco Vini Orsone Bastianich 2023",
+   "brand": "Bastianich",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b084",
+   "title": "Rosato 'Desueto' Nevio Scala 2023",
+   "brand": "Scala Nevio",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b267",
+   "title": "Collio Ribolla Gialla DOC “L'Adelchi” 2025 - Venica & Venica",
+   "brand": "Venica & Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b077",
+   "title": "\"Critone\" Calabria IGT Bianco 2025",
+   "brand": "Librandi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b281",
+   "title": "Friuli Colli Orientali DOC Friulano Livio Felluga 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b281",
+   "title": "Friuli Colli Orientali Sauvignon DOC Livio Felluga 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b086",
+   "title": "Cirò Rosso Classico Superiore Riserva 'A Vita 2020",
+   "brand": "'A Vita",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b273",
+   "title": "Venezia Giulia Ribolla Gialla IGT \"Vinnae\" 2025 - Jermann (tappo a vite)",
+   "brand": "Jermann",
+   "why": "parole in più: vinnae"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b281",
+   "title": "Friuli Colli Orientali DOC Chardonnay Livio Felluga 2025 0,75 ℓ",
+   "brand": "",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b278",
+   "title": "Schioppettino Vini Orsone Bastianich 2023",
+   "brand": "Bastianich",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b273",
+   "title": "Venezia Giulia Ribolla Gialla IGT \"Vinnae\" 2025 - Jermann (tappo a vite)",
+   "brand": "Jermann",
+   "why": "parole in più: vinnae"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b088",
+   "title": "Cirò Bianco L'Arciglione - Cataldo Calabretta 2025",
+   "brand": "Calabretta Cataldo",
+   "why": "parole in più: arciglione"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b278",
+   "title": "Friuli Colli Orientali DOC Schioppettino 2023 - Bastianich",
+   "brand": "Bastianich",
+   "why": "parole in più: schioppettino"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b280",
+   "title": "Friulano Toros 2025",
+   "brand": "Toros",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b105",
+   "title": "\"Munazei\" Bianco Lacryma Christi del Vesuvio DOC 2025",
+   "brand": "Casa Setaro",
+   "why": "parole in più: munazei"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b278",
+   "title": "Friuli Colli Orientali DOC Schioppettino 2023 - Bastianich",
+   "brand": "Bastianich",
+   "why": "parole in più: schioppettino"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b280",
+   "title": "Pinot Bianco Toros 2025",
+   "brand": "Toros",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b088",
+   "title": "Cirò Rosato L'Arciglione - Cataldo Calabretta 2025",
+   "brand": "Calabretta Cataldo",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b288",
+   "title": "Friuli Grave DOC Borgo Tesis Sauvignon Fantinel 2024 0,75 ℓ",
+   "brand": "",
+   "why": "parole in più: borgo tesis"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b105",
+   "title": "\"Munazei\" Rosso Lacryma Christi del Vesuvio DOC 2025",
+   "brand": "Casa Setaro",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b288",
+   "title": "Friuli Grave DOC Borgo Tesis Cabernet Sauvignon Fantinel 2024 0,75 ℓ",
+   "brand": "",
+   "why": "parole in più: borgo tesis"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b284",
+   "title": "Venezia Giulia Chardonnay IGT 2025 - Attems, Marchesi Frescobaldi",
+   "brand": "Attems",
+   "why": "parole in più: marchesi frescobaldi"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b288",
+   "title": "Friuli Grave DOC Borgo Tesis Refosco dal Peduncolo Rosso Fantinel 2...",
+   "brand": "",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b284",
+   "title": "Venezia Giulia Chardonnay IGT 2025 - Attems, Marchesi Frescobaldi",
+   "brand": "Attems",
+   "why": "parole in più: marchesi frescobaldi"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b088",
+   "title": "Cirò Rosso Clas. Sup. Riserva L'Arciglione - Cataldo Calabretta 2019",
+   "brand": "Calabretta Cataldo",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b284",
+   "title": "Venezia Giulia Sauvignon IGT 2025 - Attems, Marchesi Frescobaldi",
+   "brand": "Attems",
+   "why": "parole in più: marchesi frescobaldi"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b280",
+   "title": "Pinot Grigio Toros 2023",
+   "brand": "Toros",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b105",
+   "title": "\"Munazei\" Rosato Lacryma Christi del Vesuvio DOC 2025",
+   "brand": "Casa Setaro",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b288",
+   "title": "Friuli Sauvignon DOC “Borgo Tesis” 2024 - Fantinel",
+   "brand": "Fantinel",
+   "why": "parole in più: borgo tesis"
+  },
+  {
+   "shop": "vinocom",
+   "wine": "b294",
+   "title": "Isonzo del Friuli DOC Pinot Grigio Borgo Conventi 2025 0,75 ℓ",
+   "brand": "",
+   "why": "parole in più: borgo"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b281",
+   "title": "Chardonnay Livio Felluga 2025",
+   "brand": "Livio Felluga",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b288",
+   "title": "Friuli Cabernet Sauvignon DOC “Borgo Tesis” 2024 - Fantinel",
+   "brand": "Fantinel",
+   "why": "parole in più: borgo tesis"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b288",
+   "title": "Friuli Sauvignon DOC “Borgo Tesis” 2024 - Fantinel",
+   "brand": "Fantinel",
+   "why": "parole in più: borgo tesis"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b292",
+   "title": "Venezia Giulia Ribolla Gialla IGT 2025 - Attems, Marchesi Frescobaldi",
+   "brand": "Attems",
+   "why": "parole in più: marchesi frescobaldi"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b281",
+   "title": "Ribolla Gialla Livio Felluga 2025",
+   "brand": "Livio Felluga",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b292",
+   "title": "Venezia Giulia Ribolla Gialla IGT 2025 - Attems, Marchesi Frescobaldi",
+   "brand": "Attems",
+   "why": "parole in più: marchesi frescobaldi"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b112",
+   "title": "\"Cutizzi\" Greco di Tufo DOCG Riserva 2024",
+   "brand": "Feudi di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b103",
+   "title": "Falanghina 'Janare Anima Lavica' La Guardiense 2025",
+   "brand": "La Guardiense",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b292",
+   "title": "Venezia Giulia Sauvignon IGT 2025 - Attems, Marchesi Frescobaldi",
+   "brand": "Attems",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b292",
+   "title": "Ribolla Gialla Attems 2025",
+   "brand": "Attems",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b105",
+   "title": "Lacryma Christi Bianco 'Munazei' Casa Setaro 2025",
+   "brand": "Casa Setaro",
+   "why": "parole in più: munazei"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b296",
+   "title": "Pinot Grigio Feudi Di Romans 2024",
+   "brand": "Feudi di Romans",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b311",
+   "title": "Venezia Giulia Sauvignon IGT 2025 - Attems, Marchesi Frescobaldi",
+   "brand": "Attems",
+   "why": "parole in più: marchesi frescobaldi"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b296",
+   "title": "Chardonnay Feudi Di Romans 2025",
+   "brand": "Feudi di Romans",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b105",
+   "title": "Lacryma Christi Rosso 'Munazei' Casa Setaro 2025",
+   "brand": "Casa Setaro",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b139",
+   "title": "\"Piano di Montevergine\" Taurasi Riserva DOCG 2018",
+   "brand": "Feudi di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b311",
+   "title": "Venezia Giulia Sauvignon IGT 2025 - Attems, Marchesi Frescobaldi",
+   "brand": "Attems",
+   "why": "parole in più: marchesi frescobaldi"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b311",
+   "title": "Venezia Giulia Chardonnay IGT 2025 - Attems, Marchesi Frescobaldi",
+   "brand": "Attems",
+   "why": "parole in più: marchesi frescobaldi"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b296",
+   "title": "Friulano Feudi Di Romans 2025",
+   "brand": "Feudi di Romans",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b313",
+   "title": "Cesanese di Olevano Romano DOC \"Silene\" 2025 - Damiano Ciolli",
+   "brand": "Damiano Ciolli",
+   "why": "la pagina non dice superiore"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b105",
+   "title": "Lacryma Christi Rosato 'Munazei' Casa Setaro 2025",
+   "brand": "Casa Setaro",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b313",
+   "title": "Cesanese di Olevano Romano DOC \"Silene\" 2025 - Damiano Ciolli",
+   "brand": "Damiano Ciolli",
+   "why": "la pagina non dice superiore"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b318",
+   "title": "Civitella d’Agliano Grechetto IGT “Poggio della Costa” 2024 - Sergio Mottura (tappo a vite)",
+   "brand": "Sergio Mottura",
+   "why": "parole in più: civitella agliano"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b306",
+   "title": "Friulano Ca' Bolani 2025",
+   "brand": "Ca' Bolani",
+   "why": "manca il nome etichetta: aquileia"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b318",
+   "title": "Civitella d’Agliano Grechetto IGT “Poggio della Costa” 2024 - Sergio Mottura (tappo a vite)",
+   "brand": "Sergio Mottura",
+   "why": "parole in più: civitella agliano"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b320",
+   "title": "Lazio Rosso IGT \"Mater Matuta\" 2019 - Casale del Giglio",
+   "brand": "Casale del Giglio",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b320",
+   "title": "Lazio Rosso IGT \"Mater Matuta\" 2019 - Casale del Giglio",
+   "brand": "Casale del Giglio",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b306",
+   "title": "Sauvignon Ca' Bolani 2025",
+   "brand": "Ca' Bolani",
+   "why": "manca il nome etichetta: aquileia"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b306",
+   "title": "Traminer Aromatico Ca' Bolani 2025",
+   "brand": "Ca' Bolani",
+   "why": "manca il nome etichetta: aquileia"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b308",
+   "title": "Cabernet Franc La Tunella 2024",
+   "brand": "La Tunella",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b158",
+   "title": "\"Radici\" Fiano d'Avellino DOCG 2024",
+   "brand": "Mastroberardino",
+   "why": "parole in più: radici"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b313",
+   "title": "Cesanese Silene Damiano Ciolli 2025",
+   "brand": "Damiano Ciolli",
+   "why": "la pagina non dice superiore"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b114",
+   "title": "Fiano 'Pietraincatenata' Luigi Maffini 2023",
+   "brand": "Maffini Luigi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b371",
+   "title": "Riviera Ligure di Ponente Vermentino DOC \"Apricus\" 2024 - Poggio dei Gorleri",
+   "brand": "Poggio dei Gorleri",
+   "why": "parole in più: apricus"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b167",
+   "title": "\"Trentenare\" IGP Paestum Fiano 2025",
+   "brand": "San Salvatore 1988",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b380",
+   "title": "Lugana Superiore DOC 2022 - Ca’ Lojera",
+   "brand": "Ca' Lojera",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b352",
+   "title": "Frascati Superiore Vigneto Filonardi Villa Simone 2023",
+   "brand": "Villa Simone",
+   "why": "parole in più: filonardi"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b168",
+   "title": "\"Piano di Montevergine\" Taurasi Riserva DOCG 2018",
+   "brand": "Feudi di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b383",
+   "title": "Franciacorta Extra Brut DOCG \"Golf 1927\" - Barone Pizzini",
+   "brand": "Barone Pizzini",
+   "why": "la pagina aggiunge extra"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b352",
+   "title": "Frascati Villa Simone 2025",
+   "brand": "Villa Simone",
+   "why": "la pagina non dice superiore"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b352",
+   "title": "Mezza Bottiglia Frascati Villa Simone 2024 375ml",
+   "brand": "Villa Simone",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b384",
+   "title": "Valtellina Superiore Sassella Riserva DOCG 2021 - Aldo Rainoldi",
+   "brand": "Aldo Rainoldi",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b128",
+   "title": "Fiano Pietracupa 2022",
+   "brand": "Pietracupa",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b134",
+   "title": "Aglianico 'Manent' Terre Stregate 2023",
+   "brand": "Terre Stregate",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b385",
+   "title": "Lugana DOC \"Brolettino\" 2024 - Cà dei Frati",
+   "brand": "Cà dei Frati",
+   "why": "parole in più: brolettino"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b385",
+   "title": "Lugana DOC \"Brolettino\" 2024 - Cà dei Frati",
+   "brand": "Cà dei Frati",
+   "why": "parole in più: brolettino"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b385",
+   "title": "Lugana DOC \"Brolettino\" 2024 - Cà dei Frati (0.375l)",
+   "brand": "Cà dei Frati",
+   "why": "parole in più: brolettino 375l"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b386",
+   "title": "Curtefranca Bianco DOC \"Corte del Lupo\" 2025 - Ca’ del Bosco",
+   "brand": "Ca' del Bosco",
+   "why": "parole in più: corte lupo"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b241",
+   "title": "Malvasia Collio DOC 2025",
+   "brand": "Muzic",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b386",
+   "title": "Curtefranca Bianco DOC \"Corte del Lupo\" 2023 - Ca’ del Bosco",
+   "brand": "Ca' del Bosco",
+   "why": "parole in più: corte lupo"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b386",
+   "title": "Curtefranca Bianco DOC \"Corte del Lupo\" 2021 Magnum - Ca’ del Bosco",
+   "brand": "Ca' del Bosco",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b139",
+   "title": "Taurasi Riserva 'Piano di Montevergine' Feudi di San Gregorio 2018",
+   "brand": "Feudi di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b388",
+   "title": "Valtènesi Chiaretto DOC \"RosaMara\" 2025 - Costaripa",
+   "brand": "Costaripa",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b388",
+   "title": "Valtènesi Chiaretto DOC \"RosaMara\" 2025 - Costaripa",
+   "brand": "Costaripa",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b241",
+   "title": "Chardonnay Collio DOC 2025",
+   "brand": "Muzic",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b400",
+   "title": "Rosso di Valtellina DOC “Olé!” 2024 - Dirupi",
+   "brand": "Dirupi",
+   "why": "parole in più: ole"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b241",
+   "title": "Friulano \"Valeris\" Collio DOC 2025",
+   "brand": "Muzic",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b383",
+   "title": "Franciacorta Brut Nature Naturae Barone Pizzini 2021",
+   "brand": "Barone Pizzini",
+   "why": "la pagina aggiunge nature"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b155",
+   "title": "Falanghina del Sannio 'Diana' Ocone 2025",
+   "brand": "Ocone",
+   "why": "parole in più: diana"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b400",
+   "title": "Valtellina Superiore DOCG 2023 - Dirupi",
+   "brand": "Dirupi",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b247",
+   "title": "\"Villa Locatelli\" Merlot Friuli Isonzo DOC 2024",
+   "brand": "Angoris",
+   "why": "parole in più: villa locatelli"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b155",
+   "title": "Falanghina del Sannio 'Vigna del Monaco' Ocone 2021",
+   "brand": "Ocone",
+   "why": "parole in più: monaco"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b404",
+   "title": "Curtefranca Rosso DOC \"Vigna Santella del Gröm\" 2018 - Ricci Curbastro",
+   "brand": "Ricci Curbastro",
+   "why": "parole in più: santella grom"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b383",
+   "title": "Franciacorta Dosaggio Zero Animante Barone Pizzini",
+   "brand": "Barone Pizzini",
+   "why": "la pagina non dice brut"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b404",
+   "title": "Curtefranca DOC Bianco 2025 - Ricci Curbastro",
+   "brand": "Ricci Curbastro",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b247",
+   "title": "Friulano \"Villa Locatelli\" DOC Friuli Isonzo 2024",
+   "brand": "Angoris",
+   "why": "parole in più: villa locatelli"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b383",
+   "title": "Franciacorta Extra Brut Golf 1927 Barone Pizzini",
+   "brand": "Barone Pizzini",
+   "why": "la pagina aggiunge extra"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b410",
+   "title": "Oltrepò Pavese Pinot Nero DOC 2024 \"Carillo\" - Frecciarossa",
+   "brand": "Frecciarossa",
+   "why": "parole in più: pavese carillo"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b410",
+   "title": "Oltrepò Pavese Pinot Nero DOC \"Sillery\" 2025 - Frecciarossa",
+   "brand": "Frecciarossa",
+   "why": "parole in più: pavese sillery"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b247",
+   "title": "Sauvignon \"Villa Locatelli\" DOC Friuli Isonzo 2024",
+   "brand": "Angoris",
+   "why": "parole in più: villa locatelli"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b410",
+   "title": "Oltrepò Pavese Pinot Nero DOC \"Giorgio Odero\" 2021 - Frecciarossa",
+   "brand": "Frecciarossa",
+   "why": "parole in più: pavese giorgio odero"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b165",
+   "title": "Aglianico del Taburno 'Apollo' Ocone 2022",
+   "brand": "Ocone",
+   "why": "parole in più: apollo"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b413",
+   "title": "Valtellina Rosso DOC \"Nettare\" 2024 - Tenuta Scerscé",
+   "brand": "Tenuta Scerscé",
+   "why": "parole in più: nettare"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b413",
+   "title": "Valtellina Rosso DOC \"Nettare\" 2024 - Tenuta Scerscé",
+   "brand": "Tenuta Scerscé",
+   "why": "parole in più: nettare"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b248",
+   "title": "\"Casanova\" Pinot Nero Collio DOC 2023",
+   "brand": "Castello di Spessa",
+   "why": "parole in più: casanova"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b165",
+   "title": "Aglianico del Taburno 'Vigna Pezza La Corte' Ocone 2015",
+   "brand": "Ocone",
+   "why": "parole in più: pezza corte"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b413",
+   "title": "Sforzato di Valtellina DOCG \"Infinito\" 2020 - Tenuta Scerscé",
+   "brand": "Tenuta Scerscé",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b386",
+   "title": "Corte Del Lupo Bianco Ca' Del Bosco 2025",
+   "brand": "Ca' Del Bosco",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b267",
+   "title": "\"P&egrave;tris\" Malvasia Collio DOC 2024",
+   "brand": "Venica & Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b420",
+   "title": "Valtellina Superiore Valgella Riserva DOCG \"Carterìa\" 2021 - Sandro Fay",
+   "brand": "Sandro Fay",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b422",
+   "title": "Spumante Extra Brut Metodo Classico Blanc de Noirs \"Farfalla\" - Ballabio",
+   "brand": "Ballabio",
+   "why": "la pagina aggiunge spumante"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b267",
+   "title": "\"L'Adelchi\" Ribolla Gialla Collio DOC 2024",
+   "brand": "Venica & Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b386",
+   "title": "Corte Del Lupo Rosso Ca' Del Bosco 2023",
+   "brand": "Ca' Del Bosco",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b169",
+   "title": "Lambrusco di Sorbara 'Leclisse' Magnum Paltrinieri 2024",
+   "brand": "Paltrinieri",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b422",
+   "title": "Spumante Extra Brut Metodo Classico Blanc de Noir \"Farfalla\" Magnum - Ballabio",
+   "brand": "Ballabio",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b422",
+   "title": "Spumante Metodo Classico Extra Brut \"Cave Privée - Farfalla\" 2018 - Ballabio",
+   "brand": "Ballabio",
+   "why": "la pagina aggiunge spumante"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b386",
+   "title": "Magnum Chardonnay Ca' Del Bosco 2020 (Cassetta in Legno)",
+   "brand": "Ca' Del Bosco",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b426",
+   "title": "Franciacorta Extra Brut DOCG \"Golf 1927\" - Barone Pizzini",
+   "brand": "Barone Pizzini",
+   "why": "la pagina aggiunge extra"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b267",
+   "title": "\"Ronco delle Cime\" Friulano Collio DOC 2024",
+   "brand": "Venica & Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b426",
+   "title": "Franciacorta Extra Brut DOCG \"Golf 1927\" - Barone Pizzini (astuccio)",
+   "brand": "Barone Pizzini",
+   "why": "la pagina aggiunge extra"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b273",
+   "title": "\"Vinnae\" Ribolla Gialla Venezia Giulia IGT 2025",
+   "brand": "Jermann",
+   "why": "parole in più: vinnae"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b432",
+   "title": "Valtellina Superiore Inferno Riserva DOCG 2021 - Aldo Rainoldi",
+   "brand": "Aldo Rainoldi",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b420",
+   "title": "Valtellina Superiore Valgella Cà Moréi Sandro Fay 2021",
+   "brand": "Sandro Fay",
+   "why": "parole in più: ca morei"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b279",
+   "title": "\"Afix\" Riesling Venezia Giulia IGT 2024",
+   "brand": "Jermann",
+   "why": "parole in più: afix"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b432",
+   "title": "Valtellina Superiore Inferno Riserva DOCG 2021 - Aldo Rainoldi",
+   "brand": "Aldo Rainoldi",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b426",
+   "title": "Franciacorta Extra Brut Golf 1927 Barone Pizzini",
+   "brand": "Barone Pizzini",
+   "why": "la pagina aggiunge extra"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b436",
+   "title": "Valtellina Superiore Valgella DOCG \"Söl\" 2023 - Barbàcan",
+   "brand": "Barbacàn",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b279",
+   "title": "\"Vintage Tunina\" Venezia Giulia IGT 2023",
+   "brand": "Jermann",
+   "why": "parole in più: tunina"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b436",
+   "title": "Valtellina Superiore Valgella DOCG \"Söl\" 2023 - Barbàcan",
+   "brand": "Barbacàn",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b436",
+   "title": "Sforzato di Valtellina DOCG 2022 - Barbacàn",
+   "brand": "Barbacàn",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b279",
+   "title": "\"Capo Martino\" Bianco Venezia Giulia IGT 2022",
+   "brand": "Jermann",
+   "why": "parole in più: capo martino"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b447",
+   "title": "Verdicchio di Matelica Valbona Belisario 2025",
+   "brand": "Belisario",
+   "why": "parole in più: valbona"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b439",
+   "title": "Franciacorta Brut DOCG \"Grande Cuvée Alma Brut\" Jéroboam - Bellavista (cassetta di legno)",
+   "brand": "Bellavista",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b002",
+   "title": "Torre dei Beati Pecorino Giocheremo con i Fiori 2025",
+   "brand": "Torre dei Beati",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b439",
+   "title": "Franciacorta Non Dosato DOCG \"Alma Grande Cuvée\" Magnum - Bellavista",
+   "brand": "Bellavista",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b447",
+   "title": "Verdicchio di Matelica Cambrugiano Riserva Belisario 2023",
+   "brand": "Belisario",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b281",
+   "title": "Pinot Grigio Friuli Colli Orientali DOC 2024",
+   "brand": "Livio Felluga",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b182",
+   "title": "Albana di Romagna 'Codronchio' Fattoria Monticino Rosso 2023",
+   "brand": "Fattoria Monticino Rosso",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b445",
+   "title": "Valtellina Rosso DOC \"Matteo Bandello\" 2024 - Luca Faccinelli",
+   "brand": "Luca Faccinelli",
+   "why": "parole in più: matteo bandello"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b017",
+   "title": "Tenuta I Fauri Pecorino 2024",
+   "brand": "Tenuta I Fauri",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b445",
+   "title": "Valtellina Rosso DOC \"Matteo Bandello\" 2024 - Luca Faccinelli",
+   "brand": "Luca Faccinelli",
+   "why": "parole in più: matteo bandello"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b017",
+   "title": "Tenuta I Fauri Pecorino 2025",
+   "brand": "Tenuta I Fauri",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b445",
+   "title": "Valtellina Superiore Grumello DOCG \"Tell\" 2021 - Luca Faccinelli",
+   "brand": "Luca Faccinelli",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b285",
+   "title": "Pinot Grigio \"Villa Locatelli\" DOC Friuli Isonzo 2025",
+   "brand": "Angoris",
+   "why": "parole in più: villa locatelli"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b029",
+   "title": "Masciarelli Marina Cvetic Trebbiano Riserva 2023",
+   "brand": "Masciarelli",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b029",
+   "title": "Masciarelli Castello di Semivicoli Trebbiano d'Abruzzo Superiore 2022",
+   "brand": "Masciarelli",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b467",
+   "title": "Verdicchio di Matelica Gegè Cavalieri 2023",
+   "brand": "Cavalieri",
+   "why": "parole in più: gege"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b285",
+   "title": "\"Albertina\" Pinot Nero DOC Friuli Isonzo 2023",
+   "brand": "Angoris",
+   "why": "parole in più: albertina"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b043",
+   "title": "Marramiero Montepulciano Abruzzo Inferi Riserva 2021",
+   "brand": "Marramiero",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b043",
+   "title": "Marramiero Pecorino Colle Delle Pietre Abruzzo 2025",
+   "brand": "Marramiero",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b285",
+   "title": "Pinot Grigio Collio DOC \"Locatelli\" 2024",
+   "brand": "Angoris",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b477",
+   "title": "Verdicchio di Matelica Cambrugiano Riserva Belisario 2023",
+   "brand": "Belisario",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b187",
+   "title": "Rosso Colli di Parma Monte delle Vigne 2024",
+   "brand": "Monte delle Vigne",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b045",
+   "title": "Marramiero Montepulciano Abruzzo Inferi Riserva 2021",
+   "brand": "Marramiero",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b459",
+   "title": "Offida Pecorino \"Bio\" 2024 - Velenosi",
+   "brand": "Velenosi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b459",
+   "title": "Marche Passerina \"Bio\" 2024 - Velenosi",
+   "brand": "Velenosi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b459",
+   "title": "Offida Pecorino \"Bio\" 2024 - Velenosi",
+   "brand": "Velenosi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b299",
+   "title": "Chardonnay Collio DOC 2024",
+   "brand": "Branko",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b504",
+   "title": "Soleiano Verdicchio di Matelica Cantine Provima 2025",
+   "brand": "Cantine Provima",
+   "why": "parole in più: soleiano"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b052",
+   "title": "Valori Pecorino Octava Dies 2018",
+   "brand": "Valori",
+   "why": "parole in più: octava dies"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b475",
+   "title": "Verdicchio dei Castelli di Jesi Classico Superiore DOC \"Grancasale\" 2022 - CasalFarneto",
+   "brand": "CasalFarneto",
+   "why": "parole in più: grancasale"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b052",
+   "title": "Valori Pecorino Superiore Octava Dies 2019",
+   "brand": "Valori",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b299",
+   "title": "Sauvignon Blanc Collio DOC 2024",
+   "brand": "Branko",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b475",
+   "title": "Verdicchio dei Castelli di Jesi Classico Superiore DOC \"Fontevecchia\" 2025 - CasalFarneto",
+   "brand": "CasalFarneto",
+   "why": "parole in più: fontevecchia"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b529",
+   "title": "Barbera Del Monferrato Frizzante La Monella Braida 2025",
+   "brand": "Braida Giacomo Bologna",
+   "why": "parole in più: monella"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b475",
+   "title": "Verdicchio dei Castelli di Jesi Classico Superiore DOC \"Grancasale\" 2023 - CasalFarneto",
+   "brand": "CasalFarneto",
+   "why": "parole in più: grancasale"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b301",
+   "title": "\"Afix\" Riesling Venezia Giulia IGT 2024",
+   "brand": "Jermann",
+   "why": "parole in più: afix"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b490",
+   "title": "Verdicchio dei Castelli di Jesi Classico Superiore DOC \"Dominè\" 2025 - Pievalta",
+   "brand": "Pievalta",
+   "why": "parole in più: domine"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b064",
+   "title": "Grifalco Aglianico del Vulture Gricos 2019",
+   "brand": "Grifalco",
+   "why": "parole in più: gricos"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b530",
+   "title": "Nebbiolo Produttori Del Barbaresco 2024",
+   "brand": "Produttori del Barbaresco",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b490",
+   "title": "Verdicchio dei Castelli di Jesi Classico Superiore DOC \"Tre Ripe\" 2025 - Pievalta",
+   "brand": "Pievalta",
+   "why": "parole in più: tre ripe"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b301",
+   "title": "\"Vintage Tunina\" Venezia Giulia IGT 2023",
+   "brand": "Jermann",
+   "why": "parole in più: tunina"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b214",
+   "title": "Albana Romagna 'Albarara' Santa Lucia 2025",
+   "brand": "Tenuta Santa Lucia",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b533",
+   "title": "Barbera D'Asti Bricco Della Bigotta Braida 2020",
+   "brand": "Braida Giacomo Bologna",
+   "why": "parole in più: bricco bigotta"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b301",
+   "title": "\"Capo Martino\" Bianco Venezia Giulia IGT 2022",
+   "brand": "Jermann",
+   "why": "parole in più: capo martino"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b090",
+   "title": "Ippolito 1845 Ciro Rosè Mabilia 2025",
+   "brand": "Ippolito 1845",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b518",
+   "title": "Molise Falanghina DOC 2025 - Di Majo Norante",
+   "brand": "Di Majo Norante",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b215",
+   "title": "Sangiovese di Romagna Superiore 'Prugneto' Poderi dal Nespoli 2024",
+   "brand": "Poderi dal Nespoli",
+   "why": "parole in più: prugneto"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b112",
+   "title": "Feudi San Gregorio Greco di Tufo Cutizzi Riserva 2024",
+   "brand": "Feudi di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b533",
+   "title": "Barbera D'Asti Montebruna Braida 2022",
+   "brand": "Braida Giacomo Bologna",
+   "why": "parole in più: montebruna"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b518",
+   "title": "Molise Greco DOP 2025 - Di Majo Norante",
+   "brand": "Di Majo Norante",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b518",
+   "title": "Tintilia del Molise DOP 2022 - Di Majo Norante",
+   "brand": "Di Majo Norante",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b116",
+   "title": "Villa Dora Lacryma Christi 2017",
+   "brand": "Villa Dora",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b533",
+   "title": "Barbera D’Asti Bricco dell’Uccellone Braida 2021",
+   "brand": "Braida Giacomo Bologna",
+   "why": "parole in più: bricco uccellone"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b519",
+   "title": "Barbera d'Asti Superiore DOCG \"Litina\" 2021 - Cascina Castlèt",
+   "brand": "Cascina Castlèt",
+   "why": "parole in più: litina"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b215",
+   "title": "Sangiovese di Romagna Superiore Riserva 'Il Nespoli' Poderi dal Nespolo 2021",
+   "brand": "Poderi dal Nespoli",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b139",
+   "title": "Feudi San Gregorio Taurasi Piano di Montevergine Riserva 2018",
+   "brand": "Feudi di San Gregorio",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b306",
+   "title": "Chardonnay Friuli Aquileia DOC 2024",
+   "brand": "Ca' Bolani",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b519",
+   "title": "Barbera d'Asti Superiore DOCG \"Passum\" 2021 - Cascina Castlèt",
+   "brand": "Cascina Castlèt",
+   "why": "parole in più: passum"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b534",
+   "title": "Nebbiolo Massolino 2024",
+   "brand": "Massolino",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b519",
+   "title": "Barbera d'Asti Superiore DOCG \"Litina\" 2021 - Cascina Castlèt",
+   "brand": "Cascina Castlèt",
+   "why": "parole in più: litina"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b520",
+   "title": "Dogliani Superiore DOCG \"sirì d’Jermu\" 2023 - Pecchenino",
+   "brand": "Pecchenino",
+   "why": "parole in più: siri jermu"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b306",
+   "title": "Traminer Aromatico Friuli Aquileia DOC 2024",
+   "brand": "Ca' Bolani",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b520",
+   "title": "Dogliani DOCG \"San Luigi\" 2025 - Pecchenino",
+   "brand": "Pecchenino",
+   "why": "la pagina non dice superiore"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b306",
+   "title": "\"Aquilis\" Sauvignon Friuli Aquileia DOC 2018",
+   "brand": "Ca' Bolani",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b174",
+   "title": "Paltrinieri Lambrusco Radice 2025",
+   "brand": "Paltrinieri Gianfranco",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b175",
+   "title": "Cleto Chiarli Lambrusco Sorbara Premium Mention Honorable Vecchia Modena 2020",
+   "brand": "Cleto Chiarli",
+   "why": "parole in più: mention honorable"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b221",
+   "title": "Sangiovese di Romagna Riserva Oriolo 'Petrignone' Tre Monti 2022",
+   "brand": "Tre Monti",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b528",
+   "title": "Erbaluce di Caluso DOCG \"Le Chiusure\" 2024 - Benito Favaro",
+   "brand": "Benito Favaro",
+   "why": "parole in più: chiusure"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b540",
+   "title": "Dolcetto D'Alba Tre Vigne Vietti 2023",
+   "brand": "Vietti",
+   "why": "parole in più: tre vigne"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b180",
+   "title": "Noelia Ricci Il Sangiovese Romagna Sangiovese 2024",
+   "brand": "Noelia Ricci",
+   "why": "la pagina non dice superiore"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b528",
+   "title": "Erbaluce di Caluso DOCG \"13 Mesi\" 2024 - Benito Favaro",
+   "brand": "Benito Favaro",
+   "why": "parole in più: mesi"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b238",
+   "title": "Friulano Russiz Superiore 2025",
+   "brand": "Russiz Superiore",
+   "why": "la pagina aggiunge superiore"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b528",
+   "title": "Erbaluce di Caluso DOCG \"Le Chiusure\" 2024 - Benito Favaro",
+   "brand": "Benito Favaro",
+   "why": "parole in più: chiusure"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b200",
+   "title": "Zucchi Lambrusco Sorbara In Purezza Silvia Zucchi Extra Brut 2019",
+   "brand": "Zucchi",
+   "why": "la pagina aggiunge brut"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b529",
+   "title": "Barbera del Monferrato Frizzante DOC \"La Monella\" 2025 - Braida di Giacomo Bologna",
+   "brand": "Braida",
+   "why": "parole in più: monella giacomo bologna"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b540",
+   "title": "Barbera D'Alba Trevìe Vietti 2023",
+   "brand": "Vietti",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b529",
+   "title": "Barbera del Monferrato Frizzante DOC “La Monella” 2025 Jéroboam - Braida di Giacomo Bologna",
+   "brand": "Braida",
+   "why": "parole in più: monella jeroboam giacomo bologna"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b318",
+   "title": "\"Poggio della Costa\" Grechetto Civitella d'Agliano IGT 2024",
+   "brand": "Sergio Mottura",
+   "why": "parole in più: civitella agliano"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b241",
+   "title": "Collio Bianco 'Stare Brajde' Muzic 2024",
+   "brand": "Muzic",
+   "why": "parole in più: stare brajde"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b529",
+   "title": "Barbera del Monferrato Frizzante DOC “La Monella” 2025 Magnum - Braida di Giacomo Bologna",
+   "brand": "Braida",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b542",
+   "title": "Roero Arneis Vietti 2025",
+   "brand": "Vietti",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b241",
+   "title": "Friulano Collio 'Villa de Randis' Muzic 2018",
+   "brand": "Muzic",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b356",
+   "title": "\"Lungh&eacute;ra\" Vermentino DOC Riviera Ligure di Ponente 2024",
+   "brand": "Durin",
+   "why": "parole in più: lungh eacute ra"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b533",
+   "title": "Barbera d’Asti DOCG \"Bricco della Bigotta\" 2020 - Braida",
+   "brand": "Braida",
+   "why": "parole in più: bricco bigotta"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b533",
+   "title": "Barbera d’Asti DOCG \"Montebruna\" 2022 - Braida di Giacomo Bologna",
+   "brand": "Braida",
+   "why": "parole in più: montebruna giacomo bologna"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b542",
+   "title": "Nebbiolo Perbacco Vietti 2023",
+   "brand": "Vietti",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b533",
+   "title": "Barbera d’Asti DOCG \"Montebruna\" 2023 - Braida di Giacomo Bologna",
+   "brand": "Braida",
+   "why": "parole in più: montebruna giacomo bologna"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b248",
+   "title": "Castello di Spessa Collio Pinot Nero Casanova Magnum 2021",
+   "brand": "Castello di Spessa",
+   "why": "formato o confezione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b243",
+   "title": "Ribolla Gialla 'Maralba' Marco Felluga 2025",
+   "brand": "Felluga Marco",
+   "why": "parole in più: maralba"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b356",
+   "title": "Vermentino DOC Riviera Ligure di Pontente 2024",
+   "brand": "Durin",
+   "why": "parole in più: pontente"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b265",
+   "title": "Specogna Pinot Grigio Ramato Riserva 2019",
+   "brand": "Vignaioli Specogna",
+   "why": "la pagina aggiunge riserva"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b245",
+   "title": "Collio Bianco 'Fosarin' Ronco dei Tassi 2024",
+   "brand": "Ronco dei Tassi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b267",
+   "title": "Venica Collio Merlot 2022",
+   "brand": "Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b557",
+   "title": "Erbaluce di Caluso Cariola Ferrando Vini 2023",
+   "brand": "Ferrando",
+   "why": "parole in più: cariola"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b267",
+   "title": "Venica Collio Bianco Tre Vignis 2022",
+   "brand": "Venica",
+   "why": "colore diverso"
+  },
+  {
+   "shop": "svinando",
+   "wine": "b356",
+   "title": "\"A Mattetta\" Pigato Riviera Ligure di Ponente DOC 2024",
+   "brand": "Durin",
+   "why": "parole in più: mattetta"
+  },
+  {
+   "shop": "xtrawine",
+   "wine": "b267",
+   "title": "Venica Collio Malvasia Petris 2024",
+   "brand": "Venica",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "callmewine",
+   "wine": "b245",
+   "title": "Malvasia Ronco dei Tassi 2025",
+   "brand": "Ronco dei Tassi",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "bernabei",
+   "wine": "b558",
+   "title": "Moscato D'Asti Prunotto 2025",
+   "brand": "Prunotto",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b540",
+   "title": "Dolcetto d'Alba DOC \"Trevie\" 2025 - Vietti",
+   "brand": "Vietti",
+   "why": "parole in più: trevie"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b542",
+   "title": "Langhe Freisa DOC 2022 - Vietti",
+   "brand": "Vietti",
+   "why": "denominazione diversa"
+  },
+  {
+   "shop": "tannico",
+   "wine": "b542",
+   "title": "Roero Arneis DOCG 2025 - Vietti",
+   "brand": "Vietti",
+   "why": "denominazione diversa"
+  }
+ ],
+ "perShop": {
+  "tannico": {
+   "urls": 18742,
+   "candidates": 907,
+   "opened": 690,
+   "ok": 166,
+   "noProduct": 0,
+   "why": {
+    "parole in più": 171,
+    "denominazione diversa": 68,
+    "la pagina aggiunge riserva": 34,
+    "formato o confezione diversa": 22,
+    "la pagina aggiunge frizzante": 3,
+    "pagina 429": 114,
+    "la pagina aggiunge cru": 2,
+    "la pagina aggiunge superiore": 32,
+    "colore diverso": 16,
+    "la pagina non dice superiore": 9,
+    "la pagina aggiunge extra": 5,
+    "la pagina aggiunge spumante": 2,
+    "la pagina aggiunge dolce": 2,
+    "la pagina aggiunge classico": 26,
+    "la pagina aggiunge vendemmia": 1,
+    "la pagina aggiunge metodo": 1,
+    "la pagina non dice brut": 2,
+    "la pagina aggiunge amarone": 5,
+    "la pagina aggiunge brut": 9
+   }
+  },
+  "bernabei": {
+   "urls": 8726,
+   "candidates": 370,
+   "opened": 298,
+   "ok": 83,
+   "noProduct": 2,
+   "why": {
+    "denominazione diversa": 78,
+    "la pagina aggiunge riserva": 14,
+    "formato o confezione diversa": 21,
+    "parole in più": 42,
+    "manca il nome etichetta": 3,
+    "la pagina non dice superiore": 4,
+    "la pagina aggiunge nature": 1,
+    "la pagina non dice brut": 1,
+    "la pagina aggiunge extra": 5,
+    "colore diverso": 15,
+    "la pagina non dice dolce": 1,
+    "la pagina aggiunge classico": 11,
+    "la pagina aggiunge spumante": 2,
+    "la pagina aggiunge superiore": 7,
+    "la pagina aggiunge millesimato": 1,
+    "la pagina non dice classico": 1,
+    "la pagina aggiunge amarone": 2,
+    "la pagina aggiunge vin": 1,
+    "la pagina aggiunge brut": 3
+   }
+  },
+  "vinocom": {
+   "urls": 7645,
+   "candidates": 623,
+   "opened": 86,
+   "ok": 34,
+   "noProduct": 0,
+   "why": {
+    "parole in più": 14,
+    "denominazione diversa": 12,
+    "la pagina aggiunge riserva": 7,
+    "formato o confezione diversa": 2,
+    "la pagina aggiunge spumante": 1,
+    "colore diverso": 3,
+    "la pagina aggiunge classico": 1,
+    "produttore diverso": 2,
+    "pagina 429": 7,
+    "la pagina aggiunge superiore": 3
+   }
+  },
+  "callmewine": {
+   "urls": 11052,
+   "candidates": 728,
+   "opened": 583,
+   "ok": 169,
+   "noProduct": 0,
+   "why": {
+    "denominazione diversa": 126,
+    "parole in più": 111,
+    "la pagina aggiunge riserva": 33,
+    "la pagina aggiunge superiore": 30,
+    "la pagina non dice superiore": 3,
+    "colore diverso": 14,
+    "formato o confezione diversa": 25,
+    "la pagina aggiunge spumante": 22,
+    "la pagina aggiunge frizzante": 1,
+    "la pagina non dice brut": 3,
+    "la pagina aggiunge nature": 2,
+    "la pagina aggiunge extra": 4,
+    "produttore diverso": 3,
+    "la pagina non dice extra": 3,
+    "la pagina non dice classico": 4,
+    "la pagina aggiunge vendemmia": 1,
+    "la pagina non dice riserva": 1,
+    "la pagina aggiunge santo": 2,
+    "la pagina aggiunge classico": 12,
+    "la pagina aggiunge selezione": 1,
+    "la pagina aggiunge vecchie": 1,
+    "la pagina aggiunge vin": 1,
+    "la pagina aggiunge brut": 9,
+    "la pagina aggiunge amarone": 1,
+    "la pagina aggiunge millesimato": 1
+   }
+  },
+  "signorvino": {
+   "urls": 1122,
+   "candidates": 17,
+   "opened": 13,
+   "ok": 3,
+   "noProduct": 0,
+   "why": {
+    "parole in più": 2,
+    "la pagina aggiunge riserva": 4,
+    "la pagina aggiunge classico": 2,
+    "la pagina aggiunge recioto": 1,
+    "la pagina non dice superiore": 1
+   }
+  },
+  "xtrawine": {
+   "urls": 8830,
+   "candidates": 560,
+   "opened": 478,
+   "ok": 99,
+   "noProduct": 53,
+   "why": {
+    "denominazione diversa": 51,
+    "la pagina aggiunge riserva": 32,
+    "la pagina aggiunge superiore": 12,
+    "parole in più": 64,
+    "la pagina non dice superiore": 3,
+    "la pagina aggiunge brut": 7,
+    "formato o confezione diversa": 8,
+    "colore diverso": 10,
+    "pagina 429": 100,
+    "la pagina non dice brut": 4,
+    "la pagina aggiunge extra": 5,
+    "la pagina aggiunge nature": 1,
+    "la pagina aggiunge classico": 9,
+    "la pagina non dice classico": 1,
+    "la pagina aggiunge passito": 2,
+    "la pagina non dice frizzante": 1,
+    "la pagina aggiunge santo": 2,
+    "la pagina aggiunge vendemmia": 1,
+    "la pagina aggiunge vin": 3,
+    "la pagina aggiunge selezione": 3,
+    "la pagina non dice millesimato": 1,
+    "la pagina aggiunge vecchie": 1,
+    "la pagina aggiunge amarone": 5
+   }
+  },
+  "bottleofitaly": {
+   "urls": 239748,
+   "candidates": 1047,
+   "opened": 287,
+   "ok": 81,
+   "noProduct": 0,
+   "why": {
+    "denominazione diversa": 49,
+    "formato o confezione diversa": 14,
+    "la pagina aggiunge riserva": 13,
+    "parole in più": 56,
+    "pagina 429": 24,
+    "la pagina aggiunge amabile": 4,
+    "la pagina aggiunge sur": 3,
+    "la pagina non dice superiore": 18,
+    "colore diverso": 6,
+    "la pagina aggiunge superiore": 6,
+    "la pagina aggiunge cru": 3,
+    "la pagina non dice brut": 1,
+    "la pagina non dice extra": 2,
+    "la pagina aggiunge classico": 3,
+    "la pagina non dice classico": 4
+   }
+  },
+  "svinando": {
+   "urls": 11719,
+   "candidates": 338,
+   "opened": 313,
+   "ok": 60,
+   "noProduct": 14,
+   "why": {
+    "la pagina aggiunge riserva": 20,
+    "la pagina aggiunge superiore": 15,
+    "pagina 404": 3,
+    "denominazione diversa": 54,
+    "parole in più": 68,
+    "colore diverso": 17,
+    "produttore diverso": 15,
+    "formato o confezione diversa": 13,
+    "la pagina non dice extra": 3,
+    "la pagina aggiunge nature": 1,
+    "la pagina non dice brut": 2,
+    "manca il nome etichetta": 7,
+    "la pagina non dice superiore": 3,
+    "la pagina aggiunge spumante": 1,
+    "la pagina aggiunge vecchie": 1,
+    "la pagina non dice dolce": 1,
+    "la pagina aggiunge vendemmia": 1,
+    "la pagina aggiunge passito": 1,
+    "la pagina aggiunge frizzante": 2,
+    "la pagina aggiunge vin": 2,
+    "la pagina aggiunge selezione": 1,
+    "la pagina aggiunge classico": 4,
+    "la pagina aggiunge amarone": 2,
+    "la pagina aggiunge brut": 2
+   }
+  },
+  "wineshop": {
+   "urls": 1971,
+   "candidates": 50,
+   "opened": 41,
+   "ok": 8,
+   "noProduct": 11,
+   "why": {
+    "produttore diverso": 2,
+    "parole in più": 8,
+    "denominazione diversa": 7,
+    "formato o confezione diversa": 2,
+    "la pagina aggiunge riserva": 1,
+    "la pagina aggiunge grappa": 1,
+    "la pagina aggiunge santo": 1
+   }
+  }
+ }
+}
