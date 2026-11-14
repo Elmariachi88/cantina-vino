@@ -1,0 +1,27 @@
+name: Dove comprare
+# Cerca i vini del Radar nei negozi online e pubblica radar/offerte.json.
+# Gira da solo ogni lunedì e giovedì mattina; si può avviare a mano da Actions.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 1,4'
+  push:
+    paths: ['tools/**', '.github/workflows/dove-comprare.yml']
+permissions:
+  contents: write
+concurrency: { group: dove-comprare, cancel-in-progress: true }
+jobs:
+  trova:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node tools/trova.mjs
+      - run: |
+          git config user.name "cantina-bot"
+          git config user.email "cantina-bot@users.noreply.github.com"
+          git add radar/offerte.json radar/_debug.json
+          git commit -m "Dove comprare: aggiornamento automatico dei riscontri" || exit 0
+          git pull --rebase origin main && git push
