@@ -109,7 +109,7 @@ function readProduct(html) {
     try { visit(JSON.parse(m[1].trim())); } catch (e) { /* JSON-LD rotto: si ignora */ }
   }
   const meta = k => { // content tra virgolette doppie o singole, in qualunque ordine rispetto al nome
-    const tag = (html.match(new RegExp(`<(?:meta|link)[^>]+(?:property|name|itemprop)=["']${k}["'][^>]*>`, 'i')) || [])[0] || '';
+    const tag = (html.match(new RegExp(`<[a-z]+[^>]+(?:property|name|itemprop)=["']${k}["'][^>]*>`, 'i')) || [])[0] || '';
     const m = tag.match(/(?:content|href)="([^"]*)"/i) || tag.match(/(?:content|href)='([^']*)'/i);
     return decode(m ? m[1] : '');
   };

@@ -467,6 +467,9 @@ select.inv-field{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://w
   <div class="nav-item" data-route="/wishlist" onclick="navTo('/wishlist')">
     <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Lista desideri
   </div>
+  <div class="nav-item" data-route="/buy" onclick="navTo('/buy')">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Dove comprare
+  </div>
   <div class="nav-item" data-route="/purchases" onclick="navTo('/purchases')">
     <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>I miei acquisti
   </div>
@@ -1331,6 +1334,7 @@ async function render(route) {
     else if(main==='wishlist') { view.innerHTML = await viewWishlist(); bindWishlist(); }
     else if(main==='stats') { view.innerHTML = await viewStats(); }
     else if(main==='investment') { view.innerHTML = await viewInvestment(); await bindInvestment(); }
+    else if(main==='buy') { view.innerHTML = viewBuy(); await bindBuy(); }
     else if(main==='wine-menu') { view.innerHTML = await viewWineMenu(); bindWineMenu(); }
     else if(main==='cellar-map') { view.innerHTML = await viewCellarMap(); bindCellarMap(); }
     else if(main==='cellar-log') { view.innerHTML = await viewCellarLog(); bindCellarLog(); }
@@ -5215,6 +5219,115 @@ async function viewInvestment() {
   </div>
   `;
 }
+// ── Dove comprare ──
+// Mostra, per i vini del Radar (Berebene), solo i riscontri certi trovati nei
+// negozi online: pagina prodotto aperta e verificata (stesso produttore, stessa
+// etichetta; l'annata può differire e viene indicata). I dati stanno in
+// radar/offerte.json, aggiornato da GitHub Actions (tools/trova.mjs): l'app non
+// cerca nulla da sola e non costruisce link.
+let _buyData = null, _buyShown = 30, _buyPrefill = '';
+async function loadBuyData() {
+  const res = await fetch('radar/offerte.json', { cache: 'no-cache' });
+  if (!res.ok) throw new Error('Elenco dei negozi non ancora disponibile');
+  _buyData = await res.json();
+  await loadRadar();
+  const pack = (window.RADAR_PACKS || []).find(p => p.source === 'Berebene' && p.wines);
+  _buyData.wines = pack ? pack.wines : [];
+  return _buyData;
+}
+function viewBuy() {
+  return `
+  <div class="page-header"><div class="page-title">Dove comprare</div></div>
+  <div class="card">
+    <div id="buy-head" class="assist-meta" style="margin-bottom:10px">Caricamento…</div>
+    <div id="buy-body"></div>
+  </div>`;
+}
+async function bindBuy() {
+  const head = document.getElementById('buy-head'), body = document.getElementById('buy-body');
+  if (!head || !body) return;
+  let d;
+  try { d = await loadBuyData(); }
+  catch (e) { head.innerHTML = `<span style="color:var(--pill-d)">⚠️ ${esc(e.message)}. Serve la connessione la prima volta.</span>`; return; }
+  if (!document.getElementById('buy-body')) return;
+  const regions = Array.from(new Set(d.wines.map(w => w.r).filter(Boolean))).sort();
+  const when = d.generated ? new Date(d.generated).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+  head.innerHTML = `<b>${d.found}</b> vini su ${d.total} della guida trovati in vendita · aggiornato il ${esc(when)}.<br>
+    Solo riscontri certi: pagina del negozio aperta, stesso produttore e stessa etichetta. L'annata può essere diversa ed è sempre indicata.`;
+  body.innerHTML = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+      <input type="text" id="buy-text" class="inv-field" placeholder="Cerca per nome, produttore, regione" value="${esc(_buyPrefill)}" style="flex:2;min-width:150px">
+      <select id="buy-region" class="inv-field" style="flex:1;min-width:120px"><option value="">Tutte le regioni</option>${regions.map(r => `<option>${esc(r)}</option>`).join('')}</select>
+      <select id="buy-shop" class="inv-field" style="flex:1;min-width:120px">
+        <option value="">Tutti i negozi</option><option value="@tried">Solo quelli che conosco</option>
+        ${d.shops.filter(s => s.offers).map(s => `<option value="${esc(s.id)}">${esc(s.name)} (${s.offers})</option>`).join('')}
+      </select>
+      <select id="buy-sort" class="inv-field" style="flex:1;min-width:120px">
+        <option value="guide">Ordine della guida</option><option value="price">Prezzo più basso</option><option value="shops">Più negozi</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--text-2);margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="buy-avail" checked> Solo disponibili</label>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="buy-year"> Solo annata della guida</label>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="buy-missing"> Mostra anche i non trovati</label>
+    </div>
+    <div id="buy-count" class="assist-meta" style="margin-bottom:6px"></div>
+    <div id="buy-list"></div>
+    <details style="margin-top:14px;font-size:12px;color:var(--text-2)"><summary style="cursor:pointer">Negozi controllati</summary>
+      <div style="margin-top:8px">${d.shops.map(s => `<div style="padding:4px 0;border-bottom:1px solid var(--border)"><b>${esc(s.name)}</b> ${s.tried ? '<span class="pill pill-p">già provato da te</span>' : '<span class="pill pill-u">nuovo: verifica tu l\'affidabilità</span>'}<br>${s.products} pagine in catalogo · ${s.offers} riscontri certi${s.note ? ' · ⚠️ ' + esc(s.note) : ''}</div>`).join('')}</div>
+    </details>`;
+  _buyPrefill = '';
+  const rerender = () => { _buyShown = 30; renderBuyList(); };
+  ['buy-text', 'buy-region', 'buy-shop', 'buy-sort', 'buy-avail', 'buy-year', 'buy-missing'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener(el.type === 'text' ? 'input' : 'change', rerender);
+  });
+  renderBuyList();
+}
+function renderBuyList() {
+  const listEl = document.getElementById('buy-list'), d = _buyData;
+  if (!listEl || !d) return;
+  const val = id => document.getElementById(id).value, on = id => document.getElementById(id).checked;
+  const text = val('buy-text').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+  const region = val('buy-region'), shop = val('buy-shop'), sort = val('buy-sort');
+  const shopBy = Object.fromEntries(d.shops.map(s => [s.id, s]));
+  const plain = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  let rows = d.wines.map(w => {
+    let offs = (d.offers[w.id] || []).filter(o => shopBy[o.s]);
+    if (shop === '@tried') offs = offs.filter(o => shopBy[o.s].tried); else if (shop) offs = offs.filter(o => o.s === shop);
+    if (on('buy-avail')) offs = offs.filter(o => o.a !== 0);
+    if (on('buy-year')) offs = offs.filter(o => o.v && w.v && o.v === w.v);
+    offs = offs.slice().sort((a, b) => (a.a === 0) - (b.a === 0) || (a.p == null) - (b.p == null) || (a.p || 0) - (b.p || 0));
+    return { w, offs, min: offs.length && offs[0].p != null ? offs[0].p : Infinity };
+  }).filter(x => (!region || x.w.r === region) && (!text || plain([x.w.n, x.w.p, x.w.r].join(' ')).includes(text)));
+  const withOffers = rows.filter(x => x.offs.length).length;
+  if (!on('buy-missing')) rows = rows.filter(x => x.offs.length);
+  if (sort === 'price') rows.sort((a, b) => a.min - b.min);
+  else if (sort === 'shops') rows.sort((a, b) => b.offs.length - a.offs.length || a.min - b.min);
+  const shown = rows.slice(0, _buyShown);
+  document.getElementById('buy-count').textContent = `${withOffers} vini con almeno un negozio${rows.length > shown.length ? ' · primi ' + shown.length : ''}`;
+  listEl.innerHTML = shown.map(({ w, offs }) => `
+    <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:13.5px;font-weight:600;overflow-wrap:anywhere">${esc(w.n)}</div>
+      <div style="font-size:11.5px;color:var(--text-2)">${esc([w.p, w.r, w.t].filter(Boolean).join(' · '))}${w.g ? ' · ' + esc(w.g) : ''}</div>
+      ${offs.length ? offs.map((o, i) => {
+        const yr = o.v ? (w.v && o.v !== w.v ? `<span class="pill pill-y">annata ${o.v} (guida: ${w.v})</span>` : `<span class="pill pill-p">annata ${o.v}</span>`) : '<span class="pill pill-u">annata non indicata</span>';
+        const av = o.a === 0 ? '<span class="pill pill-d">esaurito</span>' : o.a === 1 ? '' : '<span class="pill pill-u">disponibilità da vedere</span>';
+        return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);${i === 0 ? 'background:var(--accent-light)' : ''}">
+          <div style="min-width:0">
+            <div style="font-size:12.5px;font-weight:600">${esc(shopBy[o.s].name)}${o.p != null ? ' · ' + esc(fmt(o.p)) : ' · <span style="font-weight:400;color:var(--text-2)">prezzo sulla pagina</span>'}</div>
+            <div style="font-size:11px;color:var(--text-2);overflow-wrap:anywhere;margin:2px 0 4px">${esc(o.t)}</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap">${yr}${av}</div>
+          </div>
+          <a class="btn ${i === 0 ? 'btn-accent' : 'btn-outline'} btn-sm" href="${esc(o.u)}" target="_blank" rel="noopener noreferrer" style="flex-shrink:0">Acquista</a>
+        </div>`;
+      }).join('') : '<div style="font-size:11.5px;color:var(--text-3);margin-top:6px">Non trovato con certezza in nessun negozio.</div>'}
+    </div>`).join('')
+    + (rows.length > shown.length ? `<button type="button" class="btn btn-outline btn-sm" id="buy-more" style="margin-top:10px">Mostra altri</button>` : '')
+    + (shown.length === 0 ? '<div class="empty">Nessun vino con questi filtri.</div>' : '');
+  document.getElementById('buy-more')?.addEventListener('click', () => { _buyShown += 30; renderBuyList(); });
+}
+
 // ── Radar (motore a regole + pacchetti dati multi-fonte, in radar/) ──
 // Ogni pacchetto è una fonte/edizione (es. Berebene 2026): una nuova edizione
 // si aggiunge con un file pack-*.js e il suo nome qui sotto, senza toccare
@@ -5322,6 +5435,7 @@ function renderRadarList() {
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
         <button type="button" class="btn btn-outline btn-sm" data-action="radar-add" data-idx="${i}">+ Candidato</button>
         <button type="button" class="btn btn-outline btn-sm" data-action="radar-signals" data-idx="${i}">🔎 Segnali</button>
+        ${isProd ? '' : `<button type="button" class="btn btn-outline btn-sm" data-action="radar-buy" data-idx="${i}">🛒 Dove comprare</button>`}
       </div>
     </div>`;
   }).join('') + (_radarList.length > shown.length ? `<button type="button" class="btn btn-outline btn-sm" id="radar-more" style="margin-top:10px">Mostra altri</button>` : '')
@@ -5344,6 +5458,11 @@ function renderRadarList() {
     _invLinkedWineId = null;
     document.getElementById('inv-search-btn')?.click();
     document.getElementById('inv-results')?.scrollIntoView({behavior:'smooth', block:'start'});
+  }));
+  listEl.querySelectorAll('[data-action="radar-buy"]').forEach(b => b.addEventListener('click', () => {
+    const w = shown[parseInt(b.dataset.idx)]; if (!w) return;
+    _buyPrefill = (w.p || '').replace(/\(.*?\)/g, '').trim();
+    navigate('/buy');
   }));
   document.getElementById('radar-more')?.addEventListener('click', () => { _radarShown += 20; renderRadarList(); });
 }

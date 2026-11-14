@@ -6,11 +6,11 @@ export const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(
   .replace(/&amp;/g, ' ').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
 
 const STOP = new Set('d di del della dei degli delle dello dell de da dal il lo la le i gli l e ed in a al alla con su per un una s n the of and'.split(' '));
-const PROD_GENERIC = new Set('azienda agricola agricole cantina cantine tenuta tenute fattoria podere poderi domaine chateau maison weingut societa semplice soc agr vini vigneti vigneto vitivinicola winery estate wines casa'.split(' '));
+const PROD_GENERIC = new Set('azienda agricola agricole cantina cantine tenuta tenute fattoria podere poderi domaine chateau maison weingut societa semplice soc agr vini vigneti vigneto vitivinicola winery estate wines casa casata marchesi marchese conti conte barone baroni fratelli flli figli eredi borgo castello'.split(' '));
 const ABBR = { sup: 'superiore', ris: 'riserva', cl: 'classico', m: 'metodo' };
 // Parole che un negozio aggiunge al titolo senza cambiare il vino.
 const SHOP_NOISE = new Set(('doc docg igt igp dop doc aoc bio biologico biologica organic organico vino wine vini cl ml lt l bottiglia bottle '
-  + 'italia italy vegan vegano naturale senza solfiti aggiunti tappo vite stelvin astuccio astucciato confezione annata vintage nv sa '
+  + 'italia italy vegan vegano naturale senza solfiti aggiunti stelvin astuccio astucciato confezione annata vintage nv sa '
   + 'rosso bianco rosato rose red white tranquillo fermo secco dry 75 750 075 0 nuovo new edizione etichetta'
   + ' abruzzo basilicata calabria campania emilia romagna friuli venezia giulia lazio liguria lombardia marche molise piemonte puglia salento sardegna sicilia toscana trentino alto adige umbria valle aosta veneto')
   .split(' '));
@@ -67,12 +67,14 @@ export function isCandidate(p, tokSet) {
 // brand = produttore letto dalla pagina (può mancare).
 const SMALL = /\b(37[.,]?5 ?cl|375 ?ml|0[.,]375|50 ?cl|500 ?ml|mezza bottiglia|half bottle)\b/i;
 export function verify(p, title, brand, generic, evidence = '') {
+  title = String(title || '').replace(/\(?\s*tappo\s+(a\s+)?(vite|stelvin|sughero|corona)\s*\)?/gi, ' ');
   const tT = tokens(stripYear(title));
   const tSet = new Set(tT);
   const bT = new Set(prodTokens(brand));
   const count = t => tT.filter(x => x === t).length;
   const eT = tokens(stripYear(evidence)), evCount = t => eT.filter(x => x === t).length;
   const fmt = p.sweet ? title.replace(SMALL, ' ') : title;
+  if (/\s\+\s|\bbundle\b|\bduo\b|\btris\b|\bmix\b/i.test(title)) return { ok: false, why: 'confezione con più vini' };
   if (FORMAT_BAD.test(fmt)) return { ok: false, why: 'formato o confezione diversa' };
   if (!p.prodT.every(t => { const need = p.nameT.includes(t) ? 2 : 1; return bT.has(t) || count(t) >= need || evCount(t) >= need; })) return { ok: false, why: 'produttore diverso' };
   const missD = p.distinct.filter(t => !tSet.has(t));
@@ -85,6 +87,8 @@ export function verify(p, title, brand, generic, evidence = '') {
   const wColorInName = p.nameT.map(t => COLORS[t]).find(Boolean);
   const wColor = wColorInName || p.color;
   if (wColor && tColors.size && !tColors.has(wColor)) return { ok: false, why: 'colore diverso' };
+  if (tColors.size > 1) return { ok: false, why: 'più colori nel titolo' };
+  if (tColors.has('rosato') && wColor !== 'rosato') return { ok: false, why: 'colore diverso (rosato)' };
   const hit = p.gen.filter(t => tSet.has(t)).length;
   if (p.gen.length && hit / p.gen.length < 0.6) return { ok: false, why: 'denominazione diversa' };
   // Una parola di denominazione/vitigno che manca e un'altra al suo posto = scambio (Pinot Grigio ≠ Pinot Nero).
@@ -93,10 +97,13 @@ export function verify(p, title, brand, generic, evidence = '') {
   // Le parole della marca letta sulla pagina valgono come note solo se la marca è proprio quel produttore.
   const brandIsProducer = bT.size && p.prodT.every(t => bT.has(t));
   const known = new Set([...p.nameT, ...p.prodT, ...(brandIsProducer ? bT : [])]);
-  const extras = [...tSet].filter(t => !known.has(t) && !SHOP_NOISE.has(t) && !generic.has(t) && !PROD_GENERIC.has(t) && !STOP.has(t) && (t.length > 1 || /^\d$/.test(t)));
+  const unknown = [...tSet].filter(t => !known.has(t) && !SHOP_NOISE.has(t) && !PROD_GENERIC.has(t) && !STOP.has(t) && (t.length > 1 || /^\d$/.test(t)));
+  const extras = unknown.filter(t => !generic.has(t));          // parole mai viste: quasi certamente un'altra etichetta
+  const genExtras = unknown.filter(t => generic.has(t));        // parole di denominazione/vitigno aggiunte dal negozio
   // Parole in più nel titolo = probabile altra etichetta dello stesso produttore.
   // Tollerata una sola parola in più, e solo se il nome etichetta è lungo e riconosciuto (almeno 2 parole proprie).
   const allowed = p.distinct.filter(t => t.length > 3).length >= 2 ? 1 : 0;
   if (extras.length > allowed) return { ok: false, why: 'parole in più: ' + extras.join(' ') };
+  if (genExtras.length > 1 || (genExtras.length && extras.length)) return { ok: false, why: 'parole in più: ' + genExtras.concat(extras).join(' ') };
   return { ok: true };
 }
