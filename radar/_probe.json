@@ -1,0 +1,1003 @@
+{
+ "www.tannico.it": {
+  "robots": {
+   "status": 200,
+   "sitemaps": [
+    "https://www.tannico.it/sitemap.xml"
+   ],
+   "disallow": [
+    "Disallow: /admin",
+    "Disallow: /cart/",
+    "Disallow: /*/cart/",
+    "Disallow: /checkout",
+    "Disallow: /*/checkout",
+    "Disallow: /checkouts/",
+    "Disallow: /*/checkouts/",
+    "Disallow: /orders",
+    "Disallow: /*/orders",
+    "Disallow: /account",
+    "Disallow: /*/account",
+    "Disallow: /90574324052",
+    "Disallow: /cdn/wpm/*.js",
+    "Disallow: /services",
+    "Disallow: /sf_*",
+    "Disallow: /.well-known/shopify/monorail",
+    "Disallow: /cart.js",
+    "Disallow: /*/cart.js",
+    "Disallow: /recommendations/products",
+    "Disallow: /*/recommendations/products",
+    "Disallow: /collections/*sort_by*",
+    "Disallow: /*/collections/*sort_by*",
+    "Disallow: /collections/*+*",
+    "Disallow: /collections/*%2B*",
+    "Disallow: /collections/*%2b*",
+    "Disallow: /*/collections/*+*",
+    "Disallow: /*/collections/*%2B*",
+    "Disallow: /*/collections/*%2b*",
+    "Disallow: /collections/*filter*&*filter*",
+    "Disallow: /*/collections/*filter*&*filter*",
+    "Disallow: /blogs/*+*",
+    "Disallow: /blogs/*%2B*",
+    "Disallow: /blogs/*%2b*",
+    "Disallow: /*/blogs/*+*",
+    "Disallow: /*/blogs/*%2B*",
+    "Disallow: /*/blogs/*%2b*",
+    "Disallow: /*?*ls=*&ls=*",
+    "Disallow: /*?*ls%3*ls%3*",
+    "Disallow: /*?*oseid=*",
+    "Disallow: /*?*preview_theme_id=*"
+   ]
+  },
+  "productsJson": {
+   "status": 200,
+   "type": "application/json; charset=utf-8",
+   "final": "https://www.tannico.it/products.json?limit=2",
+   "head": "{\"products\":[{\"id\":15977613623636,\"title\":\"Vino Nobile di Montepulciano DOCG \\\"Tempo\\\" 2023 - Salcheto\",\"handle\":\"vino-nobile-di-montepulciano-docg-tempo-2023-salcheto\",\"body_html\":\"Rosso rubino con riflessi granati. Naso di ciliegia matura, viola, spezie e sottobosco. Palato strutturato ed elegante, dal tannino fitto e dal finale lungo.\\u003cbr\\u003e\\u003cbr\\u003eSalcheto è una cantina di riferimento a Montepulciano, nota anche per l’attenzione alla sostenibilità, e il Tempo lo conferma. Frutto, struttura e finezza del Sangiovese in un Nobile equilibrato e di carattere. Una scelta affidabile per chi cerca un grande rosso toscano oltre i nomi più scontati.\\u003cbr\\u003e\\u003cbr\\u003eIl Vino Nobile di Montepulciano Tempo di Salcheto accompagna carni rosse, brasati e arrosti. Ottimo con selvaggina, primi ricchi e formaggi stagionati.\\u003cbr\\u003e\\u003cbr\\u003eSolfiti\\u003cbr\\u003e\\u003cbr"
+  },
+  "sitemaps": [
+   {
+    "url": "https://www.tannico.it/sitemap.xml",
+    "status": 200,
+    "len": 5831,
+    "nLoc": 45,
+    "sample": [
+     "https://www.tannico.it/sitemap_agentic_discovery.xml",
+     "https://www.tannico.it/sitemap_products_1.xml?from=9882919502164&amp;to=9914585579860",
+     "https://www.tannico.it/sitemap_products_2.xml?from=9914585612628&amp;to=9917858611540",
+     "https://www.tannico.it/sitemap_products_3.xml?from=9917860708692&amp;to=9969020895572",
+     "https://www.tannico.it/sitemap_products_4.xml?from=9970786435412&amp;to=12137728999764",
+     "https://www.tannico.it/sitemap_products_5.xml?from=12137729786196&amp;to=12382080565588",
+     "https://www.tannico.it/sitemap_products_6.xml?from=12382080696660&amp;to=12519194820948",
+     "https://www.tannico.it/sitemap_products_7.xml?from=12519195640148&amp;to=15379868746068",
+     "https://www.tannico.it/sitemap_products_8.xml?from=15379868778836&amp;to=15558727598420",
+     "https://www.tannico.it/sitemap_products_9.xml?from=15558727696724&amp;to=15880791490900",
+     "https://www.tannico.it/sitemap_products_10.xml?from=15880791916884&amp;to=15977604841812",
+     "https://www.tannico.it/sitemap_products_11.xml?from=15977607528788&amp;to=15978010313044"
+    ],
+    "child": {
+     "url": "https://www.tannico.it/sitemap_products_1.xml?from=9882919502164&amp;to=9914585579860",
+     "status": 200,
+     "len": 493778,
+     "nLoc": 998,
+     "sample": [
+      "https://www.tannico.it/",
+      "https://www.tannico.it/products/tannico-gift-card-25",
+      "https://www.tannico.it/products/tannico-gift-card-50",
+      "https://www.tannico.it/products/tannico-gift-card-75",
+      "https://www.tannico.it/products/tannico-gift-card-100",
+      "https://www.tannico.it/products/tannico-gift-card-250",
+      "https://www.tannico.it/products/franciacorta-docg-brut-gatti",
+      "https://www.tannico.it/products/valdobbiadene-prosecco-superiore-docg-extra-dry-giall-oro-ruggeri"
+     ]
+    }
+   }
+  ],
+  "home": {
+   "status": 200,
+   "final": "https://www.tannico.it/",
+   "len": 1286618,
+   "shopify": true,
+   "blocked": true
+  }
+ },
+ "www.bernabei.it": {
+  "robots": {
+   "status": 200,
+   "sitemaps": [
+    "https://www.bernabei.it/sitemaps/sitemap_b2c_it_it.xml",
+    "https://www.bernabei.it/sitemaps/sitemap_b2c_it_en.xml"
+   ],
+   "disallow": [
+    "Disallow: /*?utm_source=criteo\r",
+    "Disallow: /*?*\r",
+    "Disallow: /index.php/\r",
+    "Disallow: /*.php$\r",
+    "Disallow: /*SID=\r",
+    "Disallow: /catalog/\r",
+    "Disallow: /catalogsearch/\r",
+    "Disallow: /checkout/\r",
+    "Disallow: /customer/\r",
+    "Disallow: /sales/\r",
+    "Disallow: /wishlist\r",
+    "Disallow: /sendfriend/\r",
+    "Disallow: /review/\r",
+    "Disallow: /productalert/\r",
+    "Disallow: /newsletter/\r",
+    "Disallow: /page_cache/\r",
+    "Disallow: /rest/\r",
+    "Disallow: /graphql\r",
+    "Disallow: /quickview/\r",
+    "Disallow: /feeds/\r",
+    "Disallow: /tools\r",
+    "Disallow: /offerte-della-settimana\r",
+    "Disallow: /offerta-newsletter-*\r",
+    "Disallow: /offerte/promo/\r",
+    "Disallow: /fornitori/\r",
+    "Disallow: /foodlabel/\r",
+    "Disallow: /selezioni/\r",
+    "Disallow: /business/\r",
+    "Disallow: /omaggio\r",
+    "Disallow: /offerta\r",
+    "Disallow: /*/*-*_\r",
+    "Disallow: /*/*_*-\r"
+   ]
+  },
+  "productsJson": {
+   "status": 404,
+   "type": "text/html; charset=UTF-8",
+   "final": "https://www.bernabei.it/products.json?limit=2",
+   "head": "<!doctype html>\n<html lang=\"it\">\n<head >\n    <meta charset=\"utf-8\"/>\n<meta name=\"title\" content=\"404 Not Found | Bernabei\"/>\n<meta name=\"description\" content=\"Page description\"/>\n<meta name=\"keywords\" content=\"Page keywords\"/>\n<meta name=\"robots\" content=\"INDEX,FOLLOW\"/>\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>\n<title>404 Not Found | Bernabei</title>\n        <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"https://www.bernabei.it/static/version1794558708/frontend/Bernabei/default/it_IT/css/styles.css\" />\n<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"https://www.bernabei.it/static/version1794558708/frontend/Bernabei/default/it_IT/Bernabei_Accessibility/css/accessibility.css\" />\n<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"https://www.bernabei.it/static/version1794558708/frontend/Bernabei/default/it_IT/StripeIntegration_Payments/c"
+  },
+  "sitemaps": [
+   {
+    "url": "https://www.bernabei.it/sitemaps/sitemap_b2c_it_it.xml",
+    "status": 200,
+    "len": 4116515,
+    "nLoc": 8728,
+    "sample": [
+     "https://www.bernabei.it/",
+     "https://www.bernabei.it/birre-online",
+     "https://www.bernabei.it/champagne",
+     "https://www.bernabei.it/birre-online/casse-di-birra",
+     "https://www.bernabei.it/birre-online/fusti-di-birra",
+     "https://www.bernabei.it/birre-online/spillatori-birra",
+     "https://www.bernabei.it/birre-online/birre-alcohol-free",
+     "https://www.bernabei.it/termini-e-condizioni",
+     "https://www.bernabei.it/informativa-sulla-privacy",
+     "https://www.bernabei.it/brands",
+     "https://www.bernabei.it/diritto-di-recesso",
+     "https://www.bernabei.it/accessibility"
+    ]
+   },
+   {
+    "url": "https://www.bernabei.it/sitemaps/sitemap_b2c_it_en.xml",
+    "status": 200,
+    "len": 3973670,
+    "nLoc": 7751,
+    "sample": [
+     "https://www.bernabei.it/",
+     "https://www.bernabei.it/birre-online",
+     "https://www.bernabei.it/champagne",
+     "https://www.bernabei.it/birre-online/casse-di-birra",
+     "https://www.bernabei.it/birre-online/fusti-di-birra",
+     "https://www.bernabei.it/birre-online/spillatori-birra",
+     "https://www.bernabei.it/birre-online/birre-alcohol-free",
+     "https://www.bernabei.it/termini-e-condizioni",
+     "https://www.bernabei.it/informativa-sulla-privacy",
+     "https://www.bernabei.it/brands",
+     "https://www.bernabei.it/diritto-di-recesso",
+     "https://www.bernabei.it/accessibility"
+    ]
+   }
+  ],
+  "home": {
+   "status": 200,
+   "final": "https://www.bernabei.it/",
+   "len": 1933604,
+   "shopify": false,
+   "blocked": true
+  }
+ },
+ "www.vino.com": {
+  "robots": {
+   "status": 200,
+   "sitemaps": [
+    "https://www.vino.com/sitemap.xml",
+    "https://www.vino.com/en/sitemap.xml",
+    "https://www.vino.com/de/sitemap.xml",
+    "https://www.vino.com/fr/sitemap.xml",
+    "https://www.vino.com/sv/sitemap.xml",
+    "https://www.vino.com/nl/sitemap.xml",
+    "https://www.vino.com/es/sitemap.xml"
+   ],
+   "disallow": [
+    "Disallow:",
+    "Disallow:",
+    "Disallow: /*?*testoRicerca=*",
+    "Disallow: /*?nav=*",
+    "Disallow: /*?*nav=*",
+    "Disallow: /*?*cl=*",
+    "Disallow: /*?*cti=*",
+    "Disallow: /account/*",
+    "Disallow: /user/*",
+    "Disallow: /purchase/*",
+    "Disallow: /go/*",
+    "Disallow: /s/*",
+    "Disallow: /de/account/*",
+    "Disallow: /de/user/*",
+    "Disallow: /de/purchase/*",
+    "Disallow: /de/go/*",
+    "Disallow: /de/s/*",
+    "Disallow: /fr/account/*",
+    "Disallow: /fr/user/*",
+    "Disallow: /fr/purchase/*",
+    "Disallow: /fr/go/*",
+    "Disallow: /fr/s/*",
+    "Disallow: /sv/account/*",
+    "Disallow: /sv/user/*",
+    "Disallow: /sv/purchase/*",
+    "Disallow: /sv/go/*",
+    "Disallow: /sv/s/*",
+    "Disallow: /nl/account/*",
+    "Disallow: /nl/user/*",
+    "Disallow: /nl/purchase/*",
+    "Disallow: /nl/go/*",
+    "Disallow: /nl/s/*",
+    "Disallow: /es/account/*",
+    "Disallow: /es/user/*",
+    "Disallow: /es/purchase/*",
+    "Disallow: /es/go/*",
+    "Disallow: /es/s/*",
+    "Disallow: /en/account/*",
+    "Disallow: /en/user/*",
+    "Disallow: /en/purchase/*"
+   ]
+  },
+  "productsJson": {
+   "status": 404,
+   "type": "text/html;charset=UTF-8",
+   "final": "https://www.vino.com/products.json?limit=2",
+   "head": "<!DOCTYPE html>\n<!--    @formatter:off-->\n<html lang=\"it\">\n<head>\n    <base href=\"https://www.vino.com/\"/>\n    <meta charset=\"UTF-8\">\n    <meta content=\"width=device-width, initial-scale=1.0\" name=\"viewport\">\n    <title>404 Not Found</title>\n    <link href=\"https://fonts.googleapis.com\" rel=\"preconnect\">\n    <link crossorigin href=\"https://fonts.gstatic.com\" rel=\"preconnect\">\n    <link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;700&family=Open+Sans:wght@400&display=swap\"\n          rel=\"stylesheet\">\n    <style>\n        body{font-family:'Open Sans',sans-serif;background:#323031;color:#323031;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh}\n        .card{background:#fff;max-width:550px;width:90%;padding:60px 40px;border-radius:8px;text-align:center;box-shadow:0 8px 10px 1px rgba(0,0,0,.07),0 3px 14px 2px rgba(0,0,0,.07),0 5px 5px "
+  },
+  "sitemaps": [
+   {
+    "url": "https://www.vino.com/sitemap.xml",
+    "status": 200,
+    "len": 11432006,
+    "nLoc": 10487,
+    "sample": [
+     "https://www.vino.com/",
+     "https://www.vino.com/altro/accessori",
+     "https://www.vino.com/altro/aceti-balsamici",
+     "https://www.vino.com/altro/birra",
+     "https://www.vino.com/altro/distillato",
+     "https://www.vino.com/altro/olio-extravergine",
+     "https://www.vino.com/vino/bag-in-box",
+     "https://www.vino.com/vino/box",
+     "https://www.vino.com/altro/box-degustazione",
+     "https://www.vino.com/vino/champagne",
+     "https://www.vino.com/vino/finewine",
+     "https://www.vino.com/vino/bianco"
+    ]
+   },
+   {
+    "url": "https://www.vino.com/en/sitemap.xml",
+    "status": 200,
+    "len": 11553962,
+    "nLoc": 10590,
+    "sample": [
+     "https://www.vino.com/en/",
+     "https://www.vino.com/en/altro/accessori",
+     "https://www.vino.com/en/altro/aceti-balsamici",
+     "https://www.vino.com/en/altro/birra",
+     "https://www.vino.com/en/altro/distillato",
+     "https://www.vino.com/en/altro/olio-extravergine",
+     "https://www.vino.com/en/vino/bag-in-box",
+     "https://www.vino.com/en/vino/box",
+     "https://www.vino.com/en/altro/box-degustazione",
+     "https://www.vino.com/en/vino/champagne",
+     "https://www.vino.com/en/vino/finewine",
+     "https://www.vino.com/en/vino/bianco"
+    ]
+   },
+   {
+    "url": "https://www.vino.com/de/sitemap.xml",
+    "status": 200,
+    "len": 11544191,
+    "nLoc": 10579,
+    "sample": [
+     "https://www.vino.com/de/",
+     "https://www.vino.com/de/altro/accessori",
+     "https://www.vino.com/de/altro/aceti-balsamici",
+     "https://www.vino.com/de/altro/birra",
+     "https://www.vino.com/de/altro/distillato",
+     "https://www.vino.com/de/altro/olio-extravergine",
+     "https://www.vino.com/de/vino/bag-in-box",
+     "https://www.vino.com/de/vino/box",
+     "https://www.vino.com/de/altro/box-degustazione",
+     "https://www.vino.com/de/vino/champagne",
+     "https://www.vino.com/de/vino/finewine",
+     "https://www.vino.com/de/vino/bianco"
+    ]
+   }
+  ],
+  "home": {
+   "status": 200,
+   "final": "https://www.vino.com/",
+   "len": 754422,
+   "shopify": false,
+   "blocked": true
+  }
+ },
+ "www.callmewine.com": {
+  "robots": {
+   "status": 200,
+   "sitemaps": [
+    "https://www.callmewine.com/sitemap.xml"
+   ],
+   "disallow": [
+    "Disallow: /*?*",
+    "Disallow: /en/*?*",
+    "Disallow: /*?*=true",
+    "Disallow: /en/*?*=true",
+    "Disallow: /catalog",
+    "Disallow: /en/catalog",
+    "Disallow: /?search=",
+    "Disallow: /en/?search=",
+    "Disallow: /*?search=*",
+    "Disallow: /en/*?search=*",
+    "Disallow: /?search=*",
+    "Disallow: /en/?search=*",
+    "Disallow: /catalog.htm",
+    "Disallow: /catalog.htm?*",
+    "Disallow: /collections/*",
+    "Disallow: /en/collections/*",
+    "Disallow: /selections/*",
+    "Disallow: /en/selections/*",
+    "Disallow: /*catalog.htm",
+    "Disallow: /*catalog.htm?*",
+    "Disallow: /*?pricerange=*",
+    "Disallow: /en/*?pricerange=*",
+    "Disallow: /*?acustom=*",
+    "Disallow: /en/*?acustom=*",
+    "Disallow: /*?pcustom=*",
+    "Disallow: /en/*?pcustom=*",
+    "Disallow: /*?aid=*",
+    "Disallow: /en/*?aid=*",
+    "Disallow: /*?sel=*",
+    "Disallow: /en/*?sel=*",
+    "Disallow: /*?mid=*",
+    "Disallow: /en/*?mid=*",
+    "Disallow: /*?zid=*",
+    "Disallow: /en/*?zid=*",
+    "Disallow: /*?sid=*",
+    "Disallow: /en/*?sid=*",
+    "Disallow: /*?fpid=*",
+    "Disallow: /en/*?fpid=*",
+    "Disallow: /*?fid=*",
+    "Disallow: /en/*?fid=*"
+   ]
+  },
+  "productsJson": {
+   "status": 404,
+   "type": "application/json",
+   "final": "https://www.callmewine.com/products.json?limit=2",
+   "head": "{\n  \"error\": true,\n  \"url\": \"https://www.callmewine.com/products.json?limit=2\",\n  \"statusCode\": 404,\n  \"statusMessage\": \"Page Not Found: /products.json?limit=2\",\n  \"message\": \"Page Not Found: /products.json?limit=2\",\n  \"data\": {\n    \"path\": \"/products.json?limit=2\"\n  }\n}"
+  },
+  "sitemaps": [
+   {
+    "url": "https://www.callmewine.com/sitemap.xml",
+    "status": 200,
+    "len": 291,
+    "nLoc": 2,
+    "sample": [
+     "https://www.callmewine.com/sitemap/sitemap-it.xml",
+     "https://www.callmewine.com/sitemap/sitemap-en.xml"
+    ],
+    "child": {
+     "url": "https://www.callmewine.com/sitemap/sitemap-it.xml",
+     "status": 200,
+     "len": 523,
+     "nLoc": 5,
+     "sample": [
+      "https://www.callmewine.com/sitemap/static-it.xml",
+      "https://www.callmewine.com/sitemap/plp-it.xml",
+      "https://www.callmewine.com/sitemap/brand-it.xml",
+      "https://www.callmewine.com/sitemap/page-it.xml",
+      "https://www.callmewine.com/sitemap/pdp-it.xml"
+     ]
+    }
+   }
+  ],
+  "home": {
+   "status": 200,
+   "final": "https://www.callmewine.com/",
+   "len": 165697,
+   "shopify": true,
+   "blocked": true
+  }
+ },
+ "www.signorvino.com": {
+  "robots": {
+   "status": 200,
+   "sitemaps": [
+    "https://www.signorvino.com/sitemap_index.xml"
+   ],
+   "disallow": [
+    "Disallow: */search?q=*\r",
+    "Disallow: */search/*\r",
+    "Disallow: *q=*\r",
+    "Disallow: */?prefn1*\r",
+    "Disallow: *?prefn1*\r",
+    "Disallow: */?cgid*\r",
+    "Disallow: */Store-Show?sid*\r",
+    "Disallow: */cart/\r",
+    "Disallow: */checkoutlogin\r",
+    "Disallow: */checkoutflow\r",
+    "Disallow: */checkout/\r",
+    "Disallow: */orderdetails*\r",
+    "Disallow: */returndetails*\r",
+    "Disallow: */wishlist*\r",
+    "Disallow: */contactform*\r",
+    "Disallow: */unsubscribe*\r",
+    "Disallow: */?tiles*\r",
+    "Disallow: */refund*\r",
+    "Disallow: */Search-ShowAjax*\r",
+    "Disallow: */Search-UpdateGrid*\r"
+   ]
+  },
+  "productsJson": {
+   "status": 410,
+   "type": "text/html;charset=UTF-8",
+   "final": "https://www.signorvino.com/products.json?limit=2",
+   "head": "<!DOCTYPE html>\n\n<html lang=\"it-IT\">\n<head>\n<!--[if gt IE 9]><!-->\n<script>//common/scripts.isml</script>\n\n<script type=\"text/javascript\" src=\"/on/demandware.static/Sites-signorvino-eu-Site/-/it_IT/v1794622603829/js/vendor.min.js\"></script>\n<script defer type=\"text/javascript\" src=\"/on/demandware.static/Sites-signorvino-eu-Site/-/it_IT/v1794622603829/js/main.min.js\"></script>\n\n    <script defer type=\"text/javascript\" src=\"/on/demandware.static/Sites-signorvino-eu-Site/-/it_IT/v1794622603829/js/pageDesigner-components.min.js\"></script>\n\n    <script defer type=\"text/javascript\" src=\"/on/demandware.static/Sites-signorvino-eu-Site/-/it_IT/v1794622603829/js/productDetail.min.js\"></script>\n\n    <script defer type=\"text/javascript\" src=\"/on/demandware.static/Sites-signorvino-eu-Site/-/it_IT/v1794622603829/js/newsletter.min.js\"></script>\n\n\n\n\n<script defer=\"defer\" lang=\"javascript\" src=\"https://c"
+  },
+  "sitemaps": [
+   {
+    "url": "https://www.signorvino.com/sitemap_index.xml",
+    "status": 200,
+    "len": 1061,
+    "nLoc": 6,
+    "sample": [
+     "https://www.signorvino.com/it/sitemap_0-product.xml",
+     "https://www.signorvino.com/it/sitemap_1-image.xml",
+     "https://www.signorvino.com/it/sitemap_2-category.xml",
+     "https://www.signorvino.com/it/sitemap_3-content.xml",
+     "https://www.signorvino.com/it/sitemap_4.xml",
+     "https://www.signorvino.com/it/sitemap-signorvino-eu_stores_0.xml"
+    ],
+    "child": {
+     "url": "https://www.signorvino.com/it/sitemap_0-product.xml",
+     "status": 200,
+     "len": 1257837,
+     "nLoc": 2244,
+     "sample": [
+      "https://www.signorvino.com/it/vini/coccole_natalizie-CAS00016+SVG+FU.html",
+      "https://www.signorvino.com/it/en/vini/coccole_natalizie-CAS00016+SVG+FU.html",
+      "https://www.signorvino.com/it/vini/signorvino_lovers-CAS00020+SVG+FU.html",
+      "https://www.signorvino.com/it/en/vini/signorvino_lovers-CAS00020+SVG+FU.html",
+      "https://www.signorvino.com/it/vini/wine_box_signor_natale-CAS00021+SVG+FU.html",
+      "https://www.signorvino.com/it/en/vini/wine_box_signor_natale-CAS00021+SVG+FU.html",
+      "https://www.signorvino.com/it/vini/wine_box_le_langhe-CAS00027+SVG+FU.html",
+      "https://www.signorvino.com/it/en/vini/wine_box_le_langhe-CAS00027+SVG+FU.html"
+     ]
+    }
+   }
+  ],
+  "home": {
+   "status": 200,
+   "final": "https://www.signorvino.com/it/",
+   "len": 764542,
+   "shopify": false,
+   "blocked": true
+  }
+ },
+ "www.xtrawine.com": {
+  "robots": {
+   "status": 200,
+   "sitemaps": [
+    "https://www.xtrawine.com/sitemap.xml"
+   ],
+   "disallow": [
+    "Disallow: */cart*",
+    "Disallow: */orders*",
+    "Disallow: */checkouts/*",
+    "Disallow: */checkout*",
+    "Disallow: */65267892395/checkouts*",
+    "Disallow: */65267892395/orders*",
+    "Disallow: */carts*",
+    "Disallow: */admin*",
+    "Disallow: */account*",
+    "Disallow: /a/downloads/-/*",
+    "Disallow: /*?*oseid=*",
+    "Disallow: /*preview_theme_id*",
+    "Disallow: /*preview_script_id*",
+    "Disallow: /*/*?*ls=*&ls=*",
+    "Disallow: /*/*?*ls%3D*%3Fls%3D*",
+    "Disallow: /*/*?*ls%3d*%3fls%3d*",
+    "Disallow: /apple-app-site-association",
+    "Disallow: /.well-known/shopify/monorail",
+    "Disallow: /cdn/wpm/*.js",
+    "Disallow: /*.atom$",
+    "Disallow: *?srsltid=*",
+    "Disallow: *?page=*",
+    "Disallow: *?q=*",
+    "#DisallowFiltriCollections",
+    "Disallow: */collections/*filter.p.m.xtrawine.*",
+    "Disallow: */collections/*sort_by*",
+    "#DisallowPaginePromoeCollections",
+    "Disallow: */collections/xtrawine-*",
+    "Disallow: */collections/test2",
+    "Disallow: */collections/test-klaviyo",
+    "Disallow: */collections/2025-02-25-xtrawine-product-focus1",
+    "#DisallowOmnibus",
+    "Disallow: */collections/omnibus-label*",
+    "#DisallowPagineStatiche",
+    "Disallow: */search*",
+    "Disallow: */policies/*",
+    "Disallow: */pages/signup",
+    "Disallow: */collections/birthday-with-friends",
+    "Disallow: */collections/cumpleanos-con-amigos",
+    "#DisallowPagamentiSpedizioni"
+   ]
+  },
+  "productsJson": {
+   "status": 200,
+   "type": "application/json; charset=utf-8",
+   "final": "https://www.xtrawine.com/products.json?limit=2",
+   "head": "{\"products\":[{\"id\":8229874303147,\"title\":\"Imballo Ghiaccioli Celsius\",\"handle\":\"imballo-ghiaccioli-celsius\",\"body_html\":\"This is a Celsius ice lolly package, not a wine.\",\"published_at\":\"2026-11-14T02:06:14+01:00\",\"created_at\":\"2024-09-10T00:48:29+02:00\",\"updated_at\":\"2026-11-14T19:14:45+01:00\",\"vendor\":\"Xtrawine\",\"product_type\":\"Accessories\",\"tags\":[\"available_eu:boolean:false\",\"available_hk:boolean:false\",\"no-discount-eu\",\"Updated_20261114_021033\"],\"variants\":[{\"id\":44503264034987,\"title\":\"Default Title\",\"option1\":\"Default Title\",\"option2\":null,\"option3\":null,\"sku\":\"52219\",\"requires_shipping\":true,\"taxable\":true,\"featured_image\":null,\"available\":false,\"price\":\"11.07\",\"grams\":500,\"compare_at_price\":null,\"position\":1,\"product_id\":8229874303147,\"created_at\":\"2024-09-10T00:48:30+02:00\",\"updated_at\":\"2026-11-14T19:14:45+01:00\"}],\"images\":[{\"id\":41520873799851,\"created_at\":\"2026-03-17T09:21:"
+  },
+  "sitemaps": [
+   {
+    "url": "https://www.xtrawine.com/sitemap.xml",
+    "status": 200,
+    "len": 51531,
+    "nLoc": 397,
+    "sample": [
+     "https://www.xtrawine.com/sitemap_agentic_discovery.xml",
+     "https://www.xtrawine.com/sitemap_products_1.xml?from=8229028298923&amp;to=8230317359275",
+     "https://www.xtrawine.com/sitemap_products_2.xml?from=8230317818027&amp;to=8231006765227",
+     "https://www.xtrawine.com/sitemap_products_3.xml?from=8231007125675&amp;to=8232668922027",
+     "https://www.xtrawine.com/sitemap_products_4.xml?from=8232669413547&amp;to=8240235806891",
+     "https://www.xtrawine.com/sitemap_products_5.xml?from=8240237641899&amp;to=8416772980907",
+     "https://www.xtrawine.com/sitemap_products_6.xml?from=8418697412779&amp;to=8613640569003",
+     "https://www.xtrawine.com/sitemap_products_7.xml?from=8613644009643&amp;to=8711119143083",
+     "https://www.xtrawine.com/sitemap_products_8.xml?from=8711119175851&amp;to=8855932600491",
+     "https://www.xtrawine.com/sitemap_products_9.xml?from=8855932731563&amp;to=9144692474027",
+     "https://www.xtrawine.com/sitemap_products_10.xml?from=9144692998315&amp;to=9187436003499",
+     "https://www.xtrawine.com/sitemap_pages_1.xml?from=100225384619&amp;to=204883493035"
+    ],
+    "child": {
+     "url": "https://www.xtrawine.com/sitemap_agentic_discovery.xml",
+     "status": 200,
+     "len": 213,
+     "nLoc": 1,
+     "sample": [
+      "https://www.xtrawine.com/agents.md"
+     ]
+    }
+   }
+  ],
+  "home": {
+   "status": 200,
+   "final": "https://www.xtrawine.com/it",
+   "len": 1417383,
+   "shopify": true,
+   "blocked": true
+  }
+ },
+ "bottleofitaly.com": {
+  "robots": {
+   "status": 200,
+   "sitemaps": [
+    "https://bottleofitaly.com/sitemap.xml"
+   ],
+   "disallow": [
+    "Disallow: /admin",
+    "Disallow: /cart/",
+    "Disallow: /*/cart/",
+    "Disallow: /checkout",
+    "Disallow: /*/checkout",
+    "Disallow: /checkouts/",
+    "Disallow: /*/checkouts/",
+    "Disallow: /orders",
+    "Disallow: /*/orders",
+    "Disallow: /account",
+    "Disallow: /*/account",
+    "Disallow: /53822685356",
+    "Disallow: /cdn/wpm/*.js",
+    "Disallow: /services",
+    "Disallow: /sf_*",
+    "Disallow: /.well-known/shopify/monorail",
+    "Disallow: /cart.js",
+    "Disallow: /*/cart.js",
+    "Disallow: /recommendations/products",
+    "Disallow: /*/recommendations/products",
+    "Disallow: /collections/*sort_by*",
+    "Disallow: /*/collections/*sort_by*",
+    "Disallow: /collections/*+*",
+    "Disallow: /collections/*%2B*",
+    "Disallow: /collections/*%2b*",
+    "Disallow: /*/collections/*+*",
+    "Disallow: /*/collections/*%2B*",
+    "Disallow: /*/collections/*%2b*",
+    "Disallow: /collections/*filter*&*filter*",
+    "Disallow: /*/collections/*filter*&*filter*",
+    "Disallow: /blogs/*+*",
+    "Disallow: /blogs/*%2B*",
+    "Disallow: /blogs/*%2b*",
+    "Disallow: /*/blogs/*+*",
+    "Disallow: /*/blogs/*%2B*",
+    "Disallow: /*/blogs/*%2b*",
+    "Disallow: /*?*ls=*&ls=*",
+    "Disallow: /*?*ls%3*ls%3*",
+    "Disallow: /*?*oseid=*",
+    "Disallow: /*?*preview_theme_id=*"
+   ]
+  },
+  "productsJson": {
+   "status": 200,
+   "type": "application/json; charset=utf-8",
+   "final": "https://bottleofitaly.com/products.json?limit=2",
+   "head": "{\"products\":[{\"id\":11316388102482,\"title\":\"Crema Gianduja 50cl - Giarola - ETICHETTA DANNEGGIATA\",\"handle\":\"crema-gianduja-50cl-giarola-etichetta-danneggiata\",\"body_html\":\"\\u003cp\\u003eLa Crema Gianduja Giarola unisce il sapore deciso del cioccolato gianduja con la\\u003cbr\\u003ecremosità di una base morbida e vellutata. Questo liquore dal gusto ricco e avvolgente è perfetto per gli amanti del cioccolato che desiderano un'esperienza dolce e golosa. Ottima da gustare al naturale o come ingrediente per arricchire dolci, caffè e cocktail, donando un tocco di classe a ogni momento.\\u003c\\/p\\u003e\",\"published_at\":\"2026-11-13T16:29:26+01:00\",\"created_at\":\"2026-11-12T15:56:36+01:00\",\"updated_at\":\"2026-11-14T19:14:48+01:00\",\"vendor\":\"Giarola\",\"product_type\":\"Spirits\",\"tags\":[\"black-friday\",\"crema\",\"custom-gradazione-17-0\",\"DANNEGGIATA\",\"danneggiate\",\"diretta\",\"emilia-romagna\",\"giarola\",\"italia\",\""
+  },
+  "sitemaps": [
+   {
+    "url": "https://bottleofitaly.com/sitemap.xml",
+    "status": 200,
+    "len": 61811,
+    "nLoc": 469,
+    "sample": [
+     "https://bottleofitaly.com/sitemap_agentic_discovery.xml",
+     "https://bottleofitaly.com/sitemap_products_1.xml?from=6274143060140&amp;to=7521172259033",
+     "https://bottleofitaly.com/sitemap_products_2.xml?from=7521172324569&amp;to=7865364709593",
+     "https://bottleofitaly.com/sitemap_products_3.xml?from=7865364775129&amp;to=8089524601049",
+     "https://bottleofitaly.com/sitemap_products_4.xml?from=8089524666585&amp;to=8428774162770",
+     "https://bottleofitaly.com/sitemap_products_5.xml?from=8428774195538&amp;to=8587698012498",
+     "https://bottleofitaly.com/sitemap_products_6.xml?from=8587710300498&amp;to=8655900606802",
+     "https://bottleofitaly.com/sitemap_products_7.xml?from=8655906406738&amp;to=8743997538642",
+     "https://bottleofitaly.com/sitemap_products_8.xml?from=8743997604178&amp;to=8769604845906",
+     "https://bottleofitaly.com/sitemap_products_9.xml?from=8769619296594&amp;to=8808492007762",
+     "https://bottleofitaly.com/sitemap_products_10.xml?from=8808492040530&amp;to=8908960432466",
+     "https://bottleofitaly.com/sitemap_products_11.xml?from=8908960465234&amp;to=9271464591698"
+    ],
+    "child": {
+     "url": "https://bottleofitaly.com/sitemap_products_1.xml?from=6274143060140&amp;to=7521172259033",
+     "status": 200,
+     "len": 586501,
+     "nLoc": 1001,
+     "sample": [
+      "https://bottleofitaly.com/",
+      "https://bottleofitaly.com/products/piemonte-brachetto-doc-acquesi-cuvage",
+      "https://bottleofitaly.com/products/piemonte-doc-marengo-spumante-brut-acquesi-cuvage",
+      "https://bottleofitaly.com/products/nizza-docg-2018-75cl-ricossa",
+      "https://bottleofitaly.com/products/acqui-docg-rose-2018-75cl-ricossa",
+      "https://bottleofitaly.com/products/mystery-box-vino-50-euro-4-o-6-bottiglie",
+      "https://bottleofitaly.com/products/mystery-box-vino-100-euro",
+      "https://bottleofitaly.com/products/barone-montalto-zibibbo-secco-collezione-di-famiglia-terre-siciliane-igt"
+     ]
+    }
+   }
+  ],
+  "home": {
+   "status": 200,
+   "final": "https://bottleofitaly.com/",
+   "len": 891214,
+   "shopify": true,
+   "blocked": true
+  }
+ },
+ "www.vino75.com": {
+  "robots": {
+   "status": 200,
+   "sitemaps": [
+    "https://www.vino.com/sitemap.xml",
+    "https://www.vino.com/en/sitemap.xml",
+    "https://www.vino.com/de/sitemap.xml",
+    "https://www.vino.com/fr/sitemap.xml",
+    "https://www.vino.com/sv/sitemap.xml",
+    "https://www.vino.com/nl/sitemap.xml",
+    "https://www.vino.com/es/sitemap.xml"
+   ],
+   "disallow": [
+    "Disallow:",
+    "Disallow:",
+    "Disallow: /*?*testoRicerca=*",
+    "Disallow: /*?nav=*",
+    "Disallow: /*?*nav=*",
+    "Disallow: /*?*cl=*",
+    "Disallow: /*?*cti=*",
+    "Disallow: /account/*",
+    "Disallow: /user/*",
+    "Disallow: /purchase/*",
+    "Disallow: /go/*",
+    "Disallow: /s/*",
+    "Disallow: /de/account/*",
+    "Disallow: /de/user/*",
+    "Disallow: /de/purchase/*",
+    "Disallow: /de/go/*",
+    "Disallow: /de/s/*",
+    "Disallow: /fr/account/*",
+    "Disallow: /fr/user/*",
+    "Disallow: /fr/purchase/*",
+    "Disallow: /fr/go/*",
+    "Disallow: /fr/s/*",
+    "Disallow: /sv/account/*",
+    "Disallow: /sv/user/*",
+    "Disallow: /sv/purchase/*",
+    "Disallow: /sv/go/*",
+    "Disallow: /sv/s/*",
+    "Disallow: /nl/account/*",
+    "Disallow: /nl/user/*",
+    "Disallow: /nl/purchase/*",
+    "Disallow: /nl/go/*",
+    "Disallow: /nl/s/*",
+    "Disallow: /es/account/*",
+    "Disallow: /es/user/*",
+    "Disallow: /es/purchase/*",
+    "Disallow: /es/go/*",
+    "Disallow: /es/s/*",
+    "Disallow: /en/account/*",
+    "Disallow: /en/user/*",
+    "Disallow: /en/purchase/*"
+   ]
+  },
+  "productsJson": {
+   "status": 404,
+   "type": "text/html;charset=UTF-8",
+   "final": "https://www.vino.com/products.json?limit=2",
+   "head": "<!DOCTYPE html>\n<!--    @formatter:off-->\n<html lang=\"it\">\n<head>\n    <base href=\"https://www.vino.com/\"/>\n    <meta charset=\"UTF-8\">\n    <meta content=\"width=device-width, initial-scale=1.0\" name=\"viewport\">\n    <title>404 Not Found</title>\n    <link href=\"https://fonts.googleapis.com\" rel=\"preconnect\">\n    <link crossorigin href=\"https://fonts.gstatic.com\" rel=\"preconnect\">\n    <link href=\"https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;700&family=Open+Sans:wght@400&display=swap\"\n          rel=\"stylesheet\">\n    <style>\n        body{font-family:'Open Sans',sans-serif;background:#323031;color:#323031;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh}\n        .card{background:#fff;max-width:550px;width:90%;padding:60px 40px;border-radius:8px;text-align:center;box-shadow:0 8px 10px 1px rgba(0,0,0,.07),0 3px 14px 2px rgba(0,0,0,.07),0 5px 5px "
+  },
+  "sitemaps": [
+   {
+    "url": "https://www.vino.com/sitemap.xml",
+    "status": 200,
+    "len": 11432006,
+    "nLoc": 10487,
+    "sample": [
+     "https://www.vino.com/",
+     "https://www.vino.com/altro/accessori",
+     "https://www.vino.com/altro/aceti-balsamici",
+     "https://www.vino.com/altro/birra",
+     "https://www.vino.com/altro/distillato",
+     "https://www.vino.com/altro/olio-extravergine",
+     "https://www.vino.com/vino/bag-in-box",
+     "https://www.vino.com/vino/box",
+     "https://www.vino.com/altro/box-degustazione",
+     "https://www.vino.com/vino/champagne",
+     "https://www.vino.com/vino/finewine",
+     "https://www.vino.com/vino/bianco"
+    ]
+   },
+   {
+    "url": "https://www.vino.com/en/sitemap.xml",
+    "status": 200,
+    "len": 11553962,
+    "nLoc": 10590,
+    "sample": [
+     "https://www.vino.com/en/",
+     "https://www.vino.com/en/altro/accessori",
+     "https://www.vino.com/en/altro/aceti-balsamici",
+     "https://www.vino.com/en/altro/birra",
+     "https://www.vino.com/en/altro/distillato",
+     "https://www.vino.com/en/altro/olio-extravergine",
+     "https://www.vino.com/en/vino/bag-in-box",
+     "https://www.vino.com/en/vino/box",
+     "https://www.vino.com/en/altro/box-degustazione",
+     "https://www.vino.com/en/vino/champagne",
+     "https://www.vino.com/en/vino/finewine",
+     "https://www.vino.com/en/vino/bianco"
+    ]
+   },
+   {
+    "url": "https://www.vino.com/de/sitemap.xml",
+    "status": 200,
+    "len": 11544191,
+    "nLoc": 10579,
+    "sample": [
+     "https://www.vino.com/de/",
+     "https://www.vino.com/de/altro/accessori",
+     "https://www.vino.com/de/altro/aceti-balsamici",
+     "https://www.vino.com/de/altro/birra",
+     "https://www.vino.com/de/altro/distillato",
+     "https://www.vino.com/de/altro/olio-extravergine",
+     "https://www.vino.com/de/vino/bag-in-box",
+     "https://www.vino.com/de/vino/box",
+     "https://www.vino.com/de/altro/box-degustazione",
+     "https://www.vino.com/de/vino/champagne",
+     "https://www.vino.com/de/vino/finewine",
+     "https://www.vino.com/de/vino/bianco"
+    ]
+   }
+  ],
+  "home": {
+   "status": 200,
+   "final": "https://www.vino.com/",
+   "len": 754422,
+   "shopify": false,
+   "blocked": true
+  }
+ },
+ "www.svinando.com": {
+  "robots": {
+   "status": 200,
+   "sitemaps": [
+    "https://www.svinando.com/sitemap-006-it.xml",
+    "https://www.svinando.com/image-sitemap-006-it.xml"
+   ],
+   "disallow": [
+    "Disallow: /altro/\r",
+    "Disallow: /back/\r",
+    "Disallow: /include/\r",
+    "Disallow: /phplib/\r",
+    "Disallow: /landing/\r",
+    "Disallow: /land/\r",
+    "Disallow: */reset=\r",
+    "Disallow: /sito-GIO/\r",
+    "Disallow: /site-GIO/\r",
+    "Disallow: /site/\r"
+   ]
+  },
+  "productsJson": {
+   "status": 404,
+   "type": "text/html; charset=ISO-8859-1",
+   "final": "https://www.svinando.com/products.json?limit=2",
+   "head": "<!DOCTYPE html>\n<html lang=\"it-IT\">\n<head>\n\t<script>\n    if ('serviceWorker' in navigator) {\n        navigator.serviceWorker.getRegistration().then(registration => {\n            if ( registration ) {\n                console.log(registration);\n            }\n          if (registration && registration.scope.includes('svinando.') && !registration.scope.includes('svinando.com')) {\n            registration.unregister().then(success => {\n              if (success) {\n                console.log('Service Worker di svinando rimosso con successo');\n              } else {\n                console.log('Impossibile rimuovere il Service Worker');\n              }\n            });\n          } else {\n            console.log('Nessun Service Worker trovato per svinando');\n          }\n        });\n      }\n      caches.keys().then(names => {\n        names.forEach(name => {\n            console.log(name); \n       "
+  },
+  "sitemaps": [
+   {
+    "url": "https://www.svinando.com/sitemap-006-it.xml",
+    "status": 200,
+    "len": 6813754,
+    "nLoc": 16488,
+    "sample": [
+     "https://www.svinando.com/",
+     "https://www.svinando.com/registrati",
+     "https://www.svinando.com/novita",
+     "https://www.svinando.com/premiati",
+     "https://www.svinando.com/-",
+     "https://www.svinando.com/vini-regalo",
+     "https://www.svinando.com/vendita-vini-online",
+     "https://www.svinando.com/tipologia-vino-naturali",
+     "https://www.svinando.com/tipologia-vino-orange-wine",
+     "https://www.svinando.com/magnum-svinando",
+     "https://www.svinando.com/tipologia-vini-dolci-passiti-liquorosi",
+     "https://www.svinando.com/aperitivo"
+    ]
+   },
+   {
+    "url": "https://www.svinando.com/image-sitemap-006-it.xml",
+    "status": 200,
+    "len": 4557205,
+    "nLoc": 6830,
+    "sample": [
+     "https://www.svinando.com/confezione-damilano-brut-e-sciabola",
+     "https://www.svinando.com/cantine-sant-agata-na-vota-ruche-di-castagnole-monferrato-docg-2024",
+     "https://www.svinando.com/pasqua-11-minutes-rose-trevenezie-igt-2025",
+     "https://www.svinando.com/grappa-13252-ore-con-astuccio-in-foglia-di-legno",
+     "https://www.svinando.com/1587-grappa-di-brachetto-affinata-in-botti-di-sherry",
+     "https://www.svinando.com/1786-grappa-di-moscato-barricata-affinata-in-botti-di-vermouth",
+     "https://www.svinando.com/1789-grappa-di-barolo-barricata-affinata-in-botti-di-bourbon",
+     "https://www.svinando.com/1820-21-grappa-di-moscato-affinata-in-botti-di-porto",
+     "https://www.svinando.com/carpene-malvolti-1868-prosecco-superiore-di-cartizze-docg-dry",
+     "https://www.svinando.com/carpene-malvolti-1868-prosecco-superiore-docg-extra-brut",
+     "https://www.svinando.com/carpene-malvolti-1868-rive-di-san-pietro-di-barbozza",
+     "https://www.svinando.com/la-versa-1905-metodo-classico-pinot-nero-brut"
+    ]
+   }
+  ],
+  "home": {
+   "status": 200,
+   "final": "https://www.svinando.com/",
+   "len": 1435233,
+   "shopify": false,
+   "blocked": true
+  }
+ },
+ "www.wineshop.it": {
+  "robots": {
+   "status": 200,
+   "sitemaps": [
+    "https://www.wineshop.it/sitemaps/it/sitemap.xml",
+    "https://www.wineshop.it/sitemaps/en/sitemap.xml"
+   ],
+   "disallow": [
+    "Disallow: /CVS\r",
+    "Disallow: /*.svn$\r",
+    "Disallow: /*.idea$\r",
+    "Disallow: /*.sql$\r",
+    "Disallow: /*.tgz$\r",
+    "Disallow: /admin/\r",
+    "Disallow:  /*/newsletter/subscriber/*\r",
+    "Disallow: /app/\r",
+    "Disallow: /downloader/\r",
+    "Disallow: /errors/\r",
+    "Disallow: /includes/\r",
+    "Disallow: /lib/\r",
+    "Disallow: /pkginfo/\r",
+    "Disallow: /shell/\r",
+    "Disallow: /var/\r",
+    "Disallow: /api.php\r",
+    "Disallow: /cron.php\r",
+    "Disallow: /cron.sh\r",
+    "Disallow: /error_log\r",
+    "Disallow: /get.php\r",
+    "Disallow: /install.php\r",
+    "Disallow: /LICENSE.html\r",
+    "Disallow: /LICENSE.txt\r",
+    "Disallow: /LICENSE_AFL.txt\r",
+    "Disallow: /README.txt\r",
+    "Disallow: /RELEASE_NOTES.txt\r",
+    "Disallow: /*?dir*\r",
+    "Disallow: /*?dir=desc*\r",
+    "Disallow: /*?dir=asc*\r",
+    "Disallow: /*?limit*\r",
+    "Disallow: /*?mode*\r",
+    "Disallow: /*?order*\r",
+    "Disallow: /*?tdp=true \r",
+    "Disallow: /index.php/\r",
+    "Disallow: /*?SID=\r",
+    "Disallow: /*/checkout/\r",
+    "Disallow: /*/onestepcheckout/\r",
+    "Disallow: /*/customer/*\r",
+    "Disallow: /*/catalogsearch/*\r",
+    "Disallow: /*/catalog/product_compare/*\r"
+   ]
+  },
+  "productsJson": {
+   "status": 404,
+   "type": "text/html; charset=UTF-8",
+   "final": "https://www.wineshop.it/products.json?limit=2",
+   "head": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"it\" lang=\"it\">\r\n<head>\r\n\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n<title>404 Not Found  Wineshop.it</title>\r\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=10\" />\r\n<meta name=\"description\" content=\"\" />\r\n<meta name=\"keywords\" content=\"\" />\r\n<meta name=\"robots\" content=\"INDEX,FOLLOW\" />\r\n<link rel=\"icon\" href=\"https://www.wineshop.it/media/favicon/default/favicon.png\" type=\"image/x-icon\" />\r\n<link rel=\"shortcut icon\" href=\"https://www.wineshop.it/media/favicon/default/favicon.png\" type=\"image/x-icon\" />\r\n\r\n<link rel=\"stylesheet\" type=\"text/css\" href=\"https://www.wineshop.it/media/css_secure/a1554f66b9a05866088444f5885a4355.css\" media=\"all\" />\n<link rel=\"styleshe"
+  },
+  "sitemaps": [
+   {
+    "url": "https://www.wineshop.it/sitemaps/it/sitemap.xml",
+    "status": 200,
+    "len": 371328,
+    "nLoc": 1971,
+    "sample": [
+     "https://www.wineshop.it/it/vini-rossi",
+     "https://www.wineshop.it/it/vini-bianchi",
+     "https://www.wineshop.it/it/vini-rossi/abruzzo",
+     "https://www.wineshop.it/it/vini-rossi/basilicata",
+     "https://www.wineshop.it/it/vini-rossi/calabria",
+     "https://www.wineshop.it/it/vini-rossi/campania",
+     "https://www.wineshop.it/it/vini-rossi/emilia-romagna",
+     "https://www.wineshop.it/it/vini-rossi/friuli-venezia-giulia",
+     "https://www.wineshop.it/it/vini-rossi/lazio",
+     "https://www.wineshop.it/it/vini-rossi/liguria",
+     "https://www.wineshop.it/it/vini-rossi/lombardia",
+     "https://www.wineshop.it/it/vini-rossi/marche"
+    ]
+   },
+   {
+    "url": "https://www.wineshop.it/sitemaps/en/sitemap.xml",
+    "status": 200,
+    "len": 124718,
+    "nLoc": 719,
+    "sample": [
+     "https://www.wineshop.it/en/red-wines",
+     "https://www.wineshop.it/en/white-wines",
+     "https://www.wineshop.it/en/red-wines/abruzzo",
+     "https://www.wineshop.it/en/red-wines/basilicata",
+     "https://www.wineshop.it/en/red-wines/calabria",
+     "https://www.wineshop.it/en/red-wines/campania",
+     "https://www.wineshop.it/en/red-wines/emilia-romagna",
+     "https://www.wineshop.it/en/red-wines/friuli-venezia-giulia",
+     "https://www.wineshop.it/en/red-wines/lazio",
+     "https://www.wineshop.it/en/red-wines/liguria",
+     "https://www.wineshop.it/en/red-wines/lombardy",
+     "https://www.wineshop.it/en/red-wines/marche"
+    ]
+   }
+  ],
+  "home": {
+   "status": 200,
+   "final": "https://www.wineshop.it/it/",
+   "len": 249635,
+   "shopify": false,
+   "blocked": false
+  }
+ }
+}
