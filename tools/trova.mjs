@@ -108,11 +108,18 @@ function readProduct(html) {
   for (const m of html.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
     try { visit(JSON.parse(m[1].trim())); } catch (e) { /* JSON-LD rotto: si ignora */ }
   }
-  const meta = k => decode((html.match(new RegExp(`<meta[^>]+(?:property|name)=["']${k}["'][^>]*content=["']([^"']*)["']`, 'i'))
-    || html.match(new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+(?:property|name)=["']${k}["']`, 'i')) || [])[1] || '');
+  const meta = k => { // content tra virgolette doppie o singole, in qualunque ordine rispetto al nome
+    const tag = (html.match(new RegExp(`<(?:meta|link)[^>]+(?:property|name|itemprop)=["']${k}["'][^>]*>`, 'i')) || [])[0] || '';
+    const m = tag.match(/(?:content|href)="([^"]*)"/i) || tag.match(/(?:content|href)='([^']*)'/i);
+    return decode(m ? m[1] : '');
+  };
   if (!out.name && /product/i.test(meta('og:type'))) out.name = meta('og:title');
   if (out.price == null) { const p = meta('product:price:amount') || meta('og:price:amount'); if (p) { out.price = +p.replace(',', '.'); out.currency = out.currency || meta('product:price:currency') || meta('og:price:currency'); } }
   if (out.avail == null) { const a = meta('product:availability') || meta('og:availability'); if (/in ?stock|instock/i.test(a)) out.avail = 1; else if (/out|oos/i.test(a)) out.avail = 0; }
+  // microdati (itemprop), usati da alcuni negozi al posto di JSON-LD
+  if (out.price == null) { const p = meta('price'); if (p) { out.price = +p.replace(',', '.'); out.currency = out.currency || meta('priceCurrency'); } }
+  if (out.avail == null) { const a = meta('availability'); if (/InStock|LimitedAvailability|PreOrder/i.test(a)) out.avail = 1; else if (/OutOfStock|SoldOut|Discontinued/i.test(a)) out.avail = 0; }
+  out.evidence = decode((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || '') + ' ' + meta('og:title');
   if (!Number.isFinite(out.price)) out.price = null;
   return out;
 }
@@ -162,7 +169,7 @@ async function runShop(shop) {
       const pr = readProduct(r.text);
       if (!debug.samples[shop.id]) debug.samples[shop.id] = { url: c.url, read: pr, ld: [...r.text.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1].trim().slice(0, 1500)).filter(x => /Product/.test(x)).slice(0, 2), metas: [...r.text.matchAll(/<meta[^>]+(?:price|availability)[^>]*>/gi)].map(m => m[0]).slice(0, 6) };
       if (!pr.name) { st.noProduct++; continue; }
-      const v = verify(p, pr.name, pr.brand, generic);
+      const v = verify(p, pr.name, pr.brand, generic, pr.evidence);
       if (!v.ok) {
         const k = v.why.split(':')[0]; st.why[k] = (st.why[k] || 0) + 1;
         if (debug.rejects.length < 400) debug.rejects.push({ shop: shop.id, wine: p.id, title: pr.name, brand: pr.brand, why: v.why });

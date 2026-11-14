@@ -65,14 +65,15 @@ export function isCandidate(p, tokSet) {
 // Verifica stretta sulla pagina aperta. title = nome prodotto letto dalla pagina,
 // brand = produttore letto dalla pagina (può mancare).
 const SMALL = /\b(37[.,]?5 ?cl|375 ?ml|0[.,]375|50 ?cl|500 ?ml|mezza bottiglia|half bottle)\b/i;
-export function verify(p, title, brand, generic) {
+export function verify(p, title, brand, generic, evidence = '') {
   const tT = tokens(stripYear(title));
   const tSet = new Set(tT);
   const bT = new Set(prodTokens(brand));
   const count = t => tT.filter(x => x === t).length;
+  const eT = tokens(stripYear(evidence)), evCount = t => eT.filter(x => x === t).length;
   const fmt = p.sweet ? title.replace(SMALL, ' ') : title;
   if (FORMAT_BAD.test(fmt)) return { ok: false, why: 'formato o confezione diversa' };
-  if (!p.prodT.every(t => bT.has(t) || count(t) >= (p.nameT.includes(t) ? 2 : 1))) return { ok: false, why: 'produttore diverso' };
+  if (!p.prodT.every(t => { const need = p.nameT.includes(t) ? 2 : 1; return bT.has(t) || count(t) >= need || evCount(t) >= need; })) return { ok: false, why: 'produttore diverso' };
   const missD = p.distinct.filter(t => !tSet.has(t));
   if (missD.length) return { ok: false, why: 'manca il nome etichetta: ' + missD.join(' ') };
   for (const t of TWO_WAY) {
@@ -85,6 +86,9 @@ export function verify(p, title, brand, generic) {
   if (wColor && tColors.size && !tColors.has(wColor)) return { ok: false, why: 'colore diverso' };
   const hit = p.gen.filter(t => tSet.has(t)).length;
   if (p.gen.length && hit / p.gen.length < 0.6) return { ok: false, why: 'denominazione diversa' };
+  // Una parola di denominazione/vitigno che manca e un'altra al suo posto = scambio (Pinot Grigio ≠ Pinot Nero).
+  const swapped = [...tSet].filter(t => generic.has(t) && !p.nameT.includes(t) && !p.prodT.includes(t) && !SHOP_NOISE.has(t) && !COLORS[t] && !TWO_WAY.has(t));
+  if (hit < p.gen.length && swapped.length) return { ok: false, why: 'denominazione o vitigno diverso: ' + swapped.join(' ') };
   // Le parole della marca letta sulla pagina valgono come note solo se la marca è proprio quel produttore.
   const brandIsProducer = bT.size && p.prodT.every(t => bT.has(t));
   const known = new Set([...p.nameT, ...p.prodT, ...(brandIsProducer ? bT : [])]);
