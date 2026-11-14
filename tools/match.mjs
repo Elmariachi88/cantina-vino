@@ -43,18 +43,21 @@ export function buildVocab(wines) {
 
 // Profilo del vino cercato, calcolato una volta.
 export function profile(w, generic) {
-  const nameT = [...new Set(tokens(stripYear(w.n)))].filter(t => !/^\d+$/.test(t));
+  // Tra parentesi nel produttore la guida mette spesso l'etichetta ("Guado al Tasso (Il Bruciato)"): fa parte del nome.
+  const paren = (String(w.p || '').match(/\((.*?)\)/) || [])[1] || '';
+  const nameT = [...new Set(tokens(stripYear(w.n + ' ' + paren)))];
   const prodT = [...new Set(prodTokens(w.p))];
   const nameOnly = nameT.filter(t => !prodT.includes(t));
-  const distinct = nameOnly.filter(t => !generic.has(t) && !TWO_WAY.has(t) && !COLORS[t]);
+  const parenT = new Set(tokens(paren));
+  const distinct = nameOnly.filter(t => parenT.has(t) || /^\d+$/.test(t) || (!generic.has(t) && !TWO_WAY.has(t) && !COLORS[t]));
   const gen = nameOnly.filter(t => !distinct.includes(t));
   return { id: w.id, nameT, prodT, distinct, gen, color: COLORS[norm(w.t)] || null, sweet: /passito|dolce/i.test(w.t || ''), year: w.v || null };
 }
 
 // Filtro largo sullo slug/titolo della sitemap: decide solo se vale la pena aprire la pagina.
 export function isCandidate(p, tokSet) {
-  if (!p.prodT.length || !p.prodT.every(t => tokSet.has(t))) return false;
-  if (!p.distinct.every(t => tokSet.has(t))) return false;
+  if (!p.prodT.length || !p.distinct.every(t => tokSet.has(t))) return false;
+  if (!p.prodT.every(t => tokSet.has(t)) && !p.distinct.some(t => !/^\d+$/.test(t) && t.length > 3)) return false;
   const hit = p.gen.filter(t => tokSet.has(t)).length;
   return p.gen.length === 0 || hit / p.gen.length >= 0.5;
 }
@@ -63,12 +66,13 @@ export function isCandidate(p, tokSet) {
 // brand = produttore letto dalla pagina (può mancare).
 const SMALL = /\b(37[.,]?5 ?cl|375 ?ml|0[.,]375|50 ?cl|500 ?ml|mezza bottiglia|half bottle)\b/i;
 export function verify(p, title, brand, generic) {
-  const tT = tokens(stripYear(title)).filter(t => !/^\d+$/.test(t));
+  const tT = tokens(stripYear(title));
   const tSet = new Set(tT);
-  const all = new Set([...tT, ...prodTokens(brand)]);
+  const bT = new Set(prodTokens(brand));
+  const count = t => tT.filter(x => x === t).length;
   const fmt = p.sweet ? title.replace(SMALL, ' ') : title;
   if (FORMAT_BAD.test(fmt)) return { ok: false, why: 'formato o confezione diversa' };
-  if (!p.prodT.every(t => all.has(t))) return { ok: false, why: 'produttore diverso' };
+  if (!p.prodT.every(t => bT.has(t) || count(t) >= (p.nameT.includes(t) ? 2 : 1))) return { ok: false, why: 'produttore diverso' };
   const missD = p.distinct.filter(t => !tSet.has(t));
   if (missD.length) return { ok: false, why: 'manca il nome etichetta: ' + missD.join(' ') };
   for (const t of TWO_WAY) {
@@ -81,10 +85,13 @@ export function verify(p, title, brand, generic) {
   if (wColor && tColors.size && !tColors.has(wColor)) return { ok: false, why: 'colore diverso' };
   const hit = p.gen.filter(t => tSet.has(t)).length;
   if (p.gen.length && hit / p.gen.length < 0.6) return { ok: false, why: 'denominazione diversa' };
-  const known = new Set([...p.nameT, ...p.prodT, ...prodTokens(brand)]);
-  const extras = [...tSet].filter(t => !known.has(t) && !SHOP_NOISE.has(t) && !generic.has(t) && !PROD_GENERIC.has(t) && t.length > 1);
+  // Le parole della marca letta sulla pagina valgono come note solo se la marca è proprio quel produttore.
+  const brandIsProducer = bT.size && p.prodT.every(t => bT.has(t));
+  const known = new Set([...p.nameT, ...p.prodT, ...(brandIsProducer ? bT : [])]);
+  const extras = [...tSet].filter(t => !known.has(t) && !SHOP_NOISE.has(t) && !generic.has(t) && !PROD_GENERIC.has(t) && !STOP.has(t) && (t.length > 1 || /^\d$/.test(t)));
   // Parole in più nel titolo = probabile altra etichetta dello stesso produttore.
-  const allowed = p.distinct.length ? 1 : 0;
+  // Tollerata una sola parola in più, e solo se il nome etichetta è lungo e riconosciuto (almeno 2 parole proprie).
+  const allowed = p.distinct.filter(t => t.length > 3).length >= 2 ? 1 : 0;
   if (extras.length > allowed) return { ok: false, why: 'parole in più: ' + extras.join(' ') };
   return { ok: true };
 }

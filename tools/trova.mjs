@@ -17,7 +17,7 @@ const SHOPS = [
   { id: 'callmewine', name: 'Callmewine', host: 'www.callmewine.com', tried: true, sitemap: 'https://www.callmewine.com/sitemap/pdp-it.xml' },
   { id: 'signorvino', name: 'Signorvino', host: 'www.signorvino.com', tried: true, sitemap: 'https://www.signorvino.com/it/sitemap_0-product.xml', drop: /\/it\/en\// },
   { id: 'xtrawine', name: 'XtraWine', host: 'www.xtrawine.com', tried: false, sitemap: 'https://www.xtrawine.com/sitemap.xml', child: /sitemap_products_/, keep: /\/products\//, preferIt: true },
-  { id: 'bottleofitaly', name: 'Bottle of Italy', host: 'bottleofitaly.com', tried: false, sitemap: 'https://bottleofitaly.com/sitemap.xml', child: /sitemap_products_/, keep: /\/products\// },
+  { id: 'bottleofitaly', name: 'Bottle of Italy', host: 'bottleofitaly.com', tried: false, sitemap: 'https://bottleofitaly.com/sitemap.xml', child: /sitemap_products_/, keep: /^https:\/\/bottleofitaly\.com\/products\// },
   { id: 'svinando', name: 'Svinando', host: 'www.svinando.com', tried: false, sitemap: 'https://www.svinando.com/sitemap-006-it.xml' },
   { id: 'wineshop', name: 'Wineshop.it', host: 'www.wineshop.it', tried: false, sitemap: 'https://www.wineshop.it/sitemaps/it/sitemap.xml' },
 ];
@@ -32,15 +32,19 @@ function client(shop) {
   let last = 0, refused = 0;
   return async function get(url) {
     if (shop.blocked) return { status: 0, text: '' };
-    const wait = last + 350 - Date.now(); if (wait > 0) await sleep(wait);
+    for (let attempt = 0; attempt < 2; attempt++) {
+    const wait = last + (shop.delay || 1500) - Date.now(); if (wait > 0) await sleep(wait);
     last = Date.now();
     try {
       const r = await fetch(url, { headers: { 'user-agent': UA, 'accept-language': 'it-IT,it;q=0.9' }, redirect: 'follow', signal: AbortSignal.timeout(30000) });
       const text = await r.text();
-      if (r.status === 403 || r.status === 429) { if (++refused >= 4) shop.blocked = true; } else refused = 0;
       shop.requests = (shop.requests || 0) + 1;
+      // 429 = "vai più piano": si aspetta e si riprova una volta, rallentando. 403 = rifiuto: ci si ferma.
+      if (r.status === 429 && attempt === 0) { shop.delay = Math.min((shop.delay || 1500) * 2, 8000); await sleep(Math.min(+(r.headers.get('retry-after') || 0) * 1000 || 45000, 120000)); continue; }
+      if (r.status === 403 || r.status === 429) { if (++refused >= 3) shop.blocked = true; } else refused = 0;
       return { status: r.status, text, final: r.url };
     } catch (e) { return { status: 0, text: '', error: String(e) }; }
+    }
   };
 }
 
@@ -123,9 +127,13 @@ if (LIMIT) wines = wines.slice(0, LIMIT);
 const profiles = wines.map(w => profile(w, generic));
 // indice: primo token del produttore → profili (per non confrontare tutto con tutto)
 const byTok = new Map();
-for (const p of profiles) { const k = p.prodT.slice().sort((a, b) => b.length - a.length)[0]; if (!k) continue; if (!byTok.has(k)) byTok.set(k, []); byTok.get(k).push(p); }
+const idx = (k, p) => { if (!k) return; if (!byTok.has(k)) byTok.set(k, []); if (!byTok.get(k).includes(p)) byTok.get(k).push(p); };
+for (const p of profiles) {
+  idx(p.prodT.slice().sort((a, b) => b.length - a.length)[0], p);
+  idx(p.distinct.filter(t => !/^\d+$/.test(t) && t.length > 3).sort((a, b) => b.length - a.length)[0], p);
+}
 
-const offers = {}, debug = { rejects: [], perShop: {} };
+const offers = {}, debug = { rejects: [], perShop: {}, samples: {} };
 async function runShop(shop) {
   const get = client(shop), st = debug.perShop[shop.id] = { urls: 0, candidates: 0, opened: 0, ok: 0, noProduct: 0, why: {} };
   const list = await readSitemap(shop, get);
@@ -139,7 +147,7 @@ async function runShop(shop) {
     for (const t of set) for (const p of byTok.get(t) || []) {
       if (seen.has(p.id)) continue; seen.add(p.id);
       if (!isCandidate(p, set)) continue;
-      const score = p.gen.filter(g => set.has(g)).length - set.size * 0.01 + (p.year && set.has(String(p.year)) ? 0.5 : 0);
+      const score = p.gen.filter(g => set.has(g)).length + (p.prodT.every(g => set.has(g)) ? 2 : 0) - set.size * 0.01 + (p.year && set.has(String(p.year)) ? 0.5 : 0);
       if (!cand.has(p.id)) cand.set(p.id, []);
       cand.get(p.id).push({ url: e.url, score });
     }
@@ -152,6 +160,7 @@ async function runShop(shop) {
       const r = await get(c.url); st.opened++;
       if (r.status !== 200) { st.why['pagina ' + r.status] = (st.why['pagina ' + r.status] || 0) + 1; continue; }
       const pr = readProduct(r.text);
+      if (!debug.samples[shop.id]) debug.samples[shop.id] = { url: c.url, read: pr, ld: [...r.text.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1].trim().slice(0, 1500)).filter(x => /Product/.test(x)).slice(0, 2), metas: [...r.text.matchAll(/<meta[^>]+(?:price|availability)[^>]*>/gi)].map(m => m[0]).slice(0, 6) };
       if (!pr.name) { st.noProduct++; continue; }
       const v = verify(p, pr.name, pr.brand, generic);
       if (!v.ok) {
