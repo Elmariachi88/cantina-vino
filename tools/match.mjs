@@ -11,7 +11,8 @@ const ABBR = { sup: 'superiore', ris: 'riserva', cl: 'classico', m: 'metodo' };
 // Parole che un negozio aggiunge al titolo senza cambiare il vino.
 const SHOP_NOISE = new Set(('doc docg igt igp dop doc aoc bio biologico biologica organic organico vino wine vini cl ml lt l bottiglia bottle '
   + 'italia italy vegan vegano naturale senza solfiti aggiunti tappo vite stelvin astuccio astucciato confezione annata vintage nv sa '
-  + 'rosso bianco rosato rose red white tranquillo fermo secco dry 75 750 075 0 nuovo new edizione etichetta')
+  + 'rosso bianco rosato rose red white tranquillo fermo secco dry 75 750 075 0 nuovo new edizione etichetta'
+  + ' abruzzo basilicata calabria campania emilia romagna friuli venezia giulia lazio liguria lombardia marche molise piemonte puglia salento sardegna sicilia toscana trentino alto adige umbria valle aosta veneto')
   .split(' '));
 // Parole che cambiano il vino: devono esserci da entrambe le parti, o da nessuna.
 const CRITICAL = ('riserva superiore classico passito spumante brut metodo frizzante ripasso amarone recioto vendemmia tardiva selezione '
