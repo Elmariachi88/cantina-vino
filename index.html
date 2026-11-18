@@ -4577,7 +4577,46 @@ function _wlLinks(it) {
   return links;
 }
 
+// Riscontri verificati per la lista desideri: la voce viene collegata al vino
+// della guida con lo stesso nome (senza annata) e lo stesso produttore, poi si
+// mostrano le offerte di radar/offerte.json (pagine prodotto aperte e verificate).
+let _wlVerified = null;
+const _wlNorm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+const _WL_NOISE = new Set('doc docg igt igp dop d di del della dell e il la le i'.split(' '));
+const _WL_GEN = new Set('azienda agricola agricole cantina cantine tenuta tenute fattoria podere poderi vini vigneti'.split(' '));
+const _WL_ABBR = { sup: 'superiore', ris: 'riserva', cl: 'classico' };
+function _wlParse(name, producer) {
+  let n = String(name || ''), p = String(producer || '');
+  n = n.split('|')[0];
+  const dash = n.split(/\s+-\s+/); if (!p && dash.length > 1) { p = dash.slice(1).join(' - '); n = dash[0]; }
+  return { n, p };
+}
+function _wlKey(n, p) {
+  const nk = _wlNorm(String(n).replace(/\b(19|20)\d{2}\b/g, ' ')).split(' ').filter(x => x && !_WL_NOISE.has(x)).map(x => _WL_ABBR[x] || x).sort().join(' ');
+  const pk = _wlNorm(String(p).replace(/\(.*?\)/g, ' ')).split(' ').filter(x => x && !_WL_NOISE.has(x) && !_WL_GEN.has(x)).sort().join(' ');
+  return nk + '|' + pk;
+}
+async function _wlLoadVerified() {
+  if (_wlVerified) return _wlVerified;
+  try {
+    const d = _buyData || await loadBuyData();
+    const byKey = new Map();
+    for (const w of d.wines) byKey.set(_wlKey(w.n, w.p), w);
+    _wlVerified = { d, byKey, shopBy: Object.fromEntries(d.shops.map(s => [s.id, s])) };
+  } catch (e) { _wlVerified = { error: e.message }; }
+  return _wlVerified;
+}
+function _wlMatch(it) {
+  const V = _wlVerified; if (!V || V.error || it.kind === 'distillates') return null;
+  const { n, p } = _wlParse(it.name, it.producer);
+  const w = V.byKey.get(_wlKey(n, p)); if (!w) return null;
+  const offs = (V.d.offers[w.id] || []).filter(o => V.shopBy[o.s])
+    .slice().sort((a, b) => (a.a === 0) - (b.a === 0) || (a.p == null) - (b.p == null) || (a.p || 0) - (b.p || 0));
+  return { w, offs };
+}
 async function viewWishlist() {
+  await _wlLoadVerified();
   const all = (await DB.getAll('wishlist')).slice().sort((a,b)=>(b._ts||0)-(a._ts||0));
   const q = WL.q.trim().toLowerCase();
   const items = q ? all.filter(it => _wlQuery(it).includes(q)) : all;
@@ -4642,10 +4681,27 @@ function _wlItemHtml(it) {
     <div class="wine-info">
       <div class="wine-name">${it.kind==='distillates'?'🥃':'🍷'} ${esc(it.name)}</div>
       <div class="wine-sub">${esc([it.producer, it.priceEstimate!=null?fmt(it.priceEstimate):''].filter(Boolean).join(' · ')||'—')}${it.notes?' · '+esc(it.notes.slice(0,60))+(it.notes.length>60?'…':''):''}</div>
+      ${(() => { const m = _wlMatch(it); if (!m) return '';
+        const av = m.offs.filter(o => o.a !== 0), best = av.find(o => o.p != null);
+        return av.length
+          ? `<div style="font-size:11.5px;color:var(--pill-p);margin-top:3px">🛒 ${av.length} ${av.length === 1 ? 'negozio verificato' : 'negozi verificati'}${best ? ' · da ' + esc(fmt(best.p)) : ''}</div>`
+          : `<div style="font-size:11.5px;color:var(--text-3);margin-top:3px">🛒 ${m.offs.length ? 'trovato ma esaurito ovunque' : 'non trovato con certezza nei negozi'}</div>`; })()}
       ${isOpen ? `<div style="margin-top:8px;padding:8px 10px;background:var(--bg);border-radius:var(--rs);font-size:12px">
         <div style="font-weight:600;margin-bottom:6px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;font-size:10.5px">🛒 Dove comprarlo</div>
-        ${offers.length ? offers.map(o => `<div style="margin-bottom:4px">${_wlSafeUrl(o.url) ? `<a href="${esc(_wlSafeUrl(o.url))}" target="_blank" rel="noopener">${esc(o.shop||o.url)}</a>` : esc(o.shop||'')}${o.price?' — '+esc(o.price+'')+' €':''}${o.availability?' · '+esc(o.availability):''}</div>`).join('') : ''}
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+        ${(() => { const m = _wlMatch(it); const V = _wlVerified;
+          if (!m) return `<div style="color:var(--text-3);margin-bottom:6px">${V && V.error ? 'Riscontri verificati non disponibili ora (serve la connessione).' : 'Nessun riscontro verificato: il vino non è nella guida o non è in vendita nei negozi controllati.'}</div>`;
+          if (!m.offs.length) return '<div style="color:var(--text-3);margin-bottom:6px">Non trovato con certezza nei negozi controllati.</div>';
+          return m.offs.map(o => `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+            <div style="min-width:0"><b>${esc(V.shopBy[o.s].name)}</b>${o.p != null ? ' · ' + esc(fmt(o.p)) : ''}${o.v ? ' · annata ' + o.v : ''}${o.a === 0 ? ' · <span style="color:var(--pill-d)">esaurito</span>' : ''}${V.shopBy[o.s].tried ? '' : ' · <span style="color:var(--text-3)">negozio nuovo</span>'}
+              <div style="font-size:11px;color:var(--text-2);overflow-wrap:anywhere">${esc(o.t)}</div></div>
+            <a class="btn ${o.a === 0 ? 'btn-outline' : 'btn-accent'} btn-sm" href="${esc(o.u)}" target="_blank" rel="noopener noreferrer" style="flex-shrink:0">Acquista</a></div>`).join('')
+            + `<div style="font-size:10.5px;color:var(--text-3);margin:4px 0 6px">Verificati aprendo la pagina del negozio · aggiornati il ${esc(new Date(V.d.generated).toLocaleDateString('it-IT'))}</div>`; })()}
+        ${offers.length ? `<details style="margin:4px 0 6px"><summary style="cursor:pointer;color:var(--pill-d)">⚠️ Link inseriti in precedenza, non verificati (${offers.length})</summary>
+          <div style="color:var(--text-3);margin:4px 0">Alcuni di questi link erano stati costruiti o inventati e possono portare a pagine sbagliate o inesistenti. Usa quelli verificati qui sopra.</div>
+          ${offers.map(o => `<div style="margin-bottom:4px;color:var(--text-2)">${esc(o.shop||'')}${o.price?' — '+esc(o.price+'')+' €':''}${o.availability?' · '+esc(o.availability):''}${_wlSafeUrl(o.url) ? ` · <a href="${esc(_wlSafeUrl(o.url))}" target="_blank" rel="noopener">apri</a>` : ''}</div>`).join('')}
+        </details>` : ''}
+        <div style="font-size:10.5px;color:var(--text-3);margin-top:6px">Cerca altrove (pagine di ricerca, non prodotti):</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:2px">
         ${_wlLinks(it).map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(l.label)} ↗</a>`).join('')}
         </div>
       </div>` : ''}
